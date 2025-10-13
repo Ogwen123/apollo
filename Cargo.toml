@@ -1,0 +1,8 @@
+[package]
+name = "apollo"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+cargo-ptest = "1.0.0"
+gpui = "0.2.0"
