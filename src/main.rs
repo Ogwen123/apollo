@@ -1,5 +1,6 @@
 mod components;
 mod style;
+mod core;
 
 use gpui::{
     div, prelude::*, px, rgb, size, App, Application, Bounds, Context, SharedString, Window,
