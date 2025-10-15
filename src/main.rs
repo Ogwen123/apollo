@@ -7,6 +7,7 @@ use gpui::{
     WindowBounds, WindowOptions,
 };
 use crate::components::toolbar::ToolBar;
+use crate::core::utils::make_rgba;
 use crate::style::Style;
 
 struct Base {
@@ -19,9 +20,9 @@ impl Render for Base {
             .flex()
             .flex_col()
             .size_full()
-            .bg(rgb(self.style.bg_colour))
+            .bg(make_rgba(self.style.bg_colour))
             .items_center()
-            .text_color(rgb(self.style.text_colour))
+            .text_color(make_rgba(self.style.text_colour))
             .child(_cx.new(|_| ToolBar {
                 style: self.style.clone()
             }))

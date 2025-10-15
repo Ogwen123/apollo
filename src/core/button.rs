@@ -1,8 +1,19 @@
-use gpui::{div, px, rgb, App, Context, InteractiveElement, IntoElement, MouseButton, MouseDownEvent, ParentElement, Render, Styled, Window};
+use gpui::{div, px, rgb, rgba, App, Context, InteractiveElement, IntoElement, MouseButton, MouseDownEvent, ParentElement, Render, Styled, Window};
+use crate::core::utils::make_rgba;
+
+pub enum TextPosition {
+    Start,
+    Centre,
+    End
+}
 
 pub struct Button {
     /// Text to be displayed on the button
     pub text: String,
+    /// Horizontal position for the text
+    pub justify_content: TextPosition,
+    /// Vertical position for the text
+    pub align_text: TextPosition,
     /// Width in pixels
     pub width: f32,
     /// Height in pixels
@@ -31,7 +42,7 @@ pub struct Button {
 
 impl Render for Button {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        div()
+        let d = div()
             .flex()
             .h(px(self.height))
             .w(px(self.width))
@@ -40,12 +51,26 @@ impl Render for Button {
             .p(px(self.padding))
             .m(px(self.margin))
             .rounded(px(self.rounding))
-            .border_color(rgb(self.border_colour.unwrap_or(self.colour)))
-            .text_color(rgb(self.text_colour))
-            .bg(rgb(self.colour))
-            .hover(|style| style.bg(rgb(self.hover_colour.unwrap_or(self.colour))))
+            .border_color(make_rgba(self.border_colour.unwrap_or(self.colour)))
+            .text_color(make_rgba(self.text_colour))
+            .bg(make_rgba(self.colour))
+            .hover(|style| style.bg(make_rgba(self.hover_colour.unwrap_or(self.colour))))
             .on_mouse_down(MouseButton::Left, self.on_click)
-            .child(self.text.clone())
+            .child(self.text.clone());
+
+        let justified = match self.justify_content {
+            TextPosition::Start => d.justify_start(),
+            TextPosition::Centre => d.justify_center(),
+            TextPosition::End => d.justify_end(),
+        };
+
+        let aligned = match self.align_text {
+            TextPosition::Start => justified.items_start(),
+            TextPosition::Centre => justified.items_center(),
+            TextPosition::End => justified.items_end(),
+        };
+
+        aligned
     }
 }
 
@@ -53,6 +78,8 @@ impl Default for Button {
     fn default() -> Self {
         Self {
             text: String::new(),
+            justify_content: TextPosition::Start,
+            align_text: TextPosition::Start,
             width: 100.0,
             height: 50.0,
             text_size: 12.0,
