@@ -1,4 +1,5 @@
-use gpui::{div, px, rgb, Context, IntoElement, ParentElement, Render, Styled, Window};
+use gpui::{div, px, rgb, AppContext, Context, IntoElement, ParentElement, Render, Styled, Window};
+use crate::core::button::Button;
 use crate::style::{Style};
 
 pub struct ToolBar {
@@ -14,6 +15,10 @@ impl Render for ToolBar {
             .bg(rgb(self.style.toolbar.bg_colour))
             .items_center()
             .text_color(rgb(self.style.text_colour))
-            .child(format!("Hello, test!"))
+            .child(format!("Apollo"))
+            .child(cx.new(|_| Button {
+                text: String::from("test"),
+                ..Default::default()
+            }))
     }
 }
