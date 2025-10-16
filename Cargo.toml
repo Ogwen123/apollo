@@ -6,3 +6,4 @@ edition = "2024"
 [dependencies]
 cargo-ptest = "1.0.0"
 gpui = "0.2.0"
+rfd = "0.15.4"

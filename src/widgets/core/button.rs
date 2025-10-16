@@ -1,9 +1,9 @@
-use crate::core::utils::make_rgba;
+use crate::widgets::utils::make_rgba;
 use gpui::{
     App, Context, InteractiveElement, IntoElement, MouseButton, MouseDownEvent, ParentElement,
     Render, Styled, Window, div, px, rgb, rgba,
 };
-use crate::{margin, padding};
+use crate::{margin, padding, rounding};
 
 pub enum TextPosition {
     Start,
@@ -24,8 +24,8 @@ pub struct Button {
     pub height: f32,
     /// Text size in pixels
     pub text_size: f32,
-    /// Corner rounding in pixels
-    pub rounding: f32,
+    /// Corner rounding in pixels, ordered as (top left, top right, bottom right, bottom left) e.g. clockwise starting at the top left, you can use the rounding!() macro to convert a single value to this form.
+    pub rounding: (f32, f32, f32, f32),
     /// Background colour in hex e.g. 0xffffff
     pub colour: u32,
     /// Hover colour in hex e.g. 0xffffff
@@ -38,9 +38,9 @@ pub struct Button {
     pub border_width: f32,
     /// Function ran on_mouse_down for left click
     pub on_click: fn(&MouseDownEvent, &mut Window, &mut App),
-    /// Padding in pixels, given as (top, right, left, bottom), you can use the padding!() macro to convert a single value to this form.
+    /// Padding in pixels, ordered as (top, right, left, bottom), you can use the padding!() macro to convert a single value or x and y value to this form.
     pub padding: (f32, f32, f32, f32),
-    /// Margin in pixels, given as (top, right, left, bottom), you can use the margin!() macro to convert a single or x and y value to this form.
+    /// Margin in pixels, ordered as (top, right, left, bottom), you can use the margin!() macro to convert a single value or x and y value to this form.
     pub margin: (f32, f32, f32, f32),
 }
 
@@ -51,16 +51,22 @@ impl Render for Button {
             .h(px(self.height))
             .w(px(self.width))
             .text_size(px(self.text_size))
-            .border(px(self.border_width))
+            // Per side padding
             .pt(px(self.padding.0))
             .pr(px(self.padding.1))
             .pb(px(self.padding.2))
             .pl(px(self.padding.3))
+            // Per side margin
             .mt(px(self.margin.0))
             .mr(px(self.margin.1))
             .mb(px(self.margin.2))
             .ml(px(self.margin.3))
-            .rounded(px(self.rounding))
+            // Per corner rounding
+            .rounded_tl(px(self.rounding.0))
+            .rounded_tr(px(self.rounding.1))
+            .rounded_br(px(self.rounding.2))
+            .rounded_bl(px(self.rounding.3))
+            .border(px(self.border_width))
             .border_color(make_rgba(self.border_colour.unwrap_or(self.colour)))
             .text_color(make_rgba(self.text_colour))
             .bg(make_rgba(self.colour))
@@ -93,7 +99,7 @@ impl Default for Button {
             width: 100.0,
             height: 50.0,
             text_size: 12.0,
-            rounding: 0.0,
+            rounding: rounding!(0.0),
             colour: 0xf5f5f5,
             hover_colour: None,
             text_colour: 0x0000000,

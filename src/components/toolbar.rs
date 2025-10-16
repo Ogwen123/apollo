@@ -1,11 +1,18 @@
-use crate::core::button::{Button, TextPosition};
-use crate::core::utils::make_rgba;
+use std::path::PathBuf;
+use crate::widgets::core::button::{Button, TextPosition};
+use crate::widgets::utils::make_rgba;
 use crate::style::Style;
-use gpui::{AppContext, Context, IntoElement, ParentElement, Render, Styled, Window, div, px, rgb, rgba, percentage};
-use crate::padding;
+use gpui::{AppContext, Context, IntoElement, ParentElement, Render, Styled, Window, div, px, rgb, rgba, percentage, App, AsyncApp, AsyncWindowContext, EventEmitter, Entity};
+use crate::{margin, padding, rounding, OpenProjects};
+use rfd::AsyncFileDialog;
+use crate::state::State;
+
+const BUTTON_HEIGHT: f32 = 30f32;
+const BUTTON_HOVER_COLOUR: u32 = 0xffffff22;
 
 pub struct ToolBar {
     pub style: Style,
+    pub state: Entity<State>
 }
 
 impl Render for ToolBar {
@@ -22,8 +29,10 @@ impl Render for ToolBar {
                     .w_full()
                     .flex()
                     .flex_row()
+                    .items_center()
                     .child(div()
-                        .pr(px(self.style.padding))
+                        .text_xl()
+                        .px(px(10.0))
                         .child("Apollo".to_string()))
                     .child(cx.new(|_| Button {
                         text: String::from("Open Project"),
@@ -31,11 +40,25 @@ impl Render for ToolBar {
                         justify_content: TextPosition::Centre,
                         align_text: TextPosition::Centre,
                         width: 80f32,
-                        height: 26f32,
-                        padding: padding!(self.style.padding, 0.0),
+                        height: BUTTON_HEIGHT,
+                        margin: margin!(self.style.margin, 0.0),
                         colour: self.style.toolbar.bg_colour,
-                        hover_colour: Some(0xffffff22),
-                        rounding: self.style.rounding,
+                        hover_colour: Some(BUTTON_HOVER_COLOUR),
+                        rounding: rounding!(self.style.rounding),
+                        //on_click: |e, window, cx| {
+                        //    cx.spawn(|cx: &mut AsyncApp| async move {
+                        //        if let Some(file) = AsyncFileDialog::new()
+                        //            .set_directory("~")
+                        //            .pick_folder()
+                        //            .await
+                        //        {
+                        //            self.state.update(cx, |state, _cx| {
+                        //                state.open_projects.projects.push(file)
+                        //            });
+                        //        }
+                        //    })
+                        //        .detach();
+                        //},
                         ..Default::default()
                     }))
                     .child(cx.new(|_| Button {
@@ -44,28 +67,29 @@ impl Render for ToolBar {
                         justify_content: TextPosition::Centre,
                         align_text: TextPosition::Centre,
                         width: 40f32,
-                        height: 26f32,
-                        padding: padding!(self.style.padding, 0.0),
+                        height: BUTTON_HEIGHT,
+                        margin: margin!(self.style.margin, 0.0),
                         colour: self.style.toolbar.bg_colour,
-                        hover_colour: Some(0xffffff22),
-                        rounding: self.style.rounding,
+                        hover_colour: Some(BUTTON_HOVER_COLOUR),
+                        rounding: rounding!(self.style.rounding),
                         ..Default::default()
                     })),
 
             )
             .child(
                 div()
-                    .w_1_12()
+                    .w(px(40.0))
                     .child(cx.new(|_| Button {
                         text: String::from("X"),
                         text_colour: self.style.text_colour,
                         justify_content: TextPosition::Centre,
                         align_text: TextPosition::Centre,
                         width: 40f32,
-                        height: 26f32,
+                        height: BUTTON_HEIGHT,
                         colour: self.style.toolbar.bg_colour,
-                        hover_colour: Some(0xffffff22),
-                        rounding: self.style.rounding,
+                        hover_colour: Some(BUTTON_HOVER_COLOUR),
+                        rounding: rounding!(self.style.rounding),
+                        margin: margin!(self.style.margin, 0.0),
                         on_click: |e, window, cx| {
                             cx.quit()
                         },

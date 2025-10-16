@@ -1,20 +1,23 @@
 #[derive(Clone)]
+/// Contains all the styling specific to the toolbar at the top of the app
 pub struct ToolBarStyle {
+    /// Height of the status bar
     pub height: f32,
-    /// Width in pixels, a width of -1 will use all available space
+    /// Background colour of the status bar
     pub bg_colour: u32,
 }
 
-impl Default for ToolBarStyle {
-    fn default() -> Self {
-        Self {
-            height: 30.0,
-            bg_colour: 0x2b2d30,
-        }
-    }
+#[derive(Clone)]
+/// Contains all the styling specific to the status bar at the bottom of the app
+pub struct StatusBarStyle {
+    /// Height of the status bar
+    pub height: f32,
+    /// Height of the status bar
+    pub bg_colour: u32,
 }
 
 #[derive(Clone)]
+/// Top level style struct
 pub struct Style {
     /// Text colour
     pub text_colour: u32,
@@ -32,8 +35,30 @@ pub struct Style {
     pub rounding: f32,
     /// The default padding applied to most elements
     pub padding: f32,
+    /// The default margin applied to most elements
+    pub margin: f32,
     /// Styling for the toolbar, which is the bar at the top of the page
     pub toolbar: ToolBarStyle,
+    /// Styling for the status bar, which is the bar at the bottom of the page
+    pub statusbar: StatusBarStyle
+}
+
+impl Default for ToolBarStyle {
+    fn default() -> Self {
+        Self {
+            height: 40.0,
+            bg_colour: 0x2b2d30,
+        }
+    }
+}
+
+impl Default for StatusBarStyle {
+    fn default() -> Self {
+        Self {
+            height: 20.0,
+            bg_colour: 0x2b2d30,
+        }
+    }
 }
 
 impl Default for Style {
@@ -46,8 +71,10 @@ impl Default for Style {
             secondary_colour: 0x2563eb,
             hover_secondary_colour: 0x1b46a6,
             rounding: 4.0,
-            padding: 8.0,
+            padding: 4.0,
+            margin: 4.0,
             toolbar: Default::default(),
+            statusbar: Default::default()
         }
     }
 }
