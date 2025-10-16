@@ -1,14 +1,14 @@
 mod components;
-mod style;
 mod core;
+mod style;
 
-use gpui::{
-    div, prelude::*, px, rgb, size, App, Application, Bounds, Context, SharedString, Window,
-    WindowBounds, WindowOptions,
-};
 use crate::components::toolbar::ToolBar;
 use crate::core::utils::make_rgba;
 use crate::style::Style;
+use gpui::{
+    App, Application, Bounds, Context, SharedString, Window, WindowBounds, WindowOptions, div,
+    prelude::*, px, rgb, size,
+};
 
 struct Base {
     style: Style,
@@ -24,14 +24,13 @@ impl Render for Base {
             .items_center()
             .text_color(make_rgba(self.style.text_colour))
             .child(_cx.new(|_| ToolBar {
-                style: self.style.clone()
+                style: self.style.clone(),
             }))
     }
 }
 
 fn main() {
     Application::new().run(|cx: &mut App| {
-
         let bounds = Bounds::centered(None, size(px(500.), px(500.0)), cx);
 
         let window_options = WindowOptions {
@@ -40,14 +39,11 @@ fn main() {
             ..Default::default()
         };
 
-        cx.open_window(
-            window_options,
-            |_, cx| {
-                cx.new(|_| Base {
-                    style: Default::default()
-                })
-            },
-        )
-            .unwrap();
+        cx.open_window(window_options, |_, cx| {
+            cx.new(|_| Base {
+                style: Default::default(),
+            })
+        })
+        .unwrap();
     });
 }

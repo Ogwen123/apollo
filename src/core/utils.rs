@@ -1,4 +1,4 @@
-use gpui::{rgba, Rgba};
+use gpui::{Rgba, rgba};
 
 pub fn make_rgba(colour: u32) -> Rgba {
     if colour <= 0xffffff {

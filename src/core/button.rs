@@ -1,10 +1,14 @@
-use gpui::{div, px, rgb, rgba, App, Context, InteractiveElement, IntoElement, MouseButton, MouseDownEvent, ParentElement, Render, Styled, Window};
 use crate::core::utils::make_rgba;
+use gpui::{
+    App, Context, InteractiveElement, IntoElement, MouseButton, MouseDownEvent, ParentElement,
+    Render, Styled, Window, div, px, rgb, rgba,
+};
+use crate::padding;
 
 pub enum TextPosition {
     Start,
     Centre,
-    End
+    End,
 }
 
 pub struct Button {
@@ -34,10 +38,10 @@ pub struct Button {
     pub border_width: f32,
     /// Function ran on_mouse_down for left click
     pub on_click: fn(&MouseDownEvent, &mut Window, &mut App),
-    /// Padding in pixels
-    pub padding: f32,
+    /// Padding in pixels, given as (top, right, left, bottom), you can use the padding!() macro to convert a single value to this form.
+    pub padding: (f32, f32, f32, f32),
     /// Margin in pixels
-    pub margin: f32
+    pub margin: f32,
 }
 
 impl Render for Button {
@@ -48,7 +52,10 @@ impl Render for Button {
             .w(px(self.width))
             .text_size(px(self.text_size))
             .border(px(self.border_width))
-            .p(px(self.padding))
+            .pt(px(self.padding.0))
+            .pr(px(self.padding.1))
+            .pb(px(self.padding.2))
+            .pl(px(self.padding.3))
             .m(px(self.margin))
             .rounded(px(self.rounding))
             .border_color(make_rgba(self.border_colour.unwrap_or(self.colour)))
@@ -90,8 +97,8 @@ impl Default for Button {
             border_colour: None,
             border_width: 0.0,
             on_click: |_, _, _| {},
-            padding: 0.0,
-            margin: 0.0
+            padding: padding!(0.0),
+            margin: 0.0,
         }
     }
 }
