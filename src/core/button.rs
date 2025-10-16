@@ -3,7 +3,7 @@ use gpui::{
     App, Context, InteractiveElement, IntoElement, MouseButton, MouseDownEvent, ParentElement,
     Render, Styled, Window, div, px, rgb, rgba,
 };
-use crate::padding;
+use crate::{margin, padding};
 
 pub enum TextPosition {
     Start,
@@ -40,8 +40,8 @@ pub struct Button {
     pub on_click: fn(&MouseDownEvent, &mut Window, &mut App),
     /// Padding in pixels, given as (top, right, left, bottom), you can use the padding!() macro to convert a single value to this form.
     pub padding: (f32, f32, f32, f32),
-    /// Margin in pixels
-    pub margin: f32,
+    /// Margin in pixels, given as (top, right, left, bottom), you can use the margin!() macro to convert a single or x and y value to this form.
+    pub margin: (f32, f32, f32, f32),
 }
 
 impl Render for Button {
@@ -56,7 +56,10 @@ impl Render for Button {
             .pr(px(self.padding.1))
             .pb(px(self.padding.2))
             .pl(px(self.padding.3))
-            .m(px(self.margin))
+            .mt(px(self.margin.0))
+            .mr(px(self.margin.1))
+            .mb(px(self.margin.2))
+            .ml(px(self.margin.3))
             .rounded(px(self.rounding))
             .border_color(make_rgba(self.border_colour.unwrap_or(self.colour)))
             .text_color(make_rgba(self.text_colour))
@@ -98,7 +101,7 @@ impl Default for Button {
             border_width: 0.0,
             on_click: |_, _, _| {},
             padding: padding!(0.0),
-            margin: 0.0,
+            margin: margin!(0.0),
         }
     }
 }
