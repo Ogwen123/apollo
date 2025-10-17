@@ -1,6 +1,5 @@
-use gpui::{div, px, Context, IntoElement, ParentElement, Render, Styled, Window};
+use gpui::{div, px, rgba, Context, IntoElement, ParentElement, Render, Styled, Window};
 use gpui::TextAlign::Center;
-use crate::widgets::utils::make_rgba;
 use crate::style::Style;
 
 pub struct StatusBar {
@@ -14,7 +13,7 @@ impl Render for StatusBar {
             .h(px(self.style.statusbar.height))
             .w_full()
             .text_xs()
-            .bg(make_rgba(self.style.statusbar.bg_colour))
+            .bg(rgba(self.style.statusbar.bg_colour))
             .child("Status bar")
     }
 }

@@ -1,8 +1,4 @@
-use crate::widgets::utils::make_rgba;
-use gpui::{
-    App, Context, InteractiveElement, IntoElement, MouseButton, MouseDownEvent, ParentElement,
-    Render, Styled, Window, div, px, rgb, rgba,
-};
+use gpui::{App, Context, InteractiveElement, IntoElement, MouseButton, MouseDownEvent, ParentElement, Render, Styled, Window, div, px, rgb, rgba, Hsla, Rgba};
 use crate::{margin, padding, rounding};
 
 pub enum TextPosition {
@@ -27,13 +23,13 @@ pub struct Button {
     /// Corner rounding in pixels, ordered as (top left, top right, bottom right, bottom left) e.g. clockwise starting at the top left, you can use the rounding!() macro to convert a single value to this form.
     pub rounding: (f32, f32, f32, f32),
     /// Background colour in hex e.g. 0xffffff
-    pub colour: u32,
+    pub colour: Rgba,
     /// Hover colour in hex e.g. 0xffffff
-    pub hover_colour: Option<u32>,
+    pub hover_colour: Option<Rgba>,
     /// Text colour in hex e.g. 0xffffff
-    pub text_colour: u32,
+    pub text_colour: Rgba,
     /// Border colour
-    pub border_colour: Option<u32>,
+    pub border_colour: Option<Rgba>,
     /// Border width in pixels
     pub border_width: f32,
     /// Function ran on_mouse_down for left click
@@ -67,13 +63,13 @@ impl Render for Button {
             .rounded_br(px(self.rounding.2))
             .rounded_bl(px(self.rounding.3))
             .border(px(self.border_width))
-            .border_color(make_rgba(self.border_colour.unwrap_or(self.colour)))
-            .text_color(make_rgba(self.text_colour))
-            .bg(make_rgba(self.colour))
-            .hover(|style| style.bg(make_rgba(self.hover_colour.unwrap_or(self.colour))))
+            .border_color(self.border_colour.unwrap_or(self.colour))
+            .text_color(self.text_colour)
+            .bg(self.colour)
+            .hover(|style| style.bg(self.hover_colour.unwrap_or(self.colour)))
             .on_mouse_down(MouseButton::Left, self.on_click)
             .child(self.text.clone());
-
+        
         let justified = match self.justify_content {
             TextPosition::Start => d.justify_start(),
             TextPosition::Centre => d.justify_center(),
@@ -100,9 +96,9 @@ impl Default for Button {
             height: 50.0,
             text_size: 12.0,
             rounding: rounding!(0.0),
-            colour: 0xf5f5f5,
+            colour: rgb(0xf5f5f5),
             hover_colour: None,
-            text_colour: 0x0000000,
+            text_colour: rgb(0x000000),
             border_colour: None,
             border_width: 0.0,
             on_click: |_, _, _| {},

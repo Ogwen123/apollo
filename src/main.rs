@@ -5,16 +5,14 @@ mod state;
 
 use std::path::PathBuf;
 use crate::components::toolbar::ToolBar;
-use crate::widgets::utils::make_rgba;
 use crate::style::Style;
-use gpui::{App, Application, Bounds, Context, SharedString, Window, WindowBounds, WindowOptions, div, prelude::*, px, rgb, size, Entity, EventEmitter};
+use gpui::{App, Application, Bounds, Context, SharedString, Window, WindowBounds, WindowOptions, div, prelude::*, px, rgb, size, Entity, EventEmitter, rgba};
 use crate::components::main_panel::MainPanel;
 use crate::components::status_bar::StatusBar;
 use crate::state::{OpenProjects, State};
 
 struct Base {
-    style: Style,
-    state: Entity<State>
+    style: Style
 }
 
 impl Render for Base {
@@ -23,12 +21,11 @@ impl Render for Base {
             .flex()
             .flex_col()
             .size_full()
-            .bg(make_rgba(self.style.bg_colour))
+            .bg(rgba(self.style.bg_colour))
             .items_center()
-            .text_color(make_rgba(self.style.text_colour))
+            .text_color(rgba(self.style.text_colour))
             .child(_cx.new(|_| ToolBar {
                 style: self.style.clone(),
-                state: self.state.clone()
             }))
             .child(_cx.new(|_| MainPanel {
                 style: self.style.clone(),
@@ -41,9 +38,6 @@ impl Render for Base {
 
 fn main() {
     Application::new().run(|cx: &mut App| {
-        let state = cx.new(|_cx| State {
-            open_projects: OpenProjects::new(),
-        });
 
         let bounds = Bounds::centered(None, size(px(500.), px(500.0)), cx);
 
@@ -55,8 +49,7 @@ fn main() {
 
         cx.open_window(window_options, |_, cx| {
             cx.new(|_| Base {
-                style: Default::default(),
-                state
+                style: Default::default()
             })
         })
         .unwrap();
