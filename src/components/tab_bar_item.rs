@@ -1,10 +1,12 @@
-use gpui::{div, px, rgba, AppContext, Context, InteractiveElement, IntoElement, ParentElement, Render, Styled, Window};
+use gpui::{div, px, rgb, rgba, AppContext, Context, InteractiveElement, IntoElement, ParentElement, Render, Styled, Window};
 use crate::{margin, rounding};
 use crate::style::Style;
 use crate::widgets::core::button::{Button, TextPosition};
 
 pub struct TabBarItem {
-    pub style: Style
+    pub style: Style,
+    pub name: String,
+    pub active: bool
 }
 
 impl Render for TabBarItem {
@@ -18,10 +20,11 @@ impl Render for TabBarItem {
             .max_w(px(200f32))
             .h(px(self.style.tabbar.height))
             .child(div().child("Text"))
-            .hover(|style| style.bg(rgba(self.style.tabbar.hover_colour)))
+            .bg(if self.active {self.style.bg_colour.get()} else {self.style.tabbar.active_colour.get()})
+            .hover(|style| if self.active {style.bg(self.style.bg_colour.get())} else {style.bg(self.style.tabbar.hover_colour.get())})
             .child(cx.new(|_| Button {
                 text: String::from("x"),
-                text_colour: rgba(self.style.text_colour),
+                text_colour: self.style.text_colour.get(),
                 justify_content: TextPosition::Centre,
                 align_text: TextPosition::Centre,
                 width: 20f32,

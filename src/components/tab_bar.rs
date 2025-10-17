@@ -15,15 +15,21 @@ impl Render for TabBar {
             .h(px(self.style.tabbar.height))
             .items_center()
             .border_b_1()
-            .border_color(rgba(self.style.separator_colour))
+            .border_color(self.style.separator_colour.get())
             .child(cx.new(|_| TabBarItem {
-                style: self.style.clone()
+                style: self.style.clone(),
+                name: "test 1".to_string(),
+                active: true
             }))
             .child(cx.new(|_| TabBarItem {
-                style: self.style.clone()
+                style: self.style.clone(),
+                name: "test 2".to_string(),
+                active: false
             }))
             .child(cx.new(|_| TabBarItem {
-                style: self.style.clone()
+                style: self.style.clone(),
+                name: "test 3".to_string(),
+                active: false
             }))
     }
 }

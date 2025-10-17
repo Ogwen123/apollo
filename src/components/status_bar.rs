@@ -13,7 +13,7 @@ impl Render for StatusBar {
             .h(px(self.style.statusbar.height))
             .w_full()
             .text_xs()
-            .bg(rgba(self.style.statusbar.bg_colour))
+            .bg(self.style.statusbar.bg_colour.get())
             .child("Status bar")
     }
 }

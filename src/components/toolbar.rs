@@ -19,9 +19,9 @@ impl Render for ToolBar {
             .flex()
             .w_full()
             .h(px(self.style.toolbar.height))
-            .bg(rgba(self.style.toolbar.bg_colour))
+            .bg(self.style.toolbar.bg_colour.get())
             .items_center()
-            .text_color(rgba(self.style.text_colour))
+            .text_color(self.style.text_colour.get())
             .child(
                 div()
                     .w_full()
@@ -34,13 +34,13 @@ impl Render for ToolBar {
                         .child("Apollo".to_string()))
                     .child(cx.new(|_| Button {
                         text: String::from("Open Project"),
-                        text_colour: rgba(self.style.text_colour),
+                        text_colour: self.style.text_colour.get(),
                         justify_content: TextPosition::Centre,
                         align_text: TextPosition::Centre,
                         width: 80f32,
                         height: BUTTON_HEIGHT,
                         margin: margin!(self.style.margin, 0.0),
-                        colour: rgba(self.style.toolbar.bg_colour),
+                        colour: self.style.toolbar.bg_colour.get(),
                         hover_colour: Some(rgba(BUTTON_HOVER_COLOUR)),
                         rounding: rounding!(self.style.rounding),
                         on_click: |e, window, cx| {
@@ -61,13 +61,13 @@ impl Render for ToolBar {
                     }))
                     .child(cx.new(|_| Button {
                         text: String::from("About"),
-                        text_colour: rgba(self.style.text_colour),
+                        text_colour: self.style.text_colour.get(),
                         justify_content: TextPosition::Centre,
                         align_text: TextPosition::Centre,
                         width: 40f32,
                         height: BUTTON_HEIGHT,
                         margin: margin!(self.style.margin, 0.0),
-                        colour: rgba(self.style.toolbar.bg_colour),
+                        colour: self.style.toolbar.bg_colour.get(),
                         hover_colour: Some(rgba(BUTTON_HOVER_COLOUR)),
                         rounding: rounding!(self.style.rounding),
                         ..Default::default()
@@ -79,12 +79,12 @@ impl Render for ToolBar {
                     .w(px(40.0))
                     .child(cx.new(|_| Button {
                         text: String::from("X"),
-                        text_colour: rgba(self.style.text_colour),
+                        text_colour: self.style.text_colour.get(),
                         justify_content: TextPosition::Centre,
                         align_text: TextPosition::Centre,
                         width: 40f32,
                         height: BUTTON_HEIGHT,
-                        colour: rgba(self.style.toolbar.bg_colour),
+                        colour: self.style.toolbar.bg_colour.get(),
                         hover_colour: Some(rgba(BUTTON_HOVER_COLOUR)),
                         rounding: rounding!(self.style.rounding),
                         margin: margin!(self.style.margin, 0.0),

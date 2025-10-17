@@ -21,9 +21,9 @@ impl Render for Base {
             .flex()
             .flex_col()
             .size_full()
-            .bg(rgba(self.style.bg_colour))
+            .bg(self.style.bg_colour.get())
             .items_center()
-            .text_color(rgba(self.style.text_colour))
+            .text_color(self.style.text_colour.get())
             .child(_cx.new(|_| ToolBar {
                 style: self.style.clone(),
             }))
