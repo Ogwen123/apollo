@@ -58,7 +58,23 @@ pub struct State {
     /// All of the currently open projects
     pub open_projects: OpenProjects,
 }
+impl State {
+    pub fn add_project(&mut self, project: Project) {
+        self.open_projects.projects.push(project)
+    }
+    pub fn remove_project(&mut self, id: u32) {
+        self.open_projects.projects = self.open_projects.projects.iter().filter_map(|x| {
+            if x.id != id {
+                Some(x.clone())
+            } else {
+                None
+            }
+        }).collect::<Vec<Project>>();
+    }
+}
+
 impl Global for State {}
+
 impl Display for State {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "State {{\n  open_projects: {}\n}}", self.open_projects)

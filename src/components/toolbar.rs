@@ -69,7 +69,7 @@ impl Render for ToolBar {
                                                     
                                                     if res {
                                                         let _ = ___cx.update_global::<State, ()>(|global, _| {
-                                                            global.open_projects.projects.push(Project::new(path[0].clone()));
+                                                            global.add_project(Project::new(path[0].clone()));
                                                         });
                                                     } else {
                                                         // TODO: add proper error handling once implemented
