@@ -4,11 +4,10 @@ use crate::widgets::core::button::{Button, TextPosition};
 use crate::{margin, rounding};
 use gpui::BorrowAppContext;
 use gpui::{
-    App, AppContext, AsyncApp, AsyncWindowContext, Context, Entity, EventEmitter, IntoElement,
-    ParentElement, PathPromptOptions, Render, SharedString, Styled, Window, div, percentage, px,
-    rgb, rgba,
+    AppContext, Context, IntoElement,
+    ParentElement, PathPromptOptions, Render, Styled, Window, div, px,
+    rgba,
 };
-use std::path::PathBuf;
 use zed_util::ResultExt;
 
 const BUTTON_HEIGHT: f32 = 30f32;
@@ -19,7 +18,7 @@ pub struct ToolBar {
 }
 
 impl Render for ToolBar {
-    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         div()
             .flex()
             .w_full()
@@ -48,7 +47,7 @@ impl Render for ToolBar {
                         .colour(self.style.toolbar.bg_colour.get())
                         .hover_colour(rgba(BUTTON_HOVER_COLOUR))
                         .rounding(rounding!(self.style.rounding))
-                        .on_click(|e, window, _cx| {
+                        .on_click(|_e, _window, _cx| {
                             // Everything inside is owned/moved
                             let options = PathPromptOptions {
                                 files: false,
@@ -69,7 +68,7 @@ impl Render for ToolBar {
                                                     let res = ___cx.has_global::<State>();
                                                     
                                                     if res {
-                                                        let _ = ___cx.update_global::<State, ()>(|global, app| {
+                                                        let _ = ___cx.update_global::<State, ()>(|global, _| {
                                                             global.open_projects.projects.push(Project::new(path[0].clone()));
                                                         });
                                                     } else {
@@ -108,11 +107,11 @@ impl Render for ToolBar {
                         .colour(self.style.toolbar.bg_colour.get())
                         .hover_colour(rgba(BUTTON_HOVER_COLOUR))
                         .rounding(rounding!(self.style.rounding))
-                        .on_click(|e, window, _cx| {
-                            _cx.read_global::<State, ()>(|global, app| {
+                        .on_click(|_e, _window, _cx| {
+                            _cx.read_global::<State, ()>(|global, _| {
                                 println!("{}", global)
                             })
-                        }) 
+                        })
                     ))
 
             )
@@ -130,7 +129,7 @@ impl Render for ToolBar {
                         .colour(self.style.toolbar.bg_colour.get())
                         .hover_colour(rgba(BUTTON_HOVER_COLOUR))
                         .rounding(rounding!(100.0))
-                        .on_click(|e, window, cx| {
+                        .on_click(|_e, _window, cx| {
                             cx.quit()
                         })
                     ))

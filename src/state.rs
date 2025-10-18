@@ -1,6 +1,6 @@
 use std::fmt;
 use std::fmt::{Debug, Display, Formatter};
-use gpui::{Entity, Global};
+use gpui::{Global};
 use std::path::PathBuf;
 
 // PROJECT
