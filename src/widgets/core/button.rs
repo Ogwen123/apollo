@@ -9,35 +9,35 @@ pub enum TextPosition {
 
 pub struct Button {
     /// Text to be displayed on the button
-    pub text: String,
+    text: String,
     /// Horizontal position for the text
-    pub justify_content: TextPosition,
+    justify_content: TextPosition,
     /// Vertical position for the text
-    pub align_text: TextPosition,
+    align_text: TextPosition,
     /// Width in pixels
-    pub width: f32,
+    width: f32,
     /// Height in pixels
-    pub height: f32,
+    height: f32,
     /// Text size in pixels
-    pub text_size: f32,
+    text_size: f32,
     /// Corner rounding in pixels, ordered as (top left, top right, bottom right, bottom left) e.g. clockwise starting at the top left, you can use the rounding!() macro to convert a single value to this form.
-    pub rounding: (f32, f32, f32, f32),
+    rounding: (f32, f32, f32, f32),
     /// Background colour in hex e.g. 0xffffff
-    pub colour: Rgba,
+    colour: Rgba,
     /// Hover colour in hex e.g. 0xffffff
-    pub hover_colour: Option<Rgba>,
+    hover_colour: Option<Rgba>,
     /// Text colour in hex e.g. 0xffffff
-    pub text_colour: Rgba,
+    text_colour: Rgba,
     /// Border colour
-    pub border_colour: Option<Rgba>,
+    border_colour: Option<Rgba>,
     /// Border width in pixels
-    pub border_width: f32,
+    border_width: f32,
     /// Function ran on_mouse_down for left click
-    pub on_click: fn(&MouseDownEvent, &mut Window, &mut App),
+    on_click: fn(&MouseDownEvent, &mut Window, &mut App),
     /// Padding in pixels, ordered as (top, right, left, bottom), you can use the padding!() macro to convert a single value or x and y value to this form.
-    pub padding: (f32, f32, f32, f32),
+    padding: (f32, f32, f32, f32),
     /// Margin in pixels, ordered as (top, right, left, bottom), you can use the margin!() macro to convert a single value or x and y value to this form.
-    pub margin: (f32, f32, f32, f32),
+    margin: (f32, f32, f32, f32),
 }
 
 impl Render for Button {
@@ -85,6 +85,94 @@ impl Render for Button {
         aligned
     }
 }
+
+impl Button {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Function ran on_mouse_down for left click
+    pub fn on_click(
+        mut self,
+        handler: fn(&MouseDownEvent, &mut Window, &mut App),
+    ) -> Self {
+        self.on_click = handler;
+        self
+    }
+
+    /// Text to be displayed on the button
+    pub fn text<T: ToString>(mut self, text: T) -> Self {
+        self.text = text.to_string();
+        self
+    }
+    /// Horizontal position for the text
+    pub fn justify_content(mut self, pos: TextPosition) -> Self {
+        self.justify_content = pos;
+        self
+    }
+    /// Vertical position for the text
+    pub fn align_text(mut self, pos: TextPosition) -> Self {
+        self.align_text = pos;
+        self
+    }
+    /// Width in pixels
+    pub fn w(mut self, w: f32) -> Self {
+        self.width = w;
+        self
+    }
+    /// Height in pixels
+    pub fn h(mut self, h: f32) -> Self {
+        self.height = h;
+        self
+    }
+    /// Text size in pixels
+    pub fn text_size(mut self, size: f32) -> Self {
+        self.text_size = size;
+        self
+    }
+    /// Corner rounding in pixels, ordered as (top left, top right, bottom right, bottom left) e.g. clockwise starting at the top left, you can use the rounding!() macro to convert a single value to this form.
+    pub fn rounding(mut self, rounding: (f32, f32, f32, f32)) -> Self {
+        self.rounding = rounding;
+        self
+    }
+    /// Background colour in hex e.g. 0xffffff
+    pub fn colour(mut self, colour: Rgba) -> Self {
+        self.colour = colour;
+        self
+    }
+    /// Hover colour in hex e.g. 0xffffff
+    pub fn hover_colour(mut self, colour: Rgba) -> Self {
+        self.hover_colour = Some(colour);
+        self
+    }
+    /// Text colour in hex e.g. 0xffffff
+    pub fn text_colour(mut self, colour: Rgba) -> Self {
+        self.text_colour = colour;
+        self
+    }
+    /// Border colour
+    pub fn border_colour(mut self, colour: Rgba) -> Self {
+        self.border_colour = Some(colour);
+        self
+    }
+    /// Border width in pixels
+    pub fn border_width(mut self, w: f32) -> Self {
+        self.border_width = w;
+        self
+    }
+
+    /// Padding in pixels, ordered as (top, right, left, bottom), you can use the padding!() macro to convert a single value or x and y value to this form.
+    pub fn p(mut self, padding: (f32, f32, f32, f32)) -> Self {
+        self.padding = padding;
+        self
+    }
+    /// Margin in pixels, ordered as (top, right, left, bottom), you can use the margin!() macro to convert a single value or x and y value to this form.
+    pub fn m(mut self, margin: (f32, f32, f32, f32)) -> Self {
+        self.margin = margin;
+        self
+    }
+}
+
 
 impl Default for Button {
     fn default() -> Self {
