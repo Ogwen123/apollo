@@ -1,13 +1,35 @@
+use std::fmt;
+use std::fmt::{Debug, Display, Formatter};
 use gpui::{Entity, Global};
-use rfd::FileHandle;
+use std::path::PathBuf;
+
+// PROJECT
 
 #[derive(Clone)]
+/// Stores data about open projects
 pub struct Project {
     pub id: u32,
-    pub handle: FileHandle,
+    pub path: PathBuf,
 }
 
+impl Project {
+    pub fn new(path: PathBuf) -> Self {
+        Self { id: 1, path }
+    }
+}
+
+impl Debug for Project {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "    Project {} at {:?}", self.id, self.path)
+    }
+}
+
+
+// OPEN PROJECTS
+
+
 #[derive(Clone)]
+/// Stores all the open projects
 pub struct OpenProjects {
     pub projects: Vec<Project>,
 }
@@ -20,14 +42,26 @@ impl OpenProjects {
     }
 }
 
+impl Display for OpenProjects {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "Projects: {:?}", self.projects)
+    }
+}
+
+
+// STATE
+
+
 #[derive(Clone)]
+/// Stores the global state for the app
 pub struct State {
+    /// All of the currently open projects
     pub open_projects: OpenProjects,
 }
 impl Global for State {}
-
-pub struct StateModel {
-    pub(crate) inner: Entity<State>,
+impl Display for State {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "State {{\n  open_projects: {}\n}}", self.open_projects)
+    }
 }
 
-impl Global for StateModel {}

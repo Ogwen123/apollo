@@ -1,14 +1,13 @@
-use crate::state::State;
+use crate::state::{Project, State};
 use crate::style::Style;
-use crate::utils::utils::get_starting_path;
 use crate::widgets::core::button::{Button, TextPosition};
-use crate::{OpenProjects, margin, padding, rounding};
+use crate::{margin, rounding};
+use gpui::BorrowAppContext;
 use gpui::{
     App, AppContext, AsyncApp, AsyncWindowContext, Context, Entity, EventEmitter, IntoElement,
     ParentElement, PathPromptOptions, Render, SharedString, Styled, Window, div, percentage, px,
     rgb, rgba,
 };
-use rfd::{AsyncFileDialog, FileHandle};
 use std::path::PathBuf;
 use zed_util::ResultExt;
 
@@ -61,20 +60,32 @@ impl Render for ToolBar {
                             let rec = _cx.prompt_for_paths(options);
 
                             _cx.spawn(
-                                async move |cx| match rec.await.anyhow().and_then(|res| res){
+                                async move |__cx| match rec.await.anyhow().and_then(|res| res){
                                     Ok(res) => {
                                         match res {
                                             Some(path) => {
-                                                println!("{:?}", path)
+                                                println!("{:?}", path);
+                                                __cx.update(|___cx| {
+                                                    let res = ___cx.has_global::<State>();
+                                                    
+                                                    if res {
+                                                        let _ = ___cx.update_global::<State, ()>(|global, app| {
+                                                            global.open_projects.projects.push(Project::new(path[0].clone()));
+                                                        });
+                                                    } else {
+                                                        // TODO: add proper error handling once implemented
+                                                        println!("No global state set")
+                                                    }
+                                                    
+                                                })
+                                                    .ok();
                                             },
                                             None => {
                                                 // TODO: add proper error handling once implemented
                                                 println!("No path was found")
                                             }
                                         }
-                                        cx.update(|cx| {
-                                        })
-                                            .ok();
+
                                     }
                                     Err(err) => {
                                         // TODO: add proper error handling once implemented
@@ -97,6 +108,11 @@ impl Render for ToolBar {
                         .colour(self.style.toolbar.bg_colour.get())
                         .hover_colour(rgba(BUTTON_HOVER_COLOUR))
                         .rounding(rounding!(self.style.rounding))
+                        .on_click(|e, window, _cx| {
+                            _cx.read_global::<State, ()>(|global, app| {
+                                println!("{}", global)
+                            })
+                        }) 
                     ))
 
             )

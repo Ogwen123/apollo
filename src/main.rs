@@ -5,16 +5,15 @@ mod style;
 mod utils;
 mod widgets;
 
-use crate::components::workspace::Workspace;
 use crate::components::status_bar::StatusBar;
 use crate::components::toolbar::ToolBar;
-use crate::state::{OpenProjects, State, StateModel};
+use crate::components::workspace::Workspace;
+use crate::state::{OpenProjects, State};
 use crate::style::Style;
 use gpui::{
     App, Application, Bounds, Context, Entity, EventEmitter, SharedString, Window, WindowBounds,
     WindowOptions, div, prelude::*, px, rgb, rgba, size,
 };
-use std::path::PathBuf;
 
 struct Base {
     style: Style,
@@ -55,21 +54,11 @@ fn main() {
             let state = State {
                 open_projects: OpenProjects::new(),
             };
-            let state_entity = cx.new(|cx| State {
-                open_projects: OpenProjects::new(),
-            });
-
-            let state_model = StateModel {
-                inner: state_entity,
-            };
 
             cx.set_global(state);
 
             cx.new(|_cx| {
-                // let state = cx.global::<StateModel>();
-                // _cx.subscribe(&state.inner, |this, entity, event, __cx| {
-                //     cx.global_mut::<StateModel>()
-                // });
+
                 Base {
                     style: Default::default(),
                 }
