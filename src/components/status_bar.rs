@@ -1,6 +1,6 @@
-use gpui::{div, px, rgba, Context, IntoElement, ParentElement, Render, Styled, Window};
-use gpui::TextAlign::Center;
 use crate::style::Style;
+use gpui::TextAlign::Center;
+use gpui::{Context, IntoElement, ParentElement, Render, Styled, Window, div, px, rgba};
 
 pub struct StatusBar {
     pub style: Style,

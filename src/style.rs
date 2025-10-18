@@ -1,16 +1,16 @@
-use gpui::{rgb, rgba, Rgba};
+use gpui::{Rgba, rgb, rgba};
 
 #[derive(Clone)]
 pub enum Colour {
     Rgb(u32),
-    Rgba(u32)
+    Rgba(u32),
 }
 
 impl Colour {
     pub(crate) fn get(&self) -> Rgba {
         match self.clone() {
             Colour::Rgb(res) => rgb(res),
-            Colour::Rgba(res) => rgba(res)
+            Colour::Rgba(res) => rgba(res),
         }
     }
 }
@@ -43,7 +43,7 @@ pub struct TabBarStyle {
     /// Colour of a hovered tab
     pub hover_colour: Colour,
     /// Colour of the active tab
-    pub active_colour: Colour
+    pub active_colour: Colour,
 }
 
 #[derive(Clone)]
@@ -74,7 +74,7 @@ pub struct Style {
     /// Styling for the status bar, which is the bar at the bottom of the page
     pub statusbar: StatusBarStyle,
     /// Styling for the tab bar, which is just under the toolbar
-    pub tabbar: TabBarStyle
+    pub tabbar: TabBarStyle,
 }
 
 impl Default for ToolBarStyle {
@@ -101,7 +101,7 @@ impl Default for TabBarStyle {
             height: 40.0,
             bg_colour: Colour::Rgb(0x1e1f22),
             hover_colour: Colour::Rgb(0x4e4f42),
-            active_colour: Colour::Rgb(0x2563eb)
+            active_colour: Colour::Rgba(0x2563ebaa),
         }
     }
 }
@@ -121,7 +121,7 @@ impl Default for Style {
             margin: 4.0,
             toolbar: Default::default(),
             statusbar: Default::default(),
-            tabbar: Default::default()
+            tabbar: Default::default(),
         }
     }
 }

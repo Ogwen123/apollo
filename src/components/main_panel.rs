@@ -1,6 +1,6 @@
-use gpui::{div, AppContext, Context, IntoElement, ParentElement, Render, Styled, Window};
 use crate::components::tab_bar::TabBar;
 use crate::style::Style;
+use gpui::{AppContext, Context, IntoElement, ParentElement, Render, Styled, Window, div};
 
 pub struct MainPanel {
     pub style: Style,
@@ -14,7 +14,7 @@ impl Render for MainPanel {
             .h_full()
             .w_full()
             .child(cx.new(|_| TabBar {
-                style: self.style.clone()
+                style: self.style.clone(),
             }))
             .child("Main panel")
     }

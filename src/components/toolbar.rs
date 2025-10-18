@@ -1,16 +1,22 @@
-use std::path::PathBuf;
-use crate::widgets::core::button::{Button, TextPosition};
-use crate::style::Style;
-use gpui::{AppContext, Context, IntoElement, ParentElement, Render, Styled, Window, div, px, rgb, rgba, percentage, App, AsyncApp, AsyncWindowContext, EventEmitter, Entity};
-use crate::{margin, padding, rounding, OpenProjects};
-use rfd::AsyncFileDialog;
 use crate::state::State;
+use crate::style::Style;
+use crate::utils::utils::get_starting_path;
+use crate::widgets::core::button::{Button, TextPosition};
+use crate::{OpenProjects, margin, padding, rounding};
+use gpui::{
+    App, AppContext, AsyncApp, AsyncWindowContext, Context, Entity, EventEmitter, IntoElement,
+    ParentElement, PathPromptOptions, Render, SharedString, Styled, Window, div, percentage, px,
+    rgb, rgba,
+};
+use rfd::{AsyncFileDialog, FileHandle};
+use std::path::PathBuf;
+use zed_util::ResultExt;
 
 const BUTTON_HEIGHT: f32 = 30f32;
 const BUTTON_HOVER_COLOUR: u32 = 0xffffff22;
 
 pub struct ToolBar {
-    pub style: Style
+    pub style: Style,
 }
 
 impl Render for ToolBar {
@@ -32,67 +38,86 @@ impl Render for ToolBar {
                         .text_xl()
                         .px(px(10.0))
                         .child("Apollo".to_string()))
-                    .child(cx.new(|_| Button {
-                        text: String::from("Open Project"),
-                        text_colour: self.style.text_colour.get(),
-                        justify_content: TextPosition::Centre,
-                        align_text: TextPosition::Centre,
-                        width: 80f32,
-                        height: BUTTON_HEIGHT,
-                        margin: margin!(self.style.margin, 0.0),
-                        colour: self.style.toolbar.bg_colour.get(),
-                        hover_colour: Some(rgba(BUTTON_HOVER_COLOUR)),
-                        rounding: rounding!(self.style.rounding),
-                        on_click: |e, window, cx| {
-                           cx.spawn(|cx: &mut AsyncApp| async move {
-                               if let Some(file) = AsyncFileDialog::new()
-                                   .set_directory("~")
-                                   .pick_folder()
-                                   .await
-                               {
-                                   // self.state.update(cx, |state, _cx| {
-                                   //     state.open_projects.projects.push(file)
-                                   // });
-                               }
-                           })
-                               .detach();
-                        },
-                        ..Default::default()
-                    }))
-                    .child(cx.new(|_| Button {
-                        text: String::from("About"),
-                        text_colour: self.style.text_colour.get(),
-                        justify_content: TextPosition::Centre,
-                        align_text: TextPosition::Centre,
-                        width: 40f32,
-                        height: BUTTON_HEIGHT,
-                        margin: margin!(self.style.margin, 0.0),
-                        colour: self.style.toolbar.bg_colour.get(),
-                        hover_colour: Some(rgba(BUTTON_HOVER_COLOUR)),
-                        rounding: rounding!(self.style.rounding),
-                        ..Default::default()
-                    }))
+                    .child(cx.new(|_| Button::new()
+                        .text(String::from("Open Project"))
+                        .text_colour(self.style.text_colour.get())
+                        .justify_content(TextPosition::Centre)
+                        .align_text(TextPosition::Centre)
+                        .w(100f32)
+                        .h(BUTTON_HEIGHT)
+                        .m(margin!(self.style.margin, 0.0))
+                        .colour(self.style.toolbar.bg_colour.get())
+                        .hover_colour(rgba(BUTTON_HOVER_COLOUR))
+                        .rounding(rounding!(self.style.rounding))
+                        .on_click(|e, window, _cx| {
+                            // Everything inside is owned/moved
+                            let options = PathPromptOptions {
+                                files: false,
+                                directories: true,
+                                multiple: false,
+                                prompt: None
+                            };
+
+                            let rec = _cx.prompt_for_paths(options);
+
+                            _cx.spawn(
+                                async move |cx| match rec.await.anyhow().and_then(|res| res){
+                                    Ok(res) => {
+                                        match res {
+                                            Some(path) => {
+                                                println!("{:?}", path)
+                                            },
+                                            None => {
+                                                // TODO: add proper error handling once implemented
+                                                println!("No path was found")
+                                            }
+                                        }
+                                        cx.update(|cx| {
+                                        })
+                                            .ok();
+                                    }
+                                    Err(err) => {
+                                        // TODO: add proper error handling once implemented
+                                        println!("The following error occurred when opening new folder");
+                                        println!("{}", err)
+                                    }
+                                },
+                            )
+                                .detach();
+                        })
+                    ))
+                    .child(cx.new(|_| Button::new()
+                        .text(String::from("About"))
+                        .text_colour(self.style.text_colour.get())
+                        .justify_content(TextPosition::Centre)
+                        .align_text(TextPosition::Centre)
+                        .w(60f32)
+                        .h(BUTTON_HEIGHT)
+                        .m(margin!(self.style.margin, 0.0))
+                        .colour(self.style.toolbar.bg_colour.get())
+                        .hover_colour(rgba(BUTTON_HOVER_COLOUR))
+                        .rounding(rounding!(self.style.rounding))
+                    ))
 
             )
             .child(
                 div()
                     .w(px(40.0))
-                    .child(cx.new(|_| Button {
-                        text: String::from("X"),
-                        text_colour: self.style.text_colour.get(),
-                        justify_content: TextPosition::Centre,
-                        align_text: TextPosition::Centre,
-                        width: 40f32,
-                        height: BUTTON_HEIGHT,
-                        colour: self.style.toolbar.bg_colour.get(),
-                        hover_colour: Some(rgba(BUTTON_HOVER_COLOUR)),
-                        rounding: rounding!(self.style.rounding),
-                        margin: margin!(self.style.margin, 0.0),
-                        on_click: |e, window, cx| {
+                    .child(cx.new(|_| Button::new()
+                        .text(String::from("X"))
+                        .text_colour(self.style.text_colour.get())
+                        .justify_content(TextPosition::Centre)
+                        .align_text(TextPosition::Centre)
+                        .w(BUTTON_HEIGHT) // make the button a circle
+                        .h(BUTTON_HEIGHT)
+                        .m(margin!(self.style.margin, 0.0))
+                        .colour(self.style.toolbar.bg_colour.get())
+                        .hover_colour(rgba(BUTTON_HOVER_COLOUR))
+                        .rounding(rounding!(100.0))
+                        .on_click(|e, window, cx| {
                             cx.quit()
-                        },
-                        ..Default::default()
-                    })),
+                        })
+                    ))
             )
     }
 }

@@ -1,3 +1,3 @@
-pub(crate) mod utils;
-mod macros;
 pub(crate) mod core;
+mod macros;
+pub(crate) mod utils;

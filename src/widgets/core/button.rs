@@ -1,5 +1,8 @@
-use gpui::{App, Context, InteractiveElement, IntoElement, MouseButton, MouseDownEvent, ParentElement, Render, Styled, Window, div, px, rgb, rgba, Hsla, Rgba};
 use crate::{margin, padding, rounding};
+use gpui::{
+    App, Context, Hsla, InteractiveElement, IntoElement, MouseButton, MouseDownEvent,
+    ParentElement, Render, Rgba, Styled, Window, div, px, rgb, rgba,
+};
 
 pub enum TextPosition {
     Start,
@@ -69,7 +72,7 @@ impl Render for Button {
             .hover(|style| style.bg(self.hover_colour.unwrap_or(self.colour)))
             .on_mouse_down(MouseButton::Left, self.on_click)
             .child(self.text.clone());
-        
+
         let justified = match self.justify_content {
             TextPosition::Start => d.justify_start(),
             TextPosition::Centre => d.justify_center(),
@@ -92,10 +95,7 @@ impl Button {
     }
 
     /// Function ran on_mouse_down for left click
-    pub fn on_click(
-        mut self,
-        handler: fn(&MouseDownEvent, &mut Window, &mut App),
-    ) -> Self {
+    pub fn on_click(mut self, handler: fn(&MouseDownEvent, &mut Window, &mut App)) -> Self {
         self.on_click = handler;
         self
     }
@@ -172,7 +172,6 @@ impl Button {
         self
     }
 }
-
 
 impl Default for Button {
     fn default() -> Self {

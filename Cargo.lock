@@ -73,6 +73,7 @@ dependencies = [
  "cargo-ptest",
  "gpui",
  "rfd",
+ "zed-util",
 ]
 
 [[package]]
