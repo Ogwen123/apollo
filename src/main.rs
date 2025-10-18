@@ -5,7 +5,7 @@ mod style;
 mod utils;
 mod widgets;
 
-use crate::components::main_panel::MainPanel;
+use crate::components::workspace::Workspace;
 use crate::components::status_bar::StatusBar;
 use crate::components::toolbar::ToolBar;
 use crate::state::{OpenProjects, State, StateModel};
@@ -32,7 +32,7 @@ impl Render for Base {
             .child(_cx.new(|_| ToolBar {
                 style: self.style.clone(),
             }))
-            .child(_cx.new(|_| MainPanel {
+            .child(_cx.new(|_| Workspace {
                 style: self.style.clone(),
             }))
             .child(_cx.new(|_| StatusBar {
