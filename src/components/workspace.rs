@@ -1,7 +1,7 @@
 use crate::components::tab_bar::TabBar;
+use crate::state::State;
 use crate::style::Style;
 use gpui::{AppContext, Context, IntoElement, ParentElement, Render, Styled, Window, div};
-use crate::state::State;
 
 pub struct Workspace {
     pub style: Style,
@@ -20,6 +20,10 @@ impl Render for Workspace {
                 style: self.style.clone(),
             }))
             .child("Workspace")
-            .children(projects.iter().map(|x| div().child(format!("{:?}", x.path))))
+            .children(
+                projects
+                    .iter()
+                    .map(|x| div().child(format!("{:?}", x.path))),
+            )
     }
 }

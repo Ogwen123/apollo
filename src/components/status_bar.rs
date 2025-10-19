@@ -9,7 +9,7 @@ impl Render for StatusBar {
     fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         div()
             .flex()
-            .h(px(self.style.statusbar.height))
+            .h(self.style.statusbar.height.get())
             .w_full()
             .text_xs()
             .bg(self.style.statusbar.bg_colour.get())

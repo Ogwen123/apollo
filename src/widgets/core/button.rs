@@ -1,7 +1,8 @@
+use crate::style::Size;
 use crate::{margin, padding, rounding};
 use gpui::{
     App, Context, Hsla, InteractiveElement, IntoElement, MouseButton, MouseDownEvent,
-    ParentElement, Render, Rgba, Styled, Window, div, px, rgb, rgba,
+    ParentElement, Render, Rgba, Styled, Window, div, percentage, px, rgb, rgba,
 };
 
 pub enum TextPosition {
@@ -18,13 +19,13 @@ pub struct Button {
     /// Vertical position for the text
     align_text: TextPosition,
     /// Width in pixels
-    width: f32,
+    width: Size,
     /// Height in pixels
-    height: f32,
+    height: Size,
     /// Text size in pixels
-    text_size: f32,
+    text_size: Size,
     /// Corner rounding in pixels, ordered as (top left, top right, bottom right, bottom left) e.g. clockwise starting at the top left, you can use the rounding!() macro to convert a single value to this form.
-    rounding: (f32, f32, f32, f32),
+    rounding: (Size, Size, Size, Size),
     /// Background colour in hex e.g. 0xffffff
     colour: Rgba,
     /// Hover colour in hex e.g. 0xffffff
@@ -34,38 +35,38 @@ pub struct Button {
     /// Border colour
     border_colour: Option<Rgba>,
     /// Border width in pixels
-    border_width: f32,
+    border_width: Size,
     /// Function ran on_mouse_down for left click
     on_click: fn(&MouseDownEvent, &mut Window, &mut App),
     /// Padding in pixels, ordered as (top, right, left, bottom), you can use the padding!() macro to convert a single value or x and y value to this form.
-    padding: (f32, f32, f32, f32),
+    padding: (Size, Size, Size, Size),
     /// Margin in pixels, ordered as (top, right, left, bottom), you can use the margin!() macro to convert a single value or x and y value to this form.
-    margin: (f32, f32, f32, f32),
+    margin: (Size, Size, Size, Size),
 }
 
 impl Render for Button {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let d = div()
             .flex()
-            .h(px(self.height))
-            .w(px(self.width))
-            .text_size(px(self.text_size))
+            .h(self.height.get())
+            .w(self.width.get())
+            .text_size(self.text_size.abs())
             // Per side padding
-            .pt(px(self.padding.0))
-            .pr(px(self.padding.1))
-            .pb(px(self.padding.2))
-            .pl(px(self.padding.3))
+            .pt(self.padding.0.def())
+            .pr(self.padding.1.def())
+            .pb(self.padding.2.def())
+            .pl(self.padding.3.def())
             // Per side margin
-            .mt(px(self.margin.0))
-            .mr(px(self.margin.1))
-            .mb(px(self.margin.2))
-            .ml(px(self.margin.3))
+            .mt(self.margin.0.get())
+            .mr(self.margin.1.get())
+            .mb(self.margin.2.get())
+            .ml(self.margin.3.get())
             // Per corner rounding
-            .rounded_tl(px(self.rounding.0))
-            .rounded_tr(px(self.rounding.1))
-            .rounded_br(px(self.rounding.2))
-            .rounded_bl(px(self.rounding.3))
-            .border(px(self.border_width))
+            .rounded_tl(self.rounding.0.abs())
+            .rounded_tr(self.rounding.1.abs())
+            .rounded_br(self.rounding.2.abs())
+            .rounded_bl(self.rounding.3.abs())
+            .border(self.border_width.abs())
             .border_color(self.border_colour.unwrap_or(self.colour))
             .text_color(self.text_colour)
             .bg(self.colour)
@@ -116,23 +117,33 @@ impl Button {
         self
     }
     /// Width in pixels
-    pub fn w(mut self, w: f32) -> Self {
+    pub fn w(mut self, w: Size) -> Self {
         self.width = w;
         self
     }
     /// Height in pixels
-    pub fn h(mut self, h: f32) -> Self {
+    pub fn h(mut self, h: Size) -> Self {
         self.height = h;
         self
     }
     /// Text size in pixels
-    pub fn text_size(mut self, size: f32) -> Self {
+    pub fn text_size(mut self, size: Size) -> Self {
         self.text_size = size;
         self
     }
     /// Corner rounding in pixels, ordered as (top left, top right, bottom right, bottom left) e.g. clockwise starting at the top left, you can use the rounding!() macro to convert a single value to this form.
-    pub fn rounding(mut self, rounding: (f32, f32, f32, f32)) -> Self {
+    pub fn rounding(mut self, rounding: (Size, Size, Size, Size)) -> Self {
         self.rounding = rounding;
+        self
+    }
+    /// Corner rounding in pixels, ordered as (top left, top right, bottom right, bottom left) e.g. clockwise starting at the top left, you can use the rounding!() macro to convert a single value to this form.
+    pub fn rounding_all(mut self, rounding: Size) -> Self {
+        self.rounding = (
+            rounding.clone(),
+            rounding.clone(),
+            rounding.clone(),
+            rounding.clone(),
+        );
         self
     }
     /// Background colour in hex e.g. 0xffffff
@@ -156,19 +167,76 @@ impl Button {
         self
     }
     /// Border width in pixels
-    pub fn border_width(mut self, w: f32) -> Self {
+    pub fn border_width(mut self, w: Size) -> Self {
         self.border_width = w;
         self
     }
 
-    /// Padding in pixels, ordered as (top, right, left, bottom), you can use the padding!() macro to convert a single value or x and y value to this form.
-    pub fn p(mut self, padding: (f32, f32, f32, f32)) -> Self {
+    /// Padding in pixels, ordered as (top, right, bottom, left), you can use the padding!() macro to convert a single value or x and y value to this form.
+    pub fn p(mut self, padding: (Size, Size, Size, Size)) -> Self {
         self.padding = padding;
         self
     }
-    /// Margin in pixels, ordered as (top, right, left, bottom), you can use the margin!() macro to convert a single value or x and y value to this form.
-    pub fn m(mut self, margin: (f32, f32, f32, f32)) -> Self {
+
+    /// Sets the padding for the left and right sides of the button.
+    pub fn px(mut self, padding: Size) -> Self {
+        self.padding = (
+            self.padding.0,
+            padding.clone(),
+            self.padding.2,
+            padding.clone(),
+        );
+        self
+    }
+
+    /// Sets the padding for the top and bottom of the button.
+    pub fn py(mut self, padding: Size) -> Self {
+        self.padding = (
+            padding.clone(),
+            self.padding.1,
+            padding.clone(),
+            self.padding.3,
+        );
+        self
+    }
+
+    /// Padding for all sides, given as a single Size value.
+    pub fn pa(mut self, padding: Size) -> Self {
+        self.margin = (
+            padding.clone(),
+            padding.clone(),
+            padding.clone(),
+            padding.clone(),
+        );
+        self
+    }
+
+    /// Margin in pixels, ordered as (top, right, bottom, left)
+    pub fn m(mut self, margin: (Size, Size, Size, Size)) -> Self {
         self.margin = margin;
+        self
+    }
+
+    /// Sets the margin for the left and right sides of the button.
+    pub fn mx(mut self, margin: Size) -> Self {
+        self.margin = (self.margin.0, margin.clone(), self.margin.2, margin.clone());
+        self
+    }
+
+    /// Sets the margin for the top and bottom of the button.
+    pub fn my(mut self, margin: Size) -> Self {
+        self.margin = (margin.clone(), self.margin.1, margin.clone(), self.margin.3);
+        self
+    }
+
+    /// Margin for all sides, given as a single Size value.
+    pub fn ma(mut self, margin: Size) -> Self {
+        self.margin = (
+            margin.clone(),
+            margin.clone(),
+            margin.clone(),
+            margin.clone(),
+        );
         self
     }
 }
@@ -179,18 +247,18 @@ impl Default for Button {
             text: String::new(),
             justify_content: TextPosition::Start,
             align_text: TextPosition::Start,
-            width: 100.0,
-            height: 50.0,
-            text_size: 12.0,
-            rounding: rounding!(0.0),
+            width: Size::Px(100.0),
+            height: Size::Px(50.0),
+            text_size: Size::Px(12.0),
+            rounding: rounding!(Size::Px(0.0)),
             colour: rgb(0xf5f5f5),
             hover_colour: None,
             text_colour: rgb(0x000000),
             border_colour: None,
-            border_width: 0.0,
+            border_width: Size::Px(0.0),
             on_click: |_, _, _| {},
-            padding: padding!(0.0),
-            margin: margin!(0.0),
+            padding: padding!(Size::Px(0.0)),
+            margin: margin!(Size::Px(0.0)),
         }
     }
 }

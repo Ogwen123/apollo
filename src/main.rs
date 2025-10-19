@@ -57,11 +57,8 @@ fn main() {
 
             cx.set_global(state);
 
-            cx.new(|_cx| {
-
-                Base {
-                    style: Default::default(),
-                }
+            cx.new(|_cx| Base {
+                style: Default::default(),
             })
         })
         .unwrap();

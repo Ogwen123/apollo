@@ -1,5 +1,5 @@
 use crate::state::State;
-use crate::style::Style;
+use crate::style::{Size, Style};
 use crate::utils::utils::get_starting_path;
 use crate::widgets::core::button::{Button, TextPosition};
 use crate::{margin, rounding};
@@ -28,10 +28,10 @@ impl Render for TabBarItem {
             .justify_between()
             .items_center()
             .min_w(px(100f32))
-            .max_w(px(200f32))
-            .h(px(self.style.tabbar.height))
+            .max_w(px(300f32))
+            .h(self.style.tabbar.height.get())
             .p(px(4.0))
-            .child(div().child("Text"))
+            .child(self.name.clone())
             .bg(bg)
             .hover(|style| {
                 if self.active {
@@ -46,9 +46,9 @@ impl Render for TabBarItem {
                     .text_colour(self.style.text_colour.get())
                     .justify_content(TextPosition::Centre)
                     .align_text(TextPosition::Centre)
-                    .w(20f32)
-                    .h(20f32)
-                    .m(margin!(self.style.margin, 0.0))
+                    .w(Size::Px(20.0))
+                    .h(Size::Px(20.0))
+                    .mx(self.style.margin)
                     .colour(self.style.bg_colour.get())
                     .hover_colour(rgba(0x00000000))
                     .rounding(rounding!(self.style.rounding))
