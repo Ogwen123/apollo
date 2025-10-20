@@ -8,3 +8,4 @@ A rust testing tool written in rust using [gpui](https://gpui.rs) and my custom 
  - [ ] make an SVG icon button widget
  - [x] add helper functions to state to make adding, removing projects etc
  - [ ] allow setting border width on individual sides in the button widget
+ - [ ] make generic modal widget

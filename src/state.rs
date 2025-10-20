@@ -13,8 +13,8 @@ pub struct Project {
 }
 
 impl Project {
-    pub fn new(path: PathBuf) -> Self {
-        Self { id: 1, path }
+    pub fn new(id: u32, path: PathBuf) -> Self {
+        Self { id, path }
     }
 
     pub fn display_name(&self) -> String {
@@ -62,6 +62,15 @@ impl Display for OpenProjects {
     }
 }
 
+
+// MODALS
+#[derive(Clone)]
+/// Stores the state of all the modals in the app
+pub struct Modals {
+    pub about: bool
+}
+
+
 // STATE
 
 #[derive(Clone)]
@@ -69,10 +78,49 @@ impl Display for OpenProjects {
 pub struct State {
     /// All of the currently open projects
     pub open_projects: OpenProjects,
+    pub active_project: u32,
+    pub modals: Modals
 }
 impl State {
+    pub fn has_path(&self, path: &PathBuf) -> bool {
+        !self
+            .open_projects
+            .projects
+            .iter()
+            .filter(|x| &x.path == path)
+            .next()
+            .is_none()
+    }
+
+    pub fn add_project_by_path(&mut self, path: PathBuf) {
+        if self.has_path(&path) {
+            warning!(
+                "Skipped {} because it is already open.",
+                path.clone()
+                    .into_os_string()
+                    .into_string()
+                    .unwrap_or("ERROR".to_string())
+            );
+            return;
+        }
+
+        let id = self
+            .open_projects
+            .projects
+            .iter()
+            .map(|x| x.id)
+            .max()
+            .unwrap_or(0)
+            + 1;
+
+        let project = Project::new(id, path.clone());
+
+        self.open_projects.projects.push(project);
+        self.active_project = id
+    }
     pub fn add_project(&mut self, project: Project) {
-        self.open_projects.projects.push(project)
+        self.open_projects.projects.push(project.clone());
+        self.active_project = project.id
     }
     pub fn remove_project(&mut self, id: u32) {
         self.open_projects.projects = self
@@ -81,6 +129,21 @@ impl State {
             .iter()
             .filter_map(|x| if x.id != id { Some(x.clone()) } else { None })
             .collect::<Vec<Project>>();
+    }
+    pub fn set_active_project(&mut self, id: u32) {
+        if self
+            .open_projects
+            .projects
+            .iter()
+            .filter_map(|x| if x.id == id { Some(id) } else { None })
+            .collect::<Vec<u32>>()
+            .len()
+            < 1
+        {
+            warning!("Ignored setting active project to non-existent id.");
+            return;
+        }
+        self.active_project = id;
     }
 }
 

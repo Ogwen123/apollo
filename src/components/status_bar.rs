@@ -1,5 +1,5 @@
 use crate::style::Style;
-use gpui::{Context, IntoElement, ParentElement, Render, Styled, Window, div, px};
+use gpui::{Context, IntoElement, ParentElement, Render, Styled, Window, div};
 
 pub struct StatusBar {
     pub style: Style,
@@ -12,7 +12,7 @@ impl Render for StatusBar {
             .h(self.style.statusbar.height.get())
             .w_full()
             .text_xs()
-            .bg(self.style.statusbar.bg_colour.get())
+            .bg(&self.style.statusbar.bg_colour)
             .child("Status bar")
     }
 }

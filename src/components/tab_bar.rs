@@ -1,9 +1,7 @@
 use crate::components::tab_bar_item::TabBarItem;
 use crate::state::State;
 use crate::style::Style;
-use gpui::{
-    AppContext, Context, IntoElement, ParentElement, Render, Styled, Window, div, px, rgba,
-};
+use gpui::{AppContext, Context, IntoElement, ParentElement, Render, Styled, Window, div};
 
 pub struct TabBar {
     pub(crate) style: Style,
@@ -23,13 +21,13 @@ impl Render for TabBar {
                 .h(self.style.tabbar.height.get())
                 .items_center()
                 .border_b_1()
-                .border_color(self.style.separator_colour.get())
-                .children(projects.iter().map(|x| {
-                    cx.new(|_| TabBarItem {
+                .border_color(&self.style.separator_colour)
+                .children(projects.iter().enumerate().map(|(index, x)| {
+                    cx.new(|_cx| TabBarItem {
                         style: self.style.clone(),
                         name: x.display_name(),
                         project_id: x.id,
-                        active: true,
+                        active: _cx.global::<State>().active_project == x.id
                     })
                 }))
         }

@@ -8,35 +8,39 @@ mod widgets;
 use crate::components::status_bar::StatusBar;
 use crate::components::toolbar::ToolBar;
 use crate::components::workspace::Workspace;
-use crate::state::{OpenProjects, State};
+use crate::state::{Modals, OpenProjects, State};
 use crate::style::Style;
+use crate::widgets::styling::{Colour, Size};
 use gpui::{
-    App, Application, Bounds, Context, Entity, EventEmitter, SharedString, Window, WindowBounds,
-    WindowOptions, div, prelude::*, px, rgb, rgba, size,
+    App, Application, Bounds, Context, Window, WindowBounds, WindowOptions, div, prelude::*, px,
+    size,
 };
+use crate::components::about_modal::AboutModal;
 
 struct Base {
     style: Style,
 }
 
 impl Render for Base {
-    fn render(&mut self, _window: &mut Window, _cx: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         div()
             .flex()
             .flex_col()
             .size_full()
-            .bg(self.style.bg_colour.get())
+            .bg(&self.style.bg_colour)
             .items_center()
-            .text_color(self.style.text_colour.get())
-            .child(_cx.new(|_| ToolBar {
+            .text_color(&self.style.text_colour)
+            .child(cx.new(|_| ToolBar {
                 style: self.style.clone(),
             }))
-            .child(_cx.new(|_| Workspace {
+            .child(cx.new(|_| Workspace {
                 style: self.style.clone(),
             }))
-            .child(_cx.new(|_| StatusBar {
+            .child(cx.new(|_| StatusBar {
                 style: self.style.clone(),
             }))
+            // Modals
+            .child(cx.new(|_| AboutModal {}))
     }
 }
 
@@ -50,9 +54,15 @@ fn main() {
             ..Default::default()
         };
 
+        let modals = Modals {
+            about: false
+        };
+
         cx.open_window(window_options, |_, cx| {
             let state = State {
                 open_projects: OpenProjects::new(),
+                active_project: 0,
+                modals
             };
 
             cx.set_global(state);

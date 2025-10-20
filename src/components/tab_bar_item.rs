@@ -1,30 +1,29 @@
 use crate::state::State;
 use crate::style::{Size, Style};
-use crate::utils::utils::get_starting_path;
 use crate::widgets::core::button::{Button, TextPosition};
-use crate::{margin, rounding};
+use crate::widgets::styling::Colour;
+use gpui::prelude::FluentBuilder;
 use gpui::{
-    AppContext, AsyncApp, BorrowAppContext, Context, InteractiveElement, IntoElement,
-    ParentElement, Render, Styled, Window, div, px, rgb, rgba,
+    AppContext, BorrowAppContext, Context, InteractiveElement, IntoElement, MouseButton,
+    ParentElement, Render, RenderOnce, Styled, Window, div, px, rgb, rgba,
 };
 
+#[derive(Clone)]
 pub struct TabBarItem {
     pub style: Style,
     pub name: String,
     pub project_id: u32,
-    pub active: bool,
+    pub active: bool
 }
 
 impl Render for TabBarItem {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        let bg = if self.active {
-            self.style.tabbar.active_colour.get()
-        } else {
-            self.style.bg_colour.get()
-        };
+        let id = self.project_id;
+
         div()
             .flex()
             .flex_row()
+            .text_sm()
             .justify_between()
             .items_center()
             .min_w(px(100f32))
@@ -32,27 +31,44 @@ impl Render for TabBarItem {
             .h(self.style.tabbar.height.get())
             .p(px(4.0))
             .child(self.name.clone())
-            .bg(bg)
-            .hover(|style| {
-                if self.active {
-                    style.bg(bg)
-                } else {
-                    style.bg(self.style.tabbar.hover_colour.get())
-                }
+            .when_else(
+                self.active,
+                |_self| _self.bg(&self.style.tabbar.active_colour),
+                |_self| _self.bg(&self.style.bg_colour),
+            )
+            .when_else(
+                self.active,
+                |_self| _self.hover(|style| style.bg(&self.style.tabbar.active_colour)),
+                |_self| _self.hover(|style| style.bg(&self.style.tabbar.hover_colour)),
+            )
+            .on_mouse_down(MouseButton::Left, move |e, window, _cx| {
+                _cx.update_global::<State, ()>(|global, _| {
+                    global.set_active_project(id);
+                    window.refresh()
+                })
             })
-            .child(cx.new(|_| {
+            .border_r_1()
+            .border_color(&self.style.separator_colour)
+            .child(
                 Button::new()
                     .text(String::from("x"))
-                    .text_colour(self.style.text_colour.get())
+                    .text_colour(&self.style.text_colour)
                     .justify_content(TextPosition::Centre)
                     .align_text(TextPosition::Centre)
                     .w(Size::Px(20.0))
                     .h(Size::Px(20.0))
                     .mx(self.style.margin)
-                    .colour(self.style.bg_colour.get())
-                    .hover_colour(rgba(0x00000000))
-                    .rounding(rounding!(self.style.rounding))
-                    .on_click(|e, window, _cx| {})
-            }))
+                    .colour(Colour::Rgba(0x00000000))
+                    .hover_colour(Colour::Rgba(0xffffff22))
+                    .rounding_all(Size::Px(100.0))
+                    .on_click(move |e, window, _cx| {
+                        _cx.update_global::<State, ()>(|global, _| {
+                            global.remove_project(id);
+                            println!("removed");
+                            window.refresh()
+                        })
+                    })
+                    .render(window, cx),
+            )
     }
 }

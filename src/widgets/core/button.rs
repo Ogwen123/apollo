@@ -1,16 +1,19 @@
-use crate::style::Size;
+use crate::widgets::styling::{Colour, Size};
 use crate::{margin, padding, rounding};
 use gpui::{
     App, Context, Hsla, InteractiveElement, IntoElement, MouseButton, MouseDownEvent,
-    ParentElement, Render, Rgba, Styled, Window, div, percentage, px, rgb, rgba,
+    ParentElement, Render, RenderOnce, Rgba, Styled, Window, div, rgb,
 };
+use gpui::prelude::FluentBuilder;
 
+#[derive(Clone)]
 pub enum TextPosition {
     Start,
     Centre,
     End,
 }
 
+/// A button capable of displaying text
 pub struct Button {
     /// Text to be displayed on the button
     text: String,
@@ -27,25 +30,29 @@ pub struct Button {
     /// Corner rounding in pixels, ordered as (top left, top right, bottom right, bottom left) e.g. clockwise starting at the top left, you can use the rounding!() macro to convert a single value to this form.
     rounding: (Size, Size, Size, Size),
     /// Background colour in hex e.g. 0xffffff
-    colour: Rgba,
+    colour: Colour,
     /// Hover colour in hex e.g. 0xffffff
-    hover_colour: Option<Rgba>,
+    hover_colour: Option<Colour>,
     /// Text colour in hex e.g. 0xffffff
-    text_colour: Rgba,
+    text_colour: Colour,
     /// Border colour
-    border_colour: Option<Rgba>,
+    border_colour: Option<Colour>,
     /// Border width in pixels
     border_width: Size,
     /// Function ran on_mouse_down for left click
-    on_click: fn(&MouseDownEvent, &mut Window, &mut App),
+    on_click: Option<Box<dyn Fn(&MouseDownEvent, &mut Window, &mut App) + 'static>>,
     /// Padding in pixels, ordered as (top, right, left, bottom), you can use the padding!() macro to convert a single value or x and y value to this form.
     padding: (Size, Size, Size, Size),
     /// Margin in pixels, ordered as (top, right, left, bottom), you can use the margin!() macro to convert a single value or x and y value to this form.
     margin: (Size, Size, Size, Size),
+    /// If the button should be disabled
+    disabled: bool,
 }
 
-impl Render for Button {
-    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+impl RenderOnce for Button {
+    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+        let disabled = self.disabled;
+
         let d = div()
             .flex()
             .h(self.height.get())
@@ -67,11 +74,13 @@ impl Render for Button {
             .rounded_br(self.rounding.2.abs())
             .rounded_bl(self.rounding.3.abs())
             .border(self.border_width.abs())
-            .border_color(self.border_colour.unwrap_or(self.colour))
+            .when_some(self.border_colour, |_self, colour| {
+                _self.border_color(colour)
+            })
             .text_color(self.text_colour)
-            .bg(self.colour)
+            .bg(&self.colour)
             .hover(|style| style.bg(self.hover_colour.unwrap_or(self.colour)))
-            .on_mouse_down(MouseButton::Left, self.on_click)
+            .on_mouse_down(MouseButton::Left, self.on_click.unwrap())
             .child(self.text.clone());
 
         let justified = match self.justify_content {
@@ -96,8 +105,11 @@ impl Button {
     }
 
     /// Function ran on_mouse_down for left click
-    pub fn on_click(mut self, handler: fn(&MouseDownEvent, &mut Window, &mut App)) -> Self {
-        self.on_click = handler;
+    pub fn on_click(
+        mut self,
+        handler: impl Fn(&MouseDownEvent, &mut Window, &mut App) + 'static,
+    ) -> Self {
+        self.on_click = Some(Box::new(handler));
         self
     }
 
@@ -147,23 +159,23 @@ impl Button {
         self
     }
     /// Background colour in hex e.g. 0xffffff
-    pub fn colour(mut self, colour: Rgba) -> Self {
-        self.colour = colour;
+    pub fn colour<T: Into<Colour>>(mut self, colour: T) -> Self {
+        self.colour = colour.into();
         self
     }
     /// Hover colour in hex e.g. 0xffffff
-    pub fn hover_colour(mut self, colour: Rgba) -> Self {
-        self.hover_colour = Some(colour);
+    pub fn hover_colour<T: Into<Colour>>(mut self, colour: T) -> Self {
+        self.hover_colour = Some(colour.into());
         self
     }
     /// Text colour in hex e.g. 0xffffff
-    pub fn text_colour(mut self, colour: Rgba) -> Self {
-        self.text_colour = colour;
+    pub fn text_colour<T: Into<Colour>>(mut self, colour: T) -> Self {
+        self.text_colour = colour.into();
         self
     }
     /// Border colour
-    pub fn border_colour(mut self, colour: Rgba) -> Self {
-        self.border_colour = Some(colour);
+    pub fn border_colour<T: Into<Colour>>(mut self, colour: T) -> Self {
+        self.border_colour = Some(colour.into());
         self
     }
     /// Border width in pixels
@@ -239,6 +251,21 @@ impl Button {
         );
         self
     }
+
+    fn disable(mut self) -> Self {
+        self.disabled = true;
+        self
+    }
+
+    fn enable(mut self) -> Self {
+        self.disabled = false;
+        self
+    }
+
+    fn toggle(mut self) -> Self {
+        self.disabled = !self.disabled;
+        self
+    }
 }
 
 impl Default for Button {
@@ -251,14 +278,15 @@ impl Default for Button {
             height: Size::Px(50.0),
             text_size: Size::Px(12.0),
             rounding: rounding!(Size::Px(0.0)),
-            colour: rgb(0xf5f5f5),
+            colour: Colour::Rgb(0xf5f5f5),
             hover_colour: None,
-            text_colour: rgb(0x000000),
+            text_colour: Colour::Rgb(0x000000),
             border_colour: None,
             border_width: Size::Px(0.0),
-            on_click: |_, _, _| {},
+            on_click: None,
             padding: padding!(Size::Px(0.0)),
             margin: margin!(Size::Px(0.0)),
+            disabled: false,
         }
     }
 }
