@@ -27,7 +27,7 @@ impl Render for TabBar {
                         style: self.style.clone(),
                         name: x.display_name(),
                         project_id: x.id,
-                        active: _cx.global::<State>().active_project == x.id
+                        active: _cx.global::<State>().active_project == x.id,
                     })
                 }))
         }

@@ -5,6 +5,7 @@ mod style;
 mod utils;
 mod widgets;
 
+use crate::components::about_modal::AboutModal;
 use crate::components::status_bar::StatusBar;
 use crate::components::toolbar::ToolBar;
 use crate::components::workspace::Workspace;
@@ -15,7 +16,6 @@ use gpui::{
     App, Application, Bounds, Context, Window, WindowBounds, WindowOptions, div, prelude::*, px,
     size,
 };
-use crate::components::about_modal::AboutModal;
 
 struct Base {
     style: Style,
@@ -54,15 +54,13 @@ fn main() {
             ..Default::default()
         };
 
-        let modals = Modals {
-            about: false
-        };
+        let modals = Modals { about: false };
 
         cx.open_window(window_options, |_, cx| {
             let state = State {
                 open_projects: OpenProjects::new(),
                 active_project: 0,
-                modals
+                modals,
             };
 
             cx.set_global(state);

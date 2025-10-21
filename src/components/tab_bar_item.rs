@@ -13,7 +13,7 @@ pub struct TabBarItem {
     pub style: Style,
     pub name: String,
     pub project_id: u32,
-    pub active: bool
+    pub active: bool,
 }
 
 impl Render for TabBarItem {

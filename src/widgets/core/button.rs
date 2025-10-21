@@ -1,10 +1,10 @@
 use crate::widgets::styling::{Colour, Size};
 use crate::{margin, padding, rounding};
+use gpui::prelude::FluentBuilder;
 use gpui::{
     App, Context, Hsla, InteractiveElement, IntoElement, MouseButton, MouseDownEvent,
     ParentElement, Render, RenderOnce, Rgba, Styled, Window, div, rgb,
 };
-use gpui::prelude::FluentBuilder;
 
 #[derive(Clone)]
 pub enum TextPosition {
@@ -80,7 +80,11 @@ impl RenderOnce for Button {
             .text_color(self.text_colour)
             .bg(&self.colour)
             .hover(|style| style.bg(self.hover_colour.unwrap_or(self.colour)))
-            .on_mouse_down(MouseButton::Left, self.on_click.unwrap())
+            .when(!self.disabled, |_self| {
+                _self.when_some(self.on_click, |__self, on_click| {
+                    __self.on_mouse_down(MouseButton::Left, on_click)
+                })
+            })
             .child(self.text.clone());
 
         let justified = match self.justify_content {

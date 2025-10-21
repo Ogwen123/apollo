@@ -62,14 +62,12 @@ impl Display for OpenProjects {
     }
 }
 
-
 // MODALS
 #[derive(Clone)]
 /// Stores the state of all the modals in the app
 pub struct Modals {
-    pub about: bool
+    pub about: bool,
 }
-
 
 // STATE
 
@@ -79,7 +77,7 @@ pub struct State {
     /// All of the currently open projects
     pub open_projects: OpenProjects,
     pub active_project: u32,
-    pub modals: Modals
+    pub modals: Modals,
 }
 impl State {
     pub fn has_path(&self, path: &PathBuf) -> bool {
