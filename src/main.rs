@@ -5,7 +5,6 @@ mod style;
 mod utils;
 mod widgets;
 
-use crate::components::about_modal::AboutModal;
 use crate::components::status_bar::StatusBar;
 use crate::components::toolbar::ToolBar;
 use crate::components::workspace::Workspace;
@@ -16,9 +15,34 @@ use gpui::{
     App, Application, Bounds, Context, Window, WindowBounds, WindowOptions, div, prelude::*, px,
     size,
 };
+use crate::widgets::core::modal::Modal;
+
+trait ModalHelper {
+    fn open_modal(&mut self, cx: &mut App, modal: Modal);
+    fn close_modal(&mut self, cx: &mut App, modal: Modal);
+}
+
+impl ModalHelper for Window {
+    fn open_modal(&mut self, cx: &mut App, modal: Modal) {
+        let root = self.root::<Base>().flatten().expect("Window root should be type Base");
+        root.update(cx, |base, cx| {
+            base.modals.push(modal);
+        });
+        self.refresh()
+    }
+
+    fn close_modal(&mut self, cx: &mut App, modal: Modal) {
+        let root = self.root::<Base>().flatten().expect("Window root should be type Base");
+        root.update(cx, |base, cx| {
+            base.modals.pop();
+        });
+        self.refresh()
+    }
+}
 
 struct Base {
     style: Style,
+    modals: Vec<Modal>
 }
 
 impl Render for Base {
@@ -40,7 +64,23 @@ impl Render for Base {
                 style: self.style.clone(),
             }))
             // Modals
-            .child(cx.new(|_| AboutModal {}))
+            .children(self.modals.iter().map(|x| cx.new(|_| Modal {
+                title: x.title.clone(),
+                body: x.body.clone(),
+                width: x.width,
+                height: x.height,
+                rounding: x.rounding,
+                bg_colour: x.bg_colour.clone(),
+                accept_button_colour: x.accept_button_colour.clone(),
+                cancel_button_colour: x.cancel_button_colour.clone(),
+                accept_text: x.accept_text.clone(),
+                cancel_text: x.cancel_text.clone(),
+                top_offset: x.top_offset,
+                on_accept: x.on_accept.clone(),
+                on_cancel: x.on_cancel.clone(),
+                on_close: x.on_close.clone(),
+                backdrop_close: x.backdrop_close
+            })))
     }
 }
 
@@ -67,6 +107,7 @@ fn main() {
 
             cx.new(|_cx| Base {
                 style: Default::default(),
+                modals: Vec::new()
             })
         })
         .unwrap();

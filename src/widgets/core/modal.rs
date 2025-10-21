@@ -1,46 +1,50 @@
+use std::sync::Arc;
+use crate::state::State;
 use crate::style::{Colour, Size};
 use crate::widgets::core::button::Button;
-use gpui::{App, DefiniteLength, IntoElement, Length, MouseDownEvent, ParentElement, Pixels, RenderOnce, Styled, Window, anchored, div, point, px, InteractiveElement, rgba};
 use gpui::prelude::FluentBuilder;
+use gpui::{
+    App, BorrowAppContext, Context, DefiniteLength, InteractiveElement, IntoElement, Length,
+    MouseButton, MouseDownEvent, ParentElement, Pixels, Render, RenderOnce, Styled, Window,
+    anchored, div, point, px, rgba,
+};
 
 /// Displays a modal which is horizontally centred
 pub struct Modal {
-    /// Whether the overlay should be visible
-    show: bool,
     /// The title of the modal
-    title: String,
+    pub title: String,
     /// The text in the body of the modal
-    body: String,
+    pub body: String,
     /// The width of the modal
-    width: Pixels,
+    pub width: Pixels,
     /// The height of the modal
-    height: Pixels,
+    pub height: Pixels,
     /// The rounding of the corners of the modal
-    rounding: Size,
+    pub rounding: Size,
     /// The background colour of the button
-    bg_colour: Colour,
+    pub bg_colour: Colour,
     /// The colour of the accepting button
-    accept_button_colour: Colour,
+    pub accept_button_colour: Colour,
     /// The colour of the cancelling button
-    cancel_button_colour: Colour,
+    pub cancel_button_colour: Colour,
     /// The text shown on the accepting button
-    accept_text: String,
+    pub accept_text: String,
     /// The text shown on the cancelling button
-    cancel_text: String,
+    pub cancel_text: String,
     /// The distance in pixels the modal should be from the top of the screen, if None then the modal will be vertically centered
-    top_offset: Option<Pixels>,
+    pub top_offset: Option<Pixels>,
     /// The function run when the accepting button is pressed
-    on_accept: Option<Box<dyn Fn(&MouseDownEvent, &mut Window, &mut App) + 'static>>,
+    pub on_accept: Option<Arc<dyn Fn(&MouseDownEvent, &mut Window, &mut App) + 'static>>,
     /// The function run when the cancelling button it pressed
-    on_cancel: Option<Box<dyn Fn(&MouseDownEvent, &mut Window, &mut App) + 'static>>,
+    pub on_cancel: Option<Arc<dyn Fn(&MouseDownEvent, &mut Window, &mut App) + 'static>>,
     /// The function run when the closing button is pressed
-    on_close: Option<Box<dyn Fn(&MouseDownEvent, &mut Window, &mut App) + 'static>>,
+    pub on_close: Option<Arc<dyn Fn(&MouseDownEvent, &mut Window, &mut App) + 'static>>,
     /// Whether clicking the backdrop should close the modal
-    backdrop_close: bool
+    pub backdrop_close: bool,
 }
 
-impl RenderOnce for Modal {
-    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+impl Render for Modal {
+    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         anchored()
             .position(point(
                 (window.viewport_size().width / 2.0) - (self.width / 2.0),
@@ -54,12 +58,17 @@ impl RenderOnce for Modal {
             .child(
                 div()
                     .occlude()
-                    .bg(rgba(0x00000022))
+                    .bg(rgba(0x00000055))
                     .w(window.viewport_size().width)
                     .h(window.viewport_size().height)
+                    .when(self.backdrop_close, |_self| {
+                        _self.on_mouse_down(MouseButton::Left, |e, window, cx| {
+                            cx.update_global::<State, ()>(|global, cx| {})
+                        })
+                    })
                     .child(
                         div()
-                            .bg(self.bg_colour)
+                            .bg(&self.bg_colour)
                             .w(self.width)
                             .h(self.height)
                             .rounded(self.rounding.abs())
@@ -79,15 +88,15 @@ impl RenderOnce for Modal {
                                     .child(Button::new().text("accept").render(window, cx))
                                     .child(Button::new().text("cancel").render(window, cx)),
                             ),
-                    )
+                    ),
             )
+            .into_any_element()
     }
 }
 
 impl Modal {
-    pub fn new(show: bool) -> Self {
+    pub fn new() -> Self {
         Self {
-            show,
             ..Default::default()
         }
     }
@@ -152,7 +161,7 @@ impl Modal {
         mut self,
         handler: impl Fn(&MouseDownEvent, &mut Window, &mut App) + 'static,
     ) -> Self {
-        self.on_accept = Some(Box::new(handler));
+        self.on_accept = Some(Arc::new(handler));
         self
     }
     /// Set the function run when the cancelling button it pressed
@@ -160,7 +169,7 @@ impl Modal {
         mut self,
         handler: impl Fn(&MouseDownEvent, &mut Window, &mut App) + 'static,
     ) -> Self {
-        self.on_cancel = Some(Box::new(handler));
+        self.on_cancel = Some(Arc::new(handler));
         self
     }
     /// Set the function run when the closing button is pressed
@@ -168,7 +177,7 @@ impl Modal {
         mut self,
         handler: impl Fn(&MouseDownEvent, &mut Window, &mut App) + 'static,
     ) -> Self {
-        self.on_close = Some(Box::new(handler));
+        self.on_close = Some(Arc::new(handler));
         self
     }
     /// Toggle whether clicking the backdrop should close the modal, default is true
@@ -181,7 +190,6 @@ impl Modal {
 impl Default for Modal {
     fn default() -> Self {
         Self {
-            show: false,
             title: "Placeholder title".to_string(),
             body: "Placeholder body".to_string(),
             width: px(100.0),
@@ -196,7 +204,7 @@ impl Default for Modal {
             on_accept: None,
             on_cancel: None,
             on_close: None,
-            backdrop_close: true
+            backdrop_close: true,
         }
     }
 }

@@ -9,6 +9,8 @@ use gpui::{
 };
 use gpui::{BorrowAppContext, RenderOnce};
 use zed_util::ResultExt;
+use crate::ModalHelper;
+use crate::widgets::core::modal::Modal;
 
 const BUTTON_HEIGHT: Size = Size::Px(30f32);
 const BUTTON_HOVER_COLOUR: u32 = 0xffffff22;
@@ -111,10 +113,9 @@ impl Render for ToolBar {
                         .hover_colour(Colour::Rgba(BUTTON_HOVER_COLOUR))
                         .rounding_all(self.style.rounding)
                         .on_click(|_e, _window, _cx| {
-                            _cx.update_global::<State, ()>(|global, _| {
-                                global.modals.about = true;
-                                _window.refresh();
-                            })
+                            println!("{}", _cx.global::<State>().modals.about);
+
+                            _window.open_modal(_cx, Modal::new())
                         }).render(window, cx)
                     )
 
