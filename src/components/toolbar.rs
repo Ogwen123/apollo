@@ -1,34 +1,32 @@
 use crate::state::{Project, State};
-use crate::style::Style;
+use crate::style::{Style, StyleProvider};
 use crate::widgets::styling::{Colour, Size};
 
+use crate::ModalHelper;
 use crate::widgets::core::button::{Button, TextPosition};
+use crate::widgets::core::modal::{Modal, ModalButtonOptions};
 use gpui::{
-    AppContext, Context, IntoElement, ParentElement, PathPromptOptions, Render, Styled, Window,
-    div, px, rgba,
+    AppContext, Context, IntoElement, MouseDownEvent, ParentElement, PathPromptOptions, Render,
+    Styled, Window, div, px, rgba,
 };
 use gpui::{BorrowAppContext, RenderOnce};
 use zed_util::ResultExt;
-use crate::ModalHelper;
-use crate::widgets::core::modal::Modal;
 
 const BUTTON_HEIGHT: Size = Size::Px(30f32);
 const BUTTON_HOVER_COLOUR: u32 = 0xffffff22;
 
-pub struct ToolBar {
-    pub style: Style,
-}
-// self.style.toolbar.bg_colour.get()
+pub struct ToolBar {}
+// cx.style().toolbar.bg_colour.get()
 impl Render for ToolBar {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         div()
             .flex()
             .flex_row()
             .w_full()
-            .h(self.style.toolbar.height.get())
-            .bg(&self.style.toolbar.bg_colour)
+            .h(cx.style().toolbar.height.get())
+            .bg(&cx.style().toolbar.bg_colour)
             .items_center()
-            .text_color(&self.style.text_colour)
+            .text_color(&cx.style().text_colour)
             .child(
                 div()
                     .w_full()
@@ -36,22 +34,22 @@ impl Render for ToolBar {
                     .flex_row()
                     .items_center()
                     .h_full()
-                    .bg(&self.style.toolbar.bg_colour)
+                    .bg(&cx.style().toolbar.bg_colour)
                     .child(div()
                         .text_xl()
                         .px(px(10.0))
                         .child("Apollo".to_string()))
                     .child(Button::new()
                         .text(String::from("Open Project"))
-                        .text_colour(&self.style.text_colour)
+                        .text_colour(&cx.style().text_colour)
                         .justify_content(TextPosition::Centre)
                         .align_text(TextPosition::Centre)
                         .w(Size::Px(100.0))
                         .h(BUTTON_HEIGHT)
-                        .mx(self.style.margin)
-                        .colour(&self.style.toolbar.bg_colour)
+                        .mx(cx.style().margin)
+                        .colour(&cx.style().toolbar.bg_colour)
                         .hover_colour(Colour::Rgba(BUTTON_HOVER_COLOUR))
-                        .rounding_all(self.style.rounding)
+                        .rounding_all(cx.style().rounding)
                         .on_click(|_e, _window, _cx| {
                             // Everything inside is owned/moved
                             let options = PathPromptOptions {
@@ -103,19 +101,37 @@ impl Render for ToolBar {
                     )
                     .child(Button::new()
                         .text(String::from("About"))
-                        .text_colour(&self.style.text_colour)
+                        .text_colour(&cx.style().text_colour)
                         .justify_content(TextPosition::Centre)
                         .align_text(TextPosition::Centre)
                         .w(Size::Px(60f32))
                         .h(BUTTON_HEIGHT)
-                        .mx(self.style.margin)
-                        .colour(&self.style.toolbar.bg_colour)
+                        .mx(cx.style().margin)
+                        .colour(&cx.style().toolbar.bg_colour)
                         .hover_colour(Colour::Rgba(BUTTON_HOVER_COLOUR))
-                        .rounding_all(self.style.rounding)
+                        .rounding_all(cx.style().rounding)
                         .on_click(|_e, _window, _cx| {
                             println!("{}", _cx.global::<State>().modals.about);
 
-                            _window.open_modal(_cx, Modal::new())
+                            _window.open_modal(_cx, Modal::new()
+                                .title("About")
+                                .body(vec![format!("Version: {}", env!("CARGO_PKG_VERSION")), "Author: Owen Jones".to_string()])
+                                .rounding(_cx.style().rounding)
+                                .bg_colour(&_cx.style().bg_colour)
+                                .padding(Size::Px(10.0))
+                                .accept_button_options(None)
+                                .cancel_button_options(Some(ModalButtonOptions {
+                                    show: true,
+                                    text: "Close".to_string(),
+                                    colour: _cx.style().bg_colour.clone(),
+                                    border_width: Size::Px(1.0),
+                                    border_colour: Some(_cx.style().separator_colour.clone()),
+                                    rounding: _cx.style().rounding,
+                                    on_click: None
+                                }.on_click(|e, __window, __cx| {
+                                    __window.close_modal(__cx)
+                                })))
+                            )
                         }).render(window, cx)
                     )
 
@@ -125,13 +141,13 @@ impl Render for ToolBar {
                     .w(px(40.0))
                     .child( Button::new()
                         .text(String::from("X"))
-                        .text_colour(&self.style.text_colour)
+                        .text_colour(&cx.style().text_colour)
                         .justify_content(TextPosition::Centre)
                         .align_text(TextPosition::Centre)
                         .w(BUTTON_HEIGHT) // make the button a circle
                         .h(BUTTON_HEIGHT)
-                        .mx(self.style.margin.clone())
-                        .colour(&self.style.toolbar.bg_colour)
+                        .mx(cx.style().margin.clone())
+                        .colour(&cx.style().toolbar.bg_colour)
                         .hover_colour(Colour::Rgba(BUTTON_HOVER_COLOUR))
                         .rounding_all(Size::Px(100.0))
                         .on_click(|_e, _window, cx| {

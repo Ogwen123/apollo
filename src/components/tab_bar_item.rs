@@ -1,5 +1,5 @@
 use crate::state::State;
-use crate::style::{Size, Style};
+use crate::style::{Size, Style, StyleProvider};
 use crate::widgets::core::button::{Button, TextPosition};
 use crate::widgets::styling::Colour;
 use gpui::prelude::FluentBuilder;
@@ -10,7 +10,6 @@ use gpui::{
 
 #[derive(Clone)]
 pub struct TabBarItem {
-    pub style: Style,
     pub name: String,
     pub project_id: u32,
     pub active: bool,
@@ -28,18 +27,18 @@ impl Render for TabBarItem {
             .items_center()
             .min_w(px(100f32))
             .max_w(px(300f32))
-            .h(self.style.tabbar.height.get())
+            .h(cx.style().tabbar.height.get())
             .p(px(4.0))
             .child(self.name.clone())
             .when_else(
                 self.active,
-                |_self| _self.bg(&self.style.tabbar.active_colour),
-                |_self| _self.bg(&self.style.bg_colour),
+                |_self| _self.bg(&cx.style().tabbar.active_colour),
+                |_self| _self.bg(&cx.style().bg_colour),
             )
             .when_else(
                 self.active,
-                |_self| _self.hover(|style| style.bg(&self.style.tabbar.active_colour)),
-                |_self| _self.hover(|style| style.bg(&self.style.tabbar.hover_colour)),
+                |_self| _self.hover(|style| style.bg(&cx.style().tabbar.active_colour)),
+                |_self| _self.hover(|style| style.bg(&cx.style().tabbar.hover_colour)),
             )
             .on_mouse_down(MouseButton::Left, move |e, window, _cx| {
                 _cx.update_global::<State, ()>(|global, _| {
@@ -48,16 +47,16 @@ impl Render for TabBarItem {
                 })
             })
             .border_r_1()
-            .border_color(&self.style.separator_colour)
+            .border_color(&cx.style().separator_colour)
             .child(
                 Button::new()
                     .text(String::from("x"))
-                    .text_colour(&self.style.text_colour)
+                    .text_colour(&cx.style().text_colour)
                     .justify_content(TextPosition::Centre)
                     .align_text(TextPosition::Centre)
                     .w(Size::Px(20.0))
                     .h(Size::Px(20.0))
-                    .mx(self.style.margin)
+                    .mx(cx.style().margin)
                     .colour(Colour::Rgba(0x00000000))
                     .hover_colour(Colour::Rgba(0xffffff22))
                     .rounding_all(Size::Px(100.0))

@@ -3,9 +3,7 @@ use crate::state::State;
 use crate::style::Style;
 use gpui::{AppContext, Context, IntoElement, ParentElement, Render, Styled, Window, div};
 
-pub struct Workspace {
-    pub style: Style,
-}
+pub struct Workspace {}
 
 impl Render for Workspace {
     fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
@@ -16,9 +14,7 @@ impl Render for Workspace {
             .flex_col()
             .h_full()
             .w_full()
-            .child(cx.new(|_| TabBar {
-                style: self.style.clone(),
-            }))
+            .child(cx.new(|_| TabBar {}))
             .child("Workspace")
             .children(
                 projects

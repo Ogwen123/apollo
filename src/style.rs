@@ -1,6 +1,11 @@
 use crate::utils::logger::warning;
 pub(crate) use crate::widgets::styling::{Colour, Size};
-use gpui::{AbsoluteLength, Background, DefiniteLength, Fill, Hsla, Length, Rgba, px, rgb, rgba};
+use gpui::{
+    AbsoluteLength, App, Background, DefiniteLength, Fill, Global, Hsla, Length, Rgba, px, rgb,
+    rgba,
+};
+use std::ops::{Deref, DerefMut};
+use std::sync::Arc;
 
 #[derive(Clone)]
 /// Contains all the styling specific to the toolbar at the top of the app
@@ -110,5 +115,42 @@ impl Default for Style {
             statusbar: Default::default(),
             tabbar: Default::default(),
         }
+    }
+}
+
+// Extend App with the style provider
+
+pub trait StyleProvider {
+    fn style(&self) -> &Arc<Style>;
+}
+
+impl Style {
+    pub fn get_global(cx: &App) -> &Arc<Style> {
+        &cx.global::<GlobalStyle>().0
+    }
+}
+
+#[derive(Clone)]
+pub struct GlobalStyle(pub Arc<Style>);
+
+impl Deref for GlobalStyle {
+    type Target = Arc<Style>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for GlobalStyle {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl Global for GlobalStyle {}
+
+impl StyleProvider for App {
+    fn style(&self) -> &Arc<Style> {
+        &self.global::<GlobalStyle>().0
     }
 }

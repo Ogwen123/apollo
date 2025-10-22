@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use crate::widgets::styling::{Colour, Size};
 use crate::{margin, padding, rounding};
 use gpui::prelude::FluentBuilder;
@@ -5,6 +6,7 @@ use gpui::{
     App, Context, Hsla, InteractiveElement, IntoElement, MouseButton, MouseDownEvent,
     ParentElement, Render, RenderOnce, Rgba, Styled, Window, div, rgb,
 };
+use gpui::private::schemars::_private::NoSerialize;
 
 #[derive(Clone)]
 pub enum TextPosition {
@@ -22,9 +24,9 @@ pub struct Button {
     /// Vertical position for the text
     align_text: TextPosition,
     /// Width in pixels
-    width: Size,
+    width: Option<Size>,
     /// Height in pixels
-    height: Size,
+    height: Option<Size>,
     /// Text size in pixels
     text_size: Size,
     /// Corner rounding in pixels, ordered as (top left, top right, bottom right, bottom left) e.g. clockwise starting at the top left, you can use the rounding!() macro to convert a single value to this form.
@@ -55,8 +57,16 @@ impl RenderOnce for Button {
 
         let d = div()
             .flex()
-            .h(self.height.get())
-            .w(self.width.get())
+            .when_else(
+                self.height.is_some(),
+                |_self| _self.h(self.height.unwrap().get()),
+                |_self| _self.h_full(),
+            )
+            .when_else(
+                self.width.is_some(),
+                |_self| _self.w(self.width.unwrap().get()),
+                |_self| _self.w_full(),
+            )
             .text_size(self.text_size.abs())
             // Per side padding
             .pt(self.padding.0.def())
@@ -134,12 +144,22 @@ impl Button {
     }
     /// Width in pixels
     pub fn w(mut self, w: Size) -> Self {
-        self.width = w;
+        self.width = Some(w);
+        self
+    }
+    /// Set the width to full
+    pub fn w_full(mut self) -> Self {
+        self.width = None;
         self
     }
     /// Height in pixels
     pub fn h(mut self, h: Size) -> Self {
-        self.height = h;
+        self.height = Some(h);
+        self
+    }
+    /// Set the height to full
+    pub fn h_full(mut self) -> Self {
+        self.height = None;
         self
     }
     /// Text size in pixels
@@ -278,8 +298,8 @@ impl Default for Button {
             text: String::new(),
             justify_content: TextPosition::Start,
             align_text: TextPosition::Start,
-            width: Size::Px(100.0),
-            height: Size::Px(50.0),
+            width: Some(Size::Px(100.0)),
+            height: Some(Size::Px(50.0)),
             text_size: Size::Px(12.0),
             rounding: rounding!(Size::Px(0.0)),
             colour: Colour::Rgb(0xf5f5f5),

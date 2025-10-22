@@ -9,30 +9,37 @@ use crate::components::status_bar::StatusBar;
 use crate::components::toolbar::ToolBar;
 use crate::components::workspace::Workspace;
 use crate::state::{Modals, OpenProjects, State};
-use crate::style::Style;
+use crate::style::{GlobalStyle, Style, StyleProvider};
+use crate::widgets::core::modal::Modal;
 use crate::widgets::styling::{Colour, Size};
 use gpui::{
     App, Application, Bounds, Context, Window, WindowBounds, WindowOptions, div, prelude::*, px,
     size,
 };
-use crate::widgets::core::modal::Modal;
+use std::sync::Arc;
 
 trait ModalHelper {
     fn open_modal(&mut self, cx: &mut App, modal: Modal);
-    fn close_modal(&mut self, cx: &mut App, modal: Modal);
+    fn close_modal(&mut self, cx: &mut App);
 }
 
 impl ModalHelper for Window {
     fn open_modal(&mut self, cx: &mut App, modal: Modal) {
-        let root = self.root::<Base>().flatten().expect("Window root should be type Base");
+        let root = self
+            .root::<Base>()
+            .flatten()
+            .expect("Window root should be type Base");
         root.update(cx, |base, cx| {
             base.modals.push(modal);
         });
         self.refresh()
     }
 
-    fn close_modal(&mut self, cx: &mut App, modal: Modal) {
-        let root = self.root::<Base>().flatten().expect("Window root should be type Base");
+    fn close_modal(&mut self, cx: &mut App) {
+        let root = self
+            .root::<Base>()
+            .flatten()
+            .expect("Window root should be type Base");
         root.update(cx, |base, cx| {
             base.modals.pop();
         });
@@ -41,8 +48,7 @@ impl ModalHelper for Window {
 }
 
 struct Base {
-    style: Style,
-    modals: Vec<Modal>
+    modals: Vec<Modal>,
 }
 
 impl Render for Base {
@@ -51,36 +57,29 @@ impl Render for Base {
             .flex()
             .flex_col()
             .size_full()
-            .bg(&self.style.bg_colour)
+            .bg(&cx.style().bg_colour)
             .items_center()
-            .text_color(&self.style.text_colour)
-            .child(cx.new(|_| ToolBar {
-                style: self.style.clone(),
-            }))
-            .child(cx.new(|_| Workspace {
-                style: self.style.clone(),
-            }))
-            .child(cx.new(|_| StatusBar {
-                style: self.style.clone(),
-            }))
+            .text_color(&cx.style().text_colour)
+            .child(cx.new(|_| ToolBar {}))
+            .child(cx.new(|_| Workspace {}))
+            .child(cx.new(|_| StatusBar {}))
             // Modals
-            .children(self.modals.iter().map(|x| cx.new(|_| Modal {
-                title: x.title.clone(),
-                body: x.body.clone(),
-                width: x.width,
-                height: x.height,
-                rounding: x.rounding,
-                bg_colour: x.bg_colour.clone(),
-                accept_button_colour: x.accept_button_colour.clone(),
-                cancel_button_colour: x.cancel_button_colour.clone(),
-                accept_text: x.accept_text.clone(),
-                cancel_text: x.cancel_text.clone(),
-                top_offset: x.top_offset,
-                on_accept: x.on_accept.clone(),
-                on_cancel: x.on_cancel.clone(),
-                on_close: x.on_close.clone(),
-                backdrop_close: x.backdrop_close
-            })))
+            .children(self.modals.iter().map(|x| {
+                cx.new(|_| Modal {
+                    title: x.title.clone(),
+                    body: x.body.clone(),
+                    width: x.width,
+                    height: x.height,
+                    padding: x.padding,
+                    rounding: x.rounding,
+                    bg_colour: x.bg_colour.clone(),
+                    accept_button: x.accept_button.clone(),
+                    cancel_button: x.cancel_button.clone(),
+                    top_offset: x.top_offset,
+                    on_close: if x.on_close.is_none() {None} else {None /*Some(Box::clone(&x.on_close.unwrap()))*/},
+                    backdrop_close: x.backdrop_close,
+                })
+            }))
     }
 }
 
@@ -104,11 +103,9 @@ fn main() {
             };
 
             cx.set_global(state);
+            cx.set_global(GlobalStyle(Arc::new(Style::default())));
 
-            cx.new(|_cx| Base {
-                style: Default::default(),
-                modals: Vec::new()
-            })
+            cx.new(|_cx| Base { modals: Vec::new() })
         })
         .unwrap();
     });
