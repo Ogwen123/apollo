@@ -76,7 +76,11 @@ impl Render for Base {
                     accept_button: x.accept_button.clone(),
                     cancel_button: x.cancel_button.clone(),
                     top_offset: x.top_offset,
-                    on_close: if x.on_close.is_none() {None} else {None /*Some(Box::clone(&x.on_close.unwrap()))*/},
+                    on_close: if x.on_close.is_none() {
+                        None
+                    } else {
+                        None /*Some(Box::clone(&x.on_close.unwrap()))*/
+                    },
                     backdrop_close: x.backdrop_close,
                 })
             }))

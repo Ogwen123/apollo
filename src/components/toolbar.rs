@@ -66,7 +66,6 @@ impl Render for ToolBar {
                                     Ok(res) => {
                                         match res {
                                             Some(path) => {
-                                                println!("{:?}", path);
                                                 __cx.update(|___cx| {
                                                     let res = ___cx.has_global::<State>();
 
@@ -111,8 +110,6 @@ impl Render for ToolBar {
                         .hover_colour(Colour::Rgba(BUTTON_HOVER_COLOUR))
                         .rounding_all(cx.style().rounding)
                         .on_click(|_e, _window, _cx| {
-                            println!("{}", _cx.global::<State>().modals.about);
-
                             _window.open_modal(_cx, Modal::new()
                                 .title("About")
                                 .body(vec![format!("Version: {}", env!("CARGO_PKG_VERSION")), "Author: Owen Jones".to_string()])
@@ -124,8 +121,10 @@ impl Render for ToolBar {
                                     show: true,
                                     text: "Close".to_string(),
                                     colour: _cx.style().bg_colour.clone(),
+                                    hover_colour: Some(Colour::Rgba(0xffffff22)),
                                     border_width: Size::Px(1.0),
                                     border_colour: Some(_cx.style().separator_colour.clone()),
+                                    padding: Size::Px(50.0),
                                     rounding: _cx.style().rounding,
                                     on_click: None
                                 }.on_click(|e, __window, __cx| {

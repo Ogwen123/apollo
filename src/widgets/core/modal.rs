@@ -1,7 +1,7 @@
 use crate::ModalHelper;
 use crate::state::State;
 use crate::style::{Colour, Size};
-use crate::widgets::core::button::Button;
+use crate::widgets::core::button::{Button, TextPosition};
 use gpui::prelude::FluentBuilder;
 use gpui::{
     App, BorrowAppContext, Context, DefiniteLength, InteractiveElement, IntoElement, Length,
@@ -18,6 +18,10 @@ pub struct ModalButtonOptions {
     pub text: String,
     /// The colour of the button
     pub colour: Colour,
+    /// The hover colour of the button
+    pub hover_colour: Option<Colour>,
+    /// The padding of the button
+    pub padding: Size,
     /// The rounding of the button
     pub rounding: Size,
     /// The thickness of the border of the button
@@ -61,7 +65,7 @@ pub struct Modal {
     /// The distance in pixels the modal should be from the top of the screen, if None then the modal will be vertically centered
     pub top_offset: Option<Pixels>,
     /// The function run when the closing button is pressed
-    pub on_close: Option<Box<dyn Fn(&MouseDownEvent, &mut Window, &mut App) + 'static>>,
+    pub on_close: Option<Arc<dyn Fn(&MouseDownEvent, &mut Window, &mut App) + 'static>>,
     /// Whether clicking the backdrop should close the modal
     pub backdrop_close: bool,
 }
@@ -83,7 +87,7 @@ impl Render for Modal {
                     .w(window.viewport_size().width)
                     .h(window.viewport_size().height)
                     .when(self.backdrop_close, |_self| {
-                        _self.on_mouse_down(MouseButton::Left, |e, window, cx| {
+                        _self.on_mouse_down(MouseButton::Left, |_, window, cx| {
                             window.close_modal(cx)
                         })
                     })
@@ -115,14 +119,18 @@ impl Render for Modal {
                                     .flex_row()
                                     .h(Length::from(DefiniteLength::Fraction(0.1)))
                                     .when(self.accept_button.show, |_self| {
+                                        let oc = self.accept_button.on_click.clone();
+
                                         _self.child(
                                             Button::new()
                                                 .h(Size::Px(20.0))
                                                 .colour(&self.accept_button.colour)
+                                                .pa(self.accept_button.padding)
                                                 .text_colour(Colour::Rgb(0xffffff))
                                                 .text(&self.accept_button.text)
                                                 .border_width(self.accept_button.border_width)
                                                 .w_full()
+                                                .justify_content(TextPosition::Centre)
                                                 .border_colour(
                                                     if self.accept_button.border_colour.is_none() {
                                                         Colour::Rgba(0x00000000)
@@ -133,19 +141,31 @@ impl Render for Modal {
                                                             .unwrap()
                                                     },
                                                 )
+                                                .when_some(self.accept_button.hover_colour.clone(), |_self, colour| {
+                                                    _self.hover_colour(colour)
+                                                })
                                                 .rounding_all(self.accept_button.rounding)
+                                                .on_click(move |e, _window, _cx| {
+                                                    let _oc = oc
+                                                        .clone()
+                                                        .unwrap_or(Arc::new(|_, _, _| {}));
+                                                    _oc(e, _window, _cx)
+                                                })
                                                 .render(window, cx),
                                         )
                                     })
                                     .when(self.cancel_button.show, |_self| {
+                                        let oc = self.cancel_button.on_click.clone();
                                         _self.child(
                                             Button::new()
                                                 .h(Size::Px(20.0))
                                                 .colour(&self.cancel_button.colour)
+                                                .pa(self.accept_button.padding)
                                                 .text_colour(Colour::Rgb(0xffffff))
                                                 .text(&self.cancel_button.text)
                                                 .border_width(self.cancel_button.border_width)
                                                 .w_full()
+                                                .justify_content(TextPosition::Centre)
                                                 .border_colour(
                                                     if self.cancel_button.border_colour.is_none() {
                                                         Colour::Rgba(0x00000000)
@@ -156,8 +176,16 @@ impl Render for Modal {
                                                             .unwrap()
                                                     },
                                                 )
+                                                .when_some(self.cancel_button.hover_colour.clone(), |_self, colour| {
+                                                    _self.hover_colour(colour)
+                                                })
                                                 .rounding_all(self.cancel_button.rounding)
-                                                //.on_click(self.cancel_button.on_click.unwrap_or(Box::new(|_, _, _| {})))
+                                                .on_click(move |e, _window, _cx| {
+                                                    let _oc = oc
+                                                        .clone()
+                                                        .unwrap_or(Arc::new(|_, _, _| {}));
+                                                    _oc(e, _window, _cx)
+                                                })
                                                 .render(window, cx),
                                         )
                                     }),
@@ -244,7 +272,7 @@ impl Modal {
         mut self,
         handler: impl Fn(&MouseDownEvent, &mut Window, &mut App) + 'static,
     ) -> Self {
-        self.on_close = Some(Box::new(handler));
+        self.on_close = Some(Arc::new(handler));
         self
     }
     /// Toggle whether clicking the backdrop should close the modal, default is true
@@ -268,6 +296,8 @@ impl Default for Modal {
                 show: true,
                 text: "Accept".to_string(),
                 colour: Colour::Rgb(0xffffff),
+                hover_colour: None,
+                padding: Size::Px(0.0),
                 rounding: Size::Px(0.0),
                 border_width: Size::Px(0.0),
                 border_colour: None,
@@ -277,6 +307,8 @@ impl Default for Modal {
                 show: true,
                 text: "Cancel".to_string(),
                 colour: Colour::Rgb(0xffffff),
+                hover_colour: None,
+                padding: Size::Px(0.0),
                 rounding: Size::Px(0.0),
                 border_width: Size::Px(0.0),
                 border_colour: None,

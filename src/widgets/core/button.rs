@@ -1,4 +1,3 @@
-use std::sync::Arc;
 use crate::widgets::styling::{Colour, Size};
 use crate::{margin, padding, rounding};
 use gpui::prelude::FluentBuilder;
@@ -6,7 +5,7 @@ use gpui::{
     App, Context, Hsla, InteractiveElement, IntoElement, MouseButton, MouseDownEvent,
     ParentElement, Render, RenderOnce, Rgba, Styled, Window, div, rgb,
 };
-use gpui::private::schemars::_private::NoSerialize;
+use std::sync::Arc;
 
 #[derive(Clone)]
 pub enum TextPosition {
@@ -207,13 +206,11 @@ impl Button {
         self.border_width = w;
         self
     }
-
     /// Padding in pixels, ordered as (top, right, bottom, left), you can use the padding!() macro to convert a single value or x and y value to this form.
     pub fn p(mut self, padding: (Size, Size, Size, Size)) -> Self {
         self.padding = padding;
         self
     }
-
     /// Sets the padding for the left and right sides of the button.
     pub fn px(mut self, padding: Size) -> Self {
         self.padding = (
@@ -224,7 +221,6 @@ impl Button {
         );
         self
     }
-
     /// Sets the padding for the top and bottom of the button.
     pub fn py(mut self, padding: Size) -> Self {
         self.padding = (
@@ -235,7 +231,6 @@ impl Button {
         );
         self
     }
-
     /// Padding for all sides, given as a single Size value.
     pub fn pa(mut self, padding: Size) -> Self {
         self.margin = (
@@ -246,25 +241,21 @@ impl Button {
         );
         self
     }
-
     /// Margin in pixels, ordered as (top, right, bottom, left)
     pub fn m(mut self, margin: (Size, Size, Size, Size)) -> Self {
         self.margin = margin;
         self
     }
-
     /// Sets the margin for the left and right sides of the button.
     pub fn mx(mut self, margin: Size) -> Self {
         self.margin = (self.margin.0, margin.clone(), self.margin.2, margin.clone());
         self
     }
-
     /// Sets the margin for the top and bottom of the button.
     pub fn my(mut self, margin: Size) -> Self {
         self.margin = (margin.clone(), self.margin.1, margin.clone(), self.margin.3);
         self
     }
-
     /// Margin for all sides, given as a single Size value.
     pub fn ma(mut self, margin: Size) -> Self {
         self.margin = (
@@ -275,20 +266,50 @@ impl Button {
         );
         self
     }
-
+    /// Disable button
     fn disable(mut self) -> Self {
         self.disabled = true;
         self
     }
-
+    /// Enable button
     fn enable(mut self) -> Self {
         self.disabled = false;
         self
     }
-
+    /// Toggle the button
     fn toggle(mut self) -> Self {
         self.disabled = !self.disabled;
         self
+    }
+    // Mimic gpuis conditional functionality
+    /// The callback is run if the predicate is true
+    pub fn when(mut self, predicate: bool, callback: impl FnOnce(Self) -> Self) -> Self {
+        if predicate {
+            callback(self)
+        } else {
+            self
+        }
+    }
+    /// The callback is run if the predicate is true
+    pub fn when_some<T>(mut self, option: Option<T>, callback: impl FnOnce(Self, T) -> Self) -> Self {
+        if option.is_some() {
+            callback(self, option.unwrap())
+        } else {
+            self
+        }
+    }
+    /// The callback is run if the predicate is true
+    pub fn when_else(
+        mut self,
+        predicate: bool,
+        true_callback: impl FnOnce(Self) -> Self,
+        false_callback: impl FnOnce(Self) -> Self,
+    ) -> Self {
+        if predicate {
+            true_callback(self)
+        } else {
+            false_callback(self)
+        }
     }
 }
 

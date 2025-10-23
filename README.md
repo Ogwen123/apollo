@@ -8,6 +8,7 @@ A rust testing tool written in rust using [gpui](https://gpui.rs) and my custom 
  - [ ] make an SVG icon button widget
  - [x] add helper functions to state to make adding, removing projects etc
  - [ ] allow setting border width on individual sides in the button widget
- - [ ] make generic modal widget
-   - [ ] add on_click callbacks to the modals buttons
+ - [x] make generic modal widget
+   - [x] add on_click callbacks to the modals buttons
+   - [ ] add close button to modal
  - [ ] switch passing the style to each component to use cx.theme() instead
