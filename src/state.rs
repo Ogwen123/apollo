@@ -1,4 +1,5 @@
 use crate::utils::logger::warning;
+use cargo_ptest::parse::ParsedTestGroup;
 use gpui::{App, Global};
 use std::fmt;
 use std::fmt::{Debug, Display, Formatter};
@@ -11,11 +12,16 @@ use std::sync::Arc;
 pub struct Project {
     pub id: u32,
     pub path: PathBuf,
+    pub tests: Option<Vec<ParsedTestGroup>>,
 }
 
 impl Project {
     pub fn new(id: u32, path: PathBuf) -> Self {
-        Self { id, path }
+        Self {
+            id,
+            path,
+            tests: None,
+        }
     }
 
     pub fn display_name(&self) -> String {
@@ -35,13 +41,15 @@ impl Project {
     }
 
     pub fn path_string(&self) -> String {
-        match self.path.clone().into_os_string().into_string() {
-            Ok(res) => res,
-            Err(err) => {
+        self.path
+            .clone()
+            .into_os_string()
+            .into_string()
+            .unwrap_or_else(|err| {
                 warning!("Could not get string from project path.");
+                println!("{:?}", err);
                 String::from("ERROR")
-            }
-        }
+            })
     }
 }
 
@@ -50,6 +58,7 @@ impl Default for Project {
         Self {
             id: 0, // A 0 id for a project or for State::active_project means inactive
             path: PathBuf::new(),
+            tests: None,
         }
     }
 }
@@ -147,6 +156,12 @@ impl State {
             .iter()
             .filter_map(|x| if x.id != id { Some(x.clone()) } else { None })
             .collect::<Vec<Project>>();
+        if id == self.active_project {
+            match self.open_projects.projects.first() {
+                Some(proj) => self.set_active_project(proj.id),
+                None => self.set_active_project(0)
+            }
+        }
     }
     pub fn set_active_project(&mut self, id: u32) {
         if self

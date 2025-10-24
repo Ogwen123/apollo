@@ -728,9 +728,9 @@ dependencies = [
 
 [[package]]
 name = "cargo-ptest"
-version = "1.0.0"
+version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bbd34723b73c009c3e8d9a00dfd3e2004e1220e847d2ea975538ac597d9871fb"
+checksum = "36addca611b5f4e3818b4fe89a4477f3c1383e9586ab0c3c428ee3ac0054b836"
 dependencies = [
  "regex",
 ]

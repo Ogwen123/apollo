@@ -28,8 +28,13 @@ impl Render for TabBarItem {
             .min_w(px(100f32))
             .max_w(px(300f32))
             .h(cx.style().tabbar.height.get())
-            .p(px(4.0))
+            .pl(px(4.0))
             .child(self.name.clone())
+            .when(self.active, |_self| {
+                _self
+                    .border_b_4()
+                    .border_color(&cx.style().secondary_colour)
+            })
             .when_else(
                 self.active,
                 |_self| _self.bg(&cx.style().tabbar.active_colour),
@@ -46,28 +51,41 @@ impl Render for TabBarItem {
                     window.refresh()
                 })
             })
-            .border_r_1()
-            .border_color(&cx.style().separator_colour)
             .child(
-                Button::new()
-                    .text(String::from("x"))
-                    .text_colour(&cx.style().text_colour)
-                    .justify_content(TextPosition::Centre)
-                    .align_text(TextPosition::Centre)
-                    .w(Size::Px(20.0))
-                    .h(Size::Px(20.0))
-                    .mx(cx.style().margin)
-                    .colour(Colour::Rgba(0x00000000))
-                    .hover_colour(Colour::Rgba(0xffffff22))
-                    .rounding_all(Size::Px(100.0))
-                    .on_click(move |e, window, _cx| {
-                        _cx.update_global::<State, ()>(|global, _| {
-                            global.remove_project(id);
-                            println!("removed");
-                            window.refresh()
-                        })
-                    })
-                    .render(window, cx),
+                div()
+                    .flex()
+                    .flex_row()
+                    .h_full()
+                    .items_center()
+                    .child(
+                        Button::new()
+                            .text(String::from("x"))
+                            .text_colour(&cx.style().text_colour)
+                            .justify_content(TextPosition::Centre)
+                            .align_text(TextPosition::Centre)
+                            .w(Size::Px(20.0))
+                            .h(Size::Px(20.0))
+                            .mx(cx.style().margin)
+                            .colour(Colour::Rgba(0x00000000))
+                            .hover_colour(Colour::Rgba(0xffffff22))
+                            .rounding_all(Size::Px(100.0))
+                            .on_click(move |e, window, _cx| {
+                                _cx.update_global::<State, ()>(|global, _| {
+                                    global.remove_project(id);
+                                    println!("removed");
+                                    window.refresh()
+                                })
+                            })
+                            .render(window, cx),
+                    )
+                    .child(
+                        div()
+                            .w(px(1.0))
+                            .h_full()
+                            .bg(&cx.style().separator_colour)
+                            .p(px(0.0))
+                            .m(px(0.0)),
+                    ),
             )
     }
 }

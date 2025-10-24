@@ -4,6 +4,6 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-cargo-ptest = "1.0.0"
+cargo-ptest = "1.1.2"
 gpui = "0.2.0"
 zed-util = "0.2.0"

@@ -1,8 +1,10 @@
 use crate::components::control_bar::ControlBar;
 use crate::components::tab_bar::TabBar;
+use crate::components::tests::Tests;
 use crate::state::{State, StateProvider};
+use crate::style::StyleProvider;
 use gpui::prelude::FluentBuilder;
-use gpui::{AppContext, Context, IntoElement, ParentElement, Render, Styled, Window, div};
+use gpui::{AppContext, Context, IntoElement, ParentElement, Render, Styled, Window, div, px, rgb};
 
 pub struct Workspace {}
 
@@ -16,18 +18,23 @@ impl Render for Workspace {
             .h_full()
             .w_full()
             .when(projects.len() > 0, |_self| {
-                _self.child(cx.new(|_| TabBar {}))
-            })
-            .when(projects.len() > 0, |_self| {
-                _self.child(cx.new(|_| ControlBar {}))
+                _self
+                    .child(cx.new(|_| TabBar {}))
+                    .child(cx.new(|_| ControlBar {}))
+                    .child(cx.new(|_| Tests {}))
             })
             .when(projects.len() == 0, |_self| {
-                _self.child("Open a project to start")
+                _self.child(
+                    div()
+                        .flex()
+                        .h_full()
+                        .w_full()
+                        .justify_center()
+                        .items_center()
+                        .text_size(px(50.0))
+                        .text_color(&cx.style().sub_text_colour)
+                        .child("Open a project to start"),
+                )
             })
-            .children(
-                projects
-                    .iter()
-                    .map(|x| div().child(format!("{:?}", x.path))),
-            )
     }
 }
