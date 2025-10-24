@@ -1,8 +1,9 @@
 use crate::utils::logger::warning;
-use gpui::Global;
+use gpui::{App, Global};
 use std::fmt;
 use std::fmt::{Debug, Display, Formatter};
 use std::path::PathBuf;
+use std::sync::Arc;
 // PROJECT
 
 #[derive(Clone)]
@@ -30,6 +31,25 @@ impl Project {
                 warning!("Could not get string from project path.");
                 String::from("ERROR")
             }
+        }
+    }
+
+    pub fn path_string(&self) -> String {
+        match self.path.clone().into_os_string().into_string() {
+            Ok(res) => res,
+            Err(err) => {
+                warning!("Could not get string from project path.");
+                String::from("ERROR")
+            }
+        }
+    }
+}
+
+impl Default for Project {
+    fn default() -> Self {
+        Self {
+            id: 0, // A 0 id for a project or for State::active_project means inactive
+            path: PathBuf::new(),
         }
     }
 }
@@ -142,6 +162,36 @@ impl State {
             return;
         }
         self.active_project = id;
+    }
+    pub fn get_active_project(&self) -> Option<Project> {
+        let search = self
+            .open_projects
+            .projects
+            .iter()
+            .filter_map(|x| {
+                if x.id == self.active_project {
+                    Some(x.clone())
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<Project>>();
+        if search.len() == 1 {
+            Some(search[0].clone())
+        } else {
+            None
+        }
+    }
+}
+
+/// A trait for simplifying read-only access to global state
+pub trait StateProvider {
+    fn state(&self) -> &State;
+}
+
+impl StateProvider for App {
+    fn state(&self) -> &State {
+        self.global::<State>()
     }
 }
 

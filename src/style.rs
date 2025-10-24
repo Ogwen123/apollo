@@ -12,6 +12,8 @@ use std::sync::Arc;
 pub struct ToolBarStyle {
     /// Height of the status bar
     pub height: Size,
+    /// Height of the buttons in the toolbar, should be less than the height
+    pub button_height: Size,
     /// Background colour of the status bar
     pub bg_colour: Colour,
 }
@@ -39,10 +41,23 @@ pub struct TabBarStyle {
 }
 
 #[derive(Clone)]
+/// Contains all the styling specific to the control bar just under the tab bar
+pub struct ControlBarStyle {
+    /// Height of the control bar
+    pub height: Size,
+    /// Height of the buttons in the control bar
+    pub button_height: Size,
+    /// Background colour of the control bar
+    pub bg_colour: Colour,
+}
+
+#[derive(Clone)]
 /// Top level style struct
 pub struct Style {
     /// Text colour
     pub text_colour: Colour,
+    /// Text colour that is slightly more muted than the main text colour
+    pub sub_text_colour: Colour,
     /// Background colour
     pub bg_colour: Colour,
     /// Primary colour for interactive elements like buttons
@@ -67,12 +82,15 @@ pub struct Style {
     pub statusbar: StatusBarStyle,
     /// Styling for the tab bar, which is just under the toolbar
     pub tabbar: TabBarStyle,
+    /// Styling for the control bar, which is just under the tab bar
+    pub controlbar: ControlBarStyle,
 }
 
 impl Default for ToolBarStyle {
     fn default() -> Self {
         Self {
             height: Size::Px(40.0),
+            button_height: Size::Px(30.0),
             bg_colour: Colour::Rgb(0x2b2d30),
         }
     }
@@ -98,10 +116,21 @@ impl Default for TabBarStyle {
     }
 }
 
+impl Default for ControlBarStyle {
+    fn default() -> Self {
+        Self {
+            height: Size::Px(40.0),
+            button_height: Size::Px(30.0),
+            bg_colour: Colour::Rgb(0x1e1f22),
+        }
+    }
+}
+
 impl Default for Style {
     fn default() -> Self {
         Self {
             text_colour: Colour::Rgb(0xffffff),
+            sub_text_colour: Colour::Rgba(0xffffffbb),
             bg_colour: Colour::Rgb(0x1e1f22),
             primary_colour: Colour::Rgb(0x2563eb),
             hover_primary_colour: Colour::Rgb(0x1b46a6),
@@ -114,6 +143,7 @@ impl Default for Style {
             toolbar: Default::default(),
             statusbar: Default::default(),
             tabbar: Default::default(),
+            controlbar: Default::default(),
         }
     }
 }

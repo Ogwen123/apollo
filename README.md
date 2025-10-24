@@ -11,4 +11,5 @@ A rust testing tool written in rust using [gpui](https://gpui.rs) and my custom 
  - [x] make generic modal widget
    - [x] add on_click callbacks to the modals buttons
    - [ ] add close button to modal
- - [ ] switch passing the style to each component to use cx.theme() instead
+ - [x] switch passing the style to each component to use cx.global struct
+ - [ ] add Into traits to Size

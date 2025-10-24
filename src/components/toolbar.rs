@@ -12,7 +12,6 @@ use gpui::{
 use gpui::{BorrowAppContext, RenderOnce};
 use zed_util::ResultExt;
 
-const BUTTON_HEIGHT: Size = Size::Px(30f32);
 const BUTTON_HOVER_COLOUR: u32 = 0xffffff22;
 
 pub struct ToolBar {}
@@ -45,7 +44,7 @@ impl Render for ToolBar {
                         .justify_content(TextPosition::Centre)
                         .align_text(TextPosition::Centre)
                         .w(Size::Px(100.0))
-                        .h(BUTTON_HEIGHT)
+                        .h(cx.style().toolbar.button_height)
                         .mx(cx.style().margin)
                         .colour(&cx.style().toolbar.bg_colour)
                         .hover_colour(Colour::Rgba(BUTTON_HOVER_COLOUR))
@@ -104,7 +103,7 @@ impl Render for ToolBar {
                         .justify_content(TextPosition::Centre)
                         .align_text(TextPosition::Centre)
                         .w(Size::Px(60f32))
-                        .h(BUTTON_HEIGHT)
+                        .h(cx.style().toolbar.button_height)
                         .mx(cx.style().margin)
                         .colour(&cx.style().toolbar.bg_colour)
                         .hover_colour(Colour::Rgba(BUTTON_HOVER_COLOUR))
@@ -143,8 +142,8 @@ impl Render for ToolBar {
                         .text_colour(&cx.style().text_colour)
                         .justify_content(TextPosition::Centre)
                         .align_text(TextPosition::Centre)
-                        .w(BUTTON_HEIGHT) // make the button a circle
-                        .h(BUTTON_HEIGHT)
+                        .w(cx.style().toolbar.button_height) // make the button a circle
+                        .h(cx.style().toolbar.button_height)
                         .mx(cx.style().margin.clone())
                         .colour(&cx.style().toolbar.bg_colour)
                         .hover_colour(Colour::Rgba(BUTTON_HOVER_COLOUR))

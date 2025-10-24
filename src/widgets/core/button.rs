@@ -233,7 +233,7 @@ impl Button {
     }
     /// Padding for all sides, given as a single Size value.
     pub fn pa(mut self, padding: Size) -> Self {
-        self.margin = (
+        self.padding = (
             padding.clone(),
             padding.clone(),
             padding.clone(),
@@ -284,14 +284,14 @@ impl Button {
     // Mimic gpuis conditional functionality
     /// The callback is run if the predicate is true
     pub fn when(mut self, predicate: bool, callback: impl FnOnce(Self) -> Self) -> Self {
-        if predicate {
-            callback(self)
-        } else {
-            self
-        }
+        if predicate { callback(self) } else { self }
     }
     /// The callback is run if the predicate is true
-    pub fn when_some<T>(mut self, option: Option<T>, callback: impl FnOnce(Self, T) -> Self) -> Self {
+    pub fn when_some<T>(
+        mut self,
+        option: Option<T>,
+        callback: impl FnOnce(Self, T) -> Self,
+    ) -> Self {
         if option.is_some() {
             callback(self, option.unwrap())
         } else {

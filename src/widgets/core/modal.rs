@@ -141,9 +141,10 @@ impl Render for Modal {
                                                             .unwrap()
                                                     },
                                                 )
-                                                .when_some(self.accept_button.hover_colour.clone(), |_self, colour| {
-                                                    _self.hover_colour(colour)
-                                                })
+                                                .when_some(
+                                                    self.accept_button.hover_colour.clone(),
+                                                    |_self, colour| _self.hover_colour(colour),
+                                                )
                                                 .rounding_all(self.accept_button.rounding)
                                                 .on_click(move |e, _window, _cx| {
                                                     let _oc = oc
@@ -176,9 +177,10 @@ impl Render for Modal {
                                                             .unwrap()
                                                     },
                                                 )
-                                                .when_some(self.cancel_button.hover_colour.clone(), |_self, colour| {
-                                                    _self.hover_colour(colour)
-                                                })
+                                                .when_some(
+                                                    self.cancel_button.hover_colour.clone(),
+                                                    |_self, colour| _self.hover_colour(colour),
+                                                )
                                                 .rounding_all(self.cancel_button.rounding)
                                                 .on_click(move |e, _window, _cx| {
                                                     let _oc = oc
