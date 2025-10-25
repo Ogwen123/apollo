@@ -1,7 +1,8 @@
 use crate::state::State;
 use crate::style::{Size, Style, StyleProvider};
 use crate::widgets::core::button::{Button, TextPosition};
-use crate::widgets::styling::Colour;
+use crate::widgets::core::divider::Divider;
+use crate::widgets::styling::{Colour, Direction};
 use gpui::prelude::FluentBuilder;
 use gpui::{
     AppContext, BorrowAppContext, Context, InteractiveElement, IntoElement, MouseButton,
@@ -79,12 +80,11 @@ impl Render for TabBarItem {
                             .render(window, cx),
                     )
                     .child(
-                        div()
-                            .w(px(1.0))
-                            .h_full()
-                            .bg(&cx.style().separator_colour)
-                            .p(px(0.0))
-                            .m(px(0.0)),
+                        Divider::new()
+                            .colour(&cx.style().separator_colour)
+                            .thickness(1.0)
+                            .direction(Direction::Vertical)
+                            .render(window, cx),
                     ),
             )
     }

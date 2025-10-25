@@ -91,11 +91,20 @@ impl Display for OpenProjects {
     }
 }
 
-// MODALS
+// STATUS
+
 #[derive(Clone)]
-/// Stores the state of all the modals in the app
-pub struct Modals {
-    pub about: bool,
+/// Stores information for what to display on the status bar
+pub struct Status {
+    pub running_tests: bool,
+}
+
+impl Default for Status {
+    fn default() -> Self {
+        Self {
+            running_tests: false,
+        }
+    }
 }
 
 // STATE
@@ -106,8 +115,9 @@ pub struct State {
     /// All of the currently open projects
     pub open_projects: OpenProjects,
     pub active_project: u32,
-    pub modals: Modals,
+    pub status: Status,
 }
+
 impl State {
     pub fn has_path(&self, path: &PathBuf) -> bool {
         !self
@@ -159,7 +169,7 @@ impl State {
         if id == self.active_project {
             match self.open_projects.projects.first() {
                 Some(proj) => self.set_active_project(proj.id),
-                None => self.set_active_project(0)
+                None => self.set_active_project(0),
             }
         }
     }
@@ -196,6 +206,42 @@ impl State {
         } else {
             None
         }
+    }
+    pub fn has_active_project(&self) -> bool {
+        self.get_active_project().is_some()
+    }
+    pub fn set_tests(&mut self, id: u32, tests: Vec<ParsedTestGroup>) {
+        self.open_projects.projects = self
+            .open_projects
+            .projects
+            .clone()
+            .into_iter()
+            .map(|x| {
+                if x.id == id {
+                    Project {
+                        tests: Some(tests.clone()),
+                        ..x
+                    }
+                } else {
+                    x
+                }
+            })
+            .collect::<Vec<Project>>();
+    }
+    pub fn clear_tests(&mut self, id: u32) {
+        self.open_projects.projects = self
+            .open_projects
+            .projects
+            .clone()
+            .into_iter()
+            .map(|x| {
+                if x.id == id {
+                    Project { tests: None, ..x }
+                } else {
+                    x
+                }
+            })
+            .collect::<Vec<Project>>();
     }
 }
 

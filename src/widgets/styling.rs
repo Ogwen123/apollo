@@ -110,3 +110,9 @@ impl Size {
         }
     }
 }
+
+#[derive(PartialEq)]
+pub enum Direction {
+    Horizontal,
+    Vertical,
+}

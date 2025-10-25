@@ -8,10 +8,9 @@ mod widgets;
 use crate::components::status_bar::StatusBar;
 use crate::components::toolbar::ToolBar;
 use crate::components::workspace::Workspace;
-use crate::state::{Modals, OpenProjects, State};
+use crate::state::{OpenProjects, State};
 use crate::style::{GlobalStyle, Style, StyleProvider};
 use crate::widgets::core::modal::Modal;
-use crate::widgets::styling::{Colour, Size};
 use gpui::{
     App, Application, Bounds, Context, Window, WindowBounds, WindowOptions, div, prelude::*, px,
     size,
@@ -97,13 +96,11 @@ fn main() {
             ..Default::default()
         };
 
-        let modals = Modals { about: false };
-
         cx.open_window(window_options, |_, cx| {
             let state = State {
                 open_projects: OpenProjects::new(),
                 active_project: 0,
-                modals,
+                status: Default::default(),
             };
 
             cx.set_global(state);
