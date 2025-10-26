@@ -111,6 +111,12 @@ impl Size {
     }
 }
 
+impl From<f32> for Size {
+    fn from(value: f32) -> Self {
+        Size::Px(value)
+    }
+}
+
 #[derive(PartialEq)]
 pub enum Direction {
     Horizontal,

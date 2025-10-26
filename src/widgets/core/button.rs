@@ -207,8 +207,8 @@ impl Button {
         self
     }
     /// Padding in pixels, ordered as (top, right, bottom, left), you can use the padding!() macro to convert a single value or x and y value to this form.
-    pub fn p(mut self, padding: (Size, Size, Size, Size)) -> Self {
-        self.padding = padding;
+    pub fn p<T: Into<Size>, R: Into<Size>, B: Into<Size>, L: Into<Size>>(mut self, padding: (T, R, B, L)) -> Self {
+        self.padding = (padding.0.into(), padding.1.into(), padding.2.into(), padding.3.into());
         self
     }
     /// Sets the padding for the left and right sides of the button.

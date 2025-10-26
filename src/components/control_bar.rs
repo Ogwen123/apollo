@@ -40,7 +40,7 @@ impl Render for ControlBar {
                     .text_sm()
                     .text_color(&cx.style().sub_text_colour)
                     .ml(cx.style().margin.get())
-                    .pb(px(2.0))
+                    .py(px(2.0))
                     .children({
                         split_path.iter().enumerate().map(|(index, x)| {
                             div()
@@ -51,6 +51,7 @@ impl Render for ControlBar {
                                         .hover(|style|
                                             style
                                                 .bg(&cx.style().primary_colour)
+                                                .opacity(0.75)
                                         )
                                         .rounded(px(4.0))
                                         .on_mouse_down(MouseButton::Left, move |e, _window, _cx| {
@@ -82,10 +83,18 @@ impl Render for ControlBar {
                     }),
             )
             .child(
+                Divider::new()
+                    .direction(Direction::Horizontal)
+                    .colour(&cx.style().separator_colour)
+                    .thickness(1.0)
+                    .render(window, cx)
+            )
+            .child(
                 div()
                     .flex()
                     .flex_row()
                     .border_b_1()
+                    .items_center()
                     .h(cx.style().controlbar.height.get())
                     .w_full()
                     .bg(&cx.style().controlbar.bg_colour)
@@ -96,7 +105,6 @@ impl Render for ControlBar {
                             .justify_content(TextPosition::Centre)
                             .align_text(TextPosition::Centre)
                             .rounding_all(cx.style().rounding)
-                            .pa(cx.style().padding)
                             .mx(cx.style().margin)
                             .h(cx.style().controlbar.button_height)
                             .colour(&cx.style().primary_colour)
@@ -108,7 +116,7 @@ impl Render for ControlBar {
                                     global.status.running_tests = true;
                                 });
                                 _window.refresh();
-                                set_current_dir(_cx.state().get_active_project().unwrap().path);
+                                let _ = set_current_dir(_cx.state().get_active_project().unwrap().path);
                                 match run(
                                     Some(Config {
                                         debug: true,
@@ -140,7 +148,6 @@ impl Render for ControlBar {
                             .justify_content(TextPosition::Centre)
                             .align_text(TextPosition::Centre)
                             .rounding_all(cx.style().rounding)
-                            .pa(cx.style().padding)
                             .mx(cx.style().margin)
                             .h(cx.style().controlbar.button_height)
                             .colour(&cx.style().bg_colour)
