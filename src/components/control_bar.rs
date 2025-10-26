@@ -6,11 +6,13 @@ use crate::widgets::core::divider::Divider;
 use crate::widgets::styling::Direction;
 use cargo_ptest::config::Config;
 use cargo_ptest::run::run;
+use gpui::prelude::FluentBuilder;
 use gpui::{
-    BorrowAppContext, Context, IntoElement, ParentElement, Render, RenderOnce, Styled, Window, div,
-    px,
+    BorrowAppContext, Context, Element, ElementId, InteractiveElement, IntoElement, MouseButton,
+    ParentElement, Render, RenderOnce, Styled, Window, div, px,
 };
 use std::env::set_current_dir;
+use std::path::PathBuf;
 
 pub struct ControlBar {}
 
@@ -38,16 +40,44 @@ impl Render for ControlBar {
                     .text_sm()
                     .text_color(&cx.style().sub_text_colour)
                     .ml(cx.style().margin.get())
+                    .pb(px(2.0))
                     .children({
                         split_path.iter().enumerate().map(|(index, x)| {
-                            div().child(
-                                x.to_string()
-                                    + if index == split_path.len() - 1 {
-                                        ""
-                                    } else {
-                                        " > "
-                                    },
-                            )
+                            div()
+                                .flex()
+                                .flex_row()
+                                .child(
+                                    div()
+                                        .hover(|style|
+                                            style
+                                                .bg(&cx.style().primary_colour)
+                                        )
+                                        .rounded(px(4.0))
+                                        .on_mouse_down(MouseButton::Left, move |e, _window, _cx| {
+                                            let sp = _cx
+                                                .state()
+                                                .get_active_project()
+                                                .unwrap_or(Project::default())
+                                                .path_string()
+                                                .split(&['/', '\\'][..])
+                                                .map(|x| x.to_string())
+                                                .filter(|x| x.len() > 0)
+                                                .collect::<Vec<String>>();
+
+                                            let mut buffer = PathBuf::from("/");
+
+                                            for (loc, i) in sp.iter().enumerate() {
+                                                buffer = buffer.join(i);
+                                                if loc == index {
+                                                    break;
+                                                }
+                                            }
+                                            println!("{:?}", buffer);
+                                            _cx.open_with_system(buffer.as_path());
+                                        })
+                                        .child(x.to_string()),
+                                )
+                                .when(index != split_path.len() - 1, |_self| _self.child(">"))
                         })
                     }),
             )
@@ -148,7 +178,9 @@ impl Render for ControlBar {
                             .text_colour(&cx.style().text_colour)
                             .on_click(|e, _window, _cx| {
                                 if _cx.state().has_active_project() {
-                                    _cx.open_with_system(_cx.state().get_active_project().unwrap().path.as_path())
+                                    _cx.open_with_system(
+                                        _cx.state().get_active_project().unwrap().path.as_path(),
+                                    )
                                 }
                             })
                             .render(window, cx),
