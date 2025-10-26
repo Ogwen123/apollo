@@ -4,14 +4,15 @@ use gpui::{App, Global};
 use std::fmt;
 use std::fmt::{Debug, Display, Formatter};
 use std::path::PathBuf;
-use std::sync::Arc;
+use serde::Serialize;
 // PROJECT
 
-#[derive(Clone)]
+#[derive(Clone, Serialize)]
 /// Stores data about open projects
 pub struct Project {
     pub id: u32,
     pub path: PathBuf,
+    #[serde(skip_serializing)]
     pub tests: Option<Vec<ParsedTestGroup>>,
 }
 
@@ -69,31 +70,9 @@ impl Debug for Project {
     }
 }
 
-// OPEN PROJECTS
-
-#[derive(Clone)]
-/// Stores all the open projects
-pub struct OpenProjects {
-    pub projects: Vec<Project>,
-}
-
-impl OpenProjects {
-    pub(crate) fn new() -> OpenProjects {
-        OpenProjects {
-            projects: Vec::new(),
-        }
-    }
-}
-
-impl Display for OpenProjects {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "Projects: {:?}", self.projects)
-    }
-}
-
 // STATUS
 
-#[derive(Clone)]
+#[derive(Clone, Serialize)]
 /// Stores information for what to display on the status bar
 pub struct Status {
     pub running_tests: bool,
@@ -109,11 +88,11 @@ impl Default for Status {
 
 // STATE
 
-#[derive(Clone)]
+#[derive(Clone, Serialize)]
 /// Stores the global state for the app
 pub struct State {
     /// All of the currently open projects
-    pub open_projects: OpenProjects,
+    pub open_projects: Vec<Project>,
     pub active_project: u32,
     pub status: Status,
 }
@@ -122,7 +101,6 @@ impl State {
     pub fn has_path(&self, path: &PathBuf) -> bool {
         !self
             .open_projects
-            .projects
             .iter()
             .filter(|x| &x.path == path)
             .next()
@@ -143,7 +121,6 @@ impl State {
 
         let id = self
             .open_projects
-            .projects
             .iter()
             .map(|x| x.id)
             .max()
@@ -152,22 +129,21 @@ impl State {
 
         let project = Project::new(id, path.clone());
 
-        self.open_projects.projects.push(project);
+        self.open_projects.push(project);
         self.active_project = id
     }
     pub fn add_project(&mut self, project: Project) {
-        self.open_projects.projects.push(project.clone());
+        self.open_projects.push(project.clone());
         self.active_project = project.id
     }
     pub fn remove_project(&mut self, id: u32) {
-        self.open_projects.projects = self
+        self.open_projects = self
             .open_projects
-            .projects
             .iter()
             .filter_map(|x| if x.id != id { Some(x.clone()) } else { None })
             .collect::<Vec<Project>>();
         if id == self.active_project {
-            match self.open_projects.projects.first() {
+            match self.open_projects.first() {
                 Some(proj) => self.set_active_project(proj.id),
                 None => self.set_active_project(0),
             }
@@ -176,7 +152,6 @@ impl State {
     pub fn set_active_project(&mut self, id: u32) {
         if self
             .open_projects
-            .projects
             .iter()
             .filter_map(|x| if x.id == id { Some(id) } else { None })
             .collect::<Vec<u32>>()
@@ -191,7 +166,6 @@ impl State {
     pub fn get_active_project(&self) -> Option<Project> {
         let search = self
             .open_projects
-            .projects
             .iter()
             .filter_map(|x| {
                 if x.id == self.active_project {
@@ -211,9 +185,8 @@ impl State {
         self.get_active_project().is_some()
     }
     pub fn set_tests(&mut self, id: u32, tests: Vec<ParsedTestGroup>) {
-        self.open_projects.projects = self
+        self.open_projects = self
             .open_projects
-            .projects
             .clone()
             .into_iter()
             .map(|x| {
@@ -229,9 +202,8 @@ impl State {
             .collect::<Vec<Project>>();
     }
     pub fn clear_tests(&mut self, id: u32) {
-        self.open_projects.projects = self
+        self.open_projects = self
             .open_projects
-            .projects
             .clone()
             .into_iter()
             .map(|x| {
@@ -260,6 +232,16 @@ impl Global for State {}
 
 impl Display for State {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "State {{\n  open_projects: {}\n}}", self.open_projects)
+        write!(f, "State {{\n  open_projects: {:?}\n}}", self.open_projects)
+    }
+}
+
+impl Default for State {
+    fn default() -> Self {
+        Self {
+            open_projects: Vec::new(),
+            active_project: 0,
+            status: Default::default(),
+        }
     }
 }

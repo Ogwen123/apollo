@@ -7,7 +7,7 @@ pub struct TabBar {}
 
 impl Render for TabBar {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        let projects = cx.state().clone().open_projects.projects;
+        let projects = cx.state().clone().open_projects;
 
         div()
             .flex()

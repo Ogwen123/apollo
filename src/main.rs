@@ -8,7 +8,7 @@ mod widgets;
 use crate::components::status_bar::StatusBar;
 use crate::components::toolbar::ToolBar;
 use crate::components::workspace::Workspace;
-use crate::state::{OpenProjects, State};
+use crate::state::{State};
 use crate::style::{GlobalStyle, Style, StyleProvider};
 use crate::widgets::core::modal::Modal;
 use gpui::{
@@ -96,15 +96,20 @@ fn main() {
             ..Default::default()
         };
 
-        cx.open_window(window_options, |_, cx| {
-            let state = State {
-                open_projects: OpenProjects::new(),
-                active_project: 0,
-                status: Default::default(),
-            };
+        // load previous state from file
 
-            cx.set_global(state);
-            cx.set_global(GlobalStyle(Arc::new(Style::default())));
+
+        cx.set_global(State::default());
+        cx.set_global(GlobalStyle(Arc::new(Style::default())));
+
+
+        cx.on_window_closed(|_cx| {
+            // save state to a file
+
+        });
+
+        cx.open_window(window_options, |_, cx| {
+
 
             cx.new(|_cx| Base { modals: Vec::new() })
         })

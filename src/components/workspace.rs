@@ -10,7 +10,7 @@ pub struct Workspace {}
 
 impl Render for Workspace {
     fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        let projects = cx.state().clone().open_projects.projects;
+        let projects = cx.state().clone().open_projects;
 
         div()
             .flex()

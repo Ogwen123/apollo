@@ -72,6 +72,8 @@ version = "0.1.0"
 dependencies = [
  "cargo-ptest",
  "gpui",
+ "serde",
+ "serde_json",
  "zed-util",
 ]
 
