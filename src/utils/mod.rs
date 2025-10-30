@@ -1,3 +1,3 @@
 pub(crate) mod logger;
 pub(crate) mod utils;
-mod file;
+pub(crate) mod file;

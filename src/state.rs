@@ -4,15 +4,16 @@ use gpui::{App, Global};
 use std::fmt;
 use std::fmt::{Debug, Display, Formatter};
 use std::path::PathBuf;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
+use crate::display_vec;
 // PROJECT
 
-#[derive(Clone, Serialize)]
+#[derive(Clone, Serialize, Deserialize)]
 /// Stores data about open projects
 pub struct Project {
     pub id: u32,
     pub path: PathBuf,
-    #[serde(skip_serializing)]
+    #[serde(skip_serializing, skip_deserializing)]
     pub tests: Option<Vec<ParsedTestGroup>>,
 }
 
@@ -67,6 +68,12 @@ impl Default for Project {
 impl Debug for Project {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "    Project {} at {:?}", self.id, self.path)
+    }
+}
+
+impl Display for Project {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "Project{{    id: {},\n    path: {:?},\n    tests: {:?}\n}}", self.id, self.path, display_vec!(self.tests.clone().unwrap_or(Vec::new())))
     }
 }
 
