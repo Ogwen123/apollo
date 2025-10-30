@@ -1,7 +1,7 @@
 use crate::style::{Colour, Size};
 use crate::widgets::styling::Direction;
 use gpui::prelude::FluentBuilder;
-use gpui::{App, IntoElement, Render, RenderOnce, Styled, Window, div};
+use gpui::{App, IntoElement, Render, RenderOnce, Styled, Window, div, px};
 
 pub struct Divider {
     /// The colour of the divider
@@ -10,14 +10,16 @@ pub struct Divider {
     direction: Direction,
     /// The thickness of the divider in pixels
     thickness: Size,
+    /// The margin on the divider, only applies in the dividers direction
+    margin: Size,
 }
 
 impl RenderOnce for Divider {
     fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
         div().bg(self.colour).when_else(
             self.direction == Direction::Horizontal,
-            |_self| _self.w_full().h(self.thickness.get()),
-            |_self| _self.h_full().w(self.thickness.get()),
+            |_self| _self.w_full().my(self.margin.get()).h(self.thickness.get()),
+            |_self| _self.h_full().mx(self.margin.get()).w(self.thickness.get()),
         )
     }
 }
@@ -41,6 +43,11 @@ impl Divider {
         self.thickness = Size::Px(thickness);
         self
     }
+    /// Margin in pixels
+    pub fn margin(mut self, margin: f32) -> Self {
+        self.margin = Size::Px(margin);
+        self
+    }
 }
 
 impl Default for Divider {
@@ -49,6 +56,7 @@ impl Default for Divider {
             colour: Colour::Rgb(0x000000),
             direction: Direction::Vertical,
             thickness: Size::Px(0.0),
+            margin: Size::Px(0.0),
         }
     }
 }

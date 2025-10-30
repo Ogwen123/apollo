@@ -1,4 +1,6 @@
+use crate::display_vec;
 use crate::state::{Project, State, Status};
+use crate::utils::logger::warning;
 use serde::{Deserialize, Serialize};
 use std::env::home_dir;
 use std::fmt::{Debug, Formatter};
@@ -6,11 +8,8 @@ use std::fs;
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::PathBuf;
-use crate::display_vec;
-use crate::utils::logger::warning;
 
 fn config_folder() -> Result<PathBuf, String> {
-
     match home_dir() {
         Some(res) => {
             // if the parent folder doesn't already exist then create it
@@ -18,7 +17,7 @@ fn config_folder() -> Result<PathBuf, String> {
 
             if !cfg_path.exists() {
                 match fs::create_dir_all(cfg_path.clone()) {
-                    Ok(_) => {},
+                    Ok(_) => {}
                     Err(err) => {
                         warning!("Failed when making config directory at {:?}", cfg_path);
                     }
@@ -26,7 +25,7 @@ fn config_folder() -> Result<PathBuf, String> {
             }
 
             Ok(cfg_path)
-        },
+        }
         None => {
             println!("Could not get home directory");
             Err(String::from("Could not get home dir."))
@@ -44,14 +43,19 @@ impl Default for SaveOpenProjects {
     fn default() -> Self {
         Self {
             open_projects: Vec::new(),
-            active_project: 0
+            active_project: 0,
         }
     }
 }
 
 impl Debug for SaveOpenProjects {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "SaveOpenProjects {{\n    open_projects: {:?},\n    active_project: {}\n}}", display_vec!(self.open_projects), self.active_project)
+        write!(
+            f,
+            "SaveOpenProjects {{\n    open_projects: {:?},\n    active_project: {}\n}}",
+            display_vec!(self.open_projects),
+            self.active_project
+        )
     }
 }
 
@@ -65,7 +69,7 @@ pub fn save_state(state: State) {
         Ok(res) => res,
         Err(err) => {
             println!("Could not serialise open_project data: {}", err);
-            return
+            return;
         }
     };
 
@@ -91,16 +95,15 @@ pub fn save_state(state: State) {
             match file.write_all(str.as_bytes()) {
                 Err(err) => {
                     println!("Could not write open projects to file: {}", err);
-                    return
+                    return;
                 }
                 _ => {}
             }
-
         }
         Err(_) => {
             warning!("Writing state to file failed.");
-            return
-        },
+            return;
+        }
     }
 }
 
@@ -109,13 +112,13 @@ pub fn load_state() -> State {
         Ok(mut res) => {
             res = res.join("open_projects.json");
             //open file
-            let mut file = match OpenOptions::new()
-                .read(true)
-                .open(res)
-            {
+            let mut file = match OpenOptions::new().read(true).open(res) {
                 Ok(res) => res,
                 Err(err) => {
-                    println!("Could not open open_projects file (load), using empty State: {}", err);
+                    println!(
+                        "Could not open open_projects file (load), using empty State: {}",
+                        err
+                    );
                     return State::default();
                 }
             };
@@ -123,14 +126,14 @@ pub fn load_state() -> State {
             let mut data: String = String::new();
             let _ = file.read_to_string(&mut data);
 
-            let saved_state: SaveOpenProjects = serde_json::from_str(data.as_str()).unwrap_or(SaveOpenProjects::default());
+            let saved_state: SaveOpenProjects =
+                serde_json::from_str(data.as_str()).unwrap_or(SaveOpenProjects::default());
 
             State {
                 open_projects: saved_state.open_projects,
                 active_project: saved_state.active_project,
-                status: Status::default()
+                status: Status::default(),
             }
-
         }
         Err(_) => State::default(),
     }

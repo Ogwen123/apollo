@@ -1,11 +1,11 @@
+use crate::display_vec;
 use crate::utils::logger::warning;
 use cargo_ptest::parse::ParsedTestGroup;
 use gpui::{App, Global};
+use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::fmt::{Debug, Display, Formatter};
 use std::path::PathBuf;
-use serde::{Deserialize, Serialize};
-use crate::display_vec;
 // PROJECT
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -73,7 +73,13 @@ impl Debug for Project {
 
 impl Display for Project {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "Project{{    id: {},\n    path: {:?},\n    tests: {:?}\n}}", self.id, self.path, display_vec!(self.tests.clone().unwrap_or(Vec::new())))
+        write!(
+            f,
+            "Project{{    id: {},\n    path: {:?},\n    tests: {:?}\n}}",
+            self.id,
+            self.path,
+            display_vec!(self.tests.clone().unwrap_or(Vec::new()))
+        )
     }
 }
 
@@ -126,13 +132,7 @@ impl State {
             return;
         }
 
-        let id = self
-            .open_projects
-            .iter()
-            .map(|x| x.id)
-            .max()
-            .unwrap_or(0)
-            + 1;
+        let id = self.open_projects.iter().map(|x| x.id).max().unwrap_or(0) + 1;
 
         let project = Project::new(id, path.clone());
 

@@ -10,10 +10,13 @@ use crate::components::toolbar::ToolBar;
 use crate::components::workspace::Workspace;
 use crate::state::{State, StateProvider};
 use crate::style::{GlobalStyle, Style, StyleProvider};
-use crate::widgets::core::modal::Modal;
-use gpui::{App, Application, Bounds, Context, Window, WindowBounds, WindowOptions, div, prelude::*, px, size, Task};
-use std::sync::Arc;
 use crate::utils::file::{load_state, save_state};
+use crate::widgets::core::modal::Modal;
+use gpui::{
+    App, Application, Bounds, Context, Task, Window, WindowBounds, WindowOptions, div, prelude::*,
+    px, size,
+};
+use std::sync::Arc;
 
 trait ModalHelper {
     fn open_modal(&mut self, cx: &mut App, modal: Modal);
@@ -100,18 +103,16 @@ fn main() {
         cx.set_global(state);
         cx.set_global(GlobalStyle(Arc::new(Style::default())));
 
-
-
-        let _ = cx.on_app_quit(|_cx| {
-            // save state to a file
-            println!("saving state");
-            save_state(_cx.state().clone());
-            return Task::ready(())
-        }).detach();
+        let _ = cx
+            .on_app_quit(|_cx| {
+                // save state to a file
+                println!("saving state");
+                save_state(_cx.state().clone());
+                return Task::ready(());
+            })
+            .detach();
 
         cx.open_window(window_options, |_, cx| {
-
-
             cx.new(|_cx| Base { modals: Vec::new() })
         })
         .unwrap();

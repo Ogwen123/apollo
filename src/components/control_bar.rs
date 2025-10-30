@@ -48,11 +48,9 @@ impl Render for ControlBar {
                                 .flex_row()
                                 .child(
                                     div()
-                                        .hover(|style|
-                                            style
-                                                .bg(&cx.style().primary_colour)
-                                                .opacity(0.75)
-                                        )
+                                        .hover(|style| {
+                                            style.bg(&cx.style().primary_colour).opacity(0.75)
+                                        })
                                         .rounded(px(4.0))
                                         .on_mouse_down(MouseButton::Left, move |e, _window, _cx| {
                                             let sp = _cx
@@ -87,7 +85,7 @@ impl Render for ControlBar {
                     .direction(Direction::Horizontal)
                     .colour(&cx.style().separator_colour)
                     .thickness(1.0)
-                    .render(window, cx)
+                    .render(window, cx),
             )
             .child(
                 div()
@@ -116,7 +114,8 @@ impl Render for ControlBar {
                                     global.status.running_tests = true;
                                 });
                                 _window.refresh();
-                                let _ = set_current_dir(_cx.state().get_active_project().unwrap().path);
+                                let _ =
+                                    set_current_dir(_cx.state().get_active_project().unwrap().path);
                                 match run(
                                     Some(Config {
                                         debug: true,
