@@ -38,7 +38,7 @@ impl Render for StatusBar {
                         cx.state()
                             .get_active_project()
                             .unwrap()
-                            .tests
+                            .tests_linear()
                             .unwrap()
                             .len()
                     ))

@@ -68,6 +68,14 @@ pub struct Style {
     pub secondary_colour: Colour,
     /// Secondary hover colour
     pub hover_secondary_colour: Colour,
+    /// Passed colour
+    pub passed_colour: Colour,
+    /// Ignore colour
+    pub ignore_colour: Colour,
+    /// Failed colour
+    pub failed_colour: Colour,
+    /// Doc-tests colour
+    pub doctest_colour: Colour,
     /// The colour used when separating ui elements, e.g. the tab bar and tab itself
     pub separator_colour: Colour,
     /// Rounding for interactive element like buttons
@@ -136,6 +144,10 @@ impl Default for Style {
             hover_primary_colour: Colour::Rgb(0x1b46a6),
             secondary_colour: Colour::Rgb(0x2563eb),
             hover_secondary_colour: Colour::Rgb(0x1b46a6),
+            passed_colour: Colour::Rgb(0x6bcb61),
+            ignore_colour: Colour::Rgb(0xe0ce70),
+            failed_colour: Colour::Rgb(0xde5544),
+            doctest_colour: Colour::Rgb(0x3675f2),
             separator_colour: Colour::Rgb(0x535353),
             rounding: Size::Px(4.0),
             padding: Size::Px(4.0),

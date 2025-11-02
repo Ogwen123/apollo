@@ -2,10 +2,7 @@ use crate::components::test_item::TestItem;
 use crate::state::{Project, StateProvider};
 use crate::style::StyleProvider;
 use gpui::prelude::FluentBuilder;
-use gpui::{
-    AppContext, Context, Element, IntoElement, ParentElement, Render, RenderOnce, SharedString,
-    Styled, TextOverflow, Window, div, px,
-};
+use gpui::{AppContext, Context, Element, IntoElement, ParentElement, Render, RenderOnce, SharedString, Styled, TextOverflow, Window, div, px, rgb};
 
 pub struct Tests {}
 
@@ -15,7 +12,7 @@ impl Render for Tests {
             .state()
             .get_active_project()
             .unwrap_or(Project::default())
-            .tests;
+            .tests_linear();
         let show_test = tests_option.is_some();
         div()
             .h_full()
@@ -24,14 +21,12 @@ impl Render for Tests {
             .when(show_test, |_self| {
                 let tests = tests_option.unwrap();
                 _self.child(
-                    div().children(
+                    div().flex().flex_col().w_full().children(
                         {
                             let mut elements: Vec<TestItem> = Vec::new();
 
-                            for group in tests {
-                                for test in group.tests {
-                                    elements.push(TestItem { test_data: test })
-                                }
+                            for test in tests { 
+                                elements.push(TestItem { test_data: test })
                             }
 
                             elements

@@ -1,6 +1,6 @@
 use crate::display_vec;
 use crate::utils::logger::warning;
-use cargo_ptest::parse::ParsedTestGroup;
+use cargo_ptest::parse::{ParsedTest, ParsedTestGroup};
 use gpui::{App, Global};
 use serde::{Deserialize, Serialize};
 use std::fmt;
@@ -52,6 +52,22 @@ impl Project {
                 println!("{:?}", err);
                 String::from("ERROR")
             })
+    }
+
+    pub fn tests_linear(&self) -> Option<Vec<ParsedTest>> {
+        let mut tests = Vec::new();
+
+        if self.tests.is_none() {
+            return None
+        }
+
+        for group in self.tests.clone().unwrap() {
+            for test in group.tests {
+                tests.push(test)
+            }
+        }
+
+        Some(tests)
     }
 }
 
