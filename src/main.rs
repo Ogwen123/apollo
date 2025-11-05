@@ -5,6 +5,7 @@ mod style;
 mod utils;
 mod widgets;
 
+use std::env;
 use crate::components::status_bar::StatusBar;
 use crate::components::toolbar::ToolBar;
 use crate::components::workspace::Workspace;
@@ -12,10 +13,7 @@ use crate::state::{State, StateProvider};
 use crate::style::{GlobalStyle, Style, StyleProvider};
 use crate::utils::file::{load_state, save_state};
 use crate::widgets::core::modal::Modal;
-use gpui::{
-    App, Application, Bounds, Context, Task, Window, WindowBounds, WindowOptions, div, prelude::*,
-    px, size,
-};
+use gpui::{App, Application, Bounds, Context, Task, Window, WindowBounds, WindowOptions, div, prelude::*, px, size, TitlebarOptions, SharedString};
 use std::sync::Arc;
 
 trait ModalHelper {
@@ -79,7 +77,7 @@ impl Render for Base {
                     on_close: if x.on_close.is_none() {
                         None
                     } else {
-                        None /*Some(Box::clone(&x.on_close.unwrap()))*/
+                        Some(x.on_close.clone().unwrap().clone())
                     },
                     backdrop_close: x.backdrop_close,
                 })
@@ -89,17 +87,43 @@ impl Render for Base {
 
 fn main() {
     Application::new().run(|cx: &mut App| {
-        let bounds = Bounds::centered(None, size(px(500.), px(500.0)), cx);
+        let bounds = Bounds::centered(None, size(px(1000.), px(800.0)), cx);
+
+        let session_type = env::var("XDG_SESSION_TYPE").unwrap_or_default();
+        let wayland_display = env::var("WAYLAND_DISPLAY").ok().is_some();
+        let x_display = env::var("DISPLAY").ok().is_some();
+        let os = env::consts::OS;
+
+        let mut csd: bool = false;
+
+        if os == "linux" {
+            if session_type == "wayland" || wayland_display {
+                // wayland doesn't handle SSD
+                csd = true
+            } else if session_type == "x11" || x_display {
+                // SSD handled by x11
+                csd = true
+            } else {
+                // Unknown environment, defaulting to no CSD
+                csd = true
+            }
+        }
 
         let window_options = WindowOptions {
             window_bounds: Some(WindowBounds::Windowed(bounds)),
             is_resizable: true,
+            titlebar: Some(TitlebarOptions {
+                title: Some(SharedString::new("Apollo")),
+                appears_transparent: csd,
+                traffic_light_position: None
+            }),
+            is_movable: true,
             ..Default::default()
         };
 
         // load previous state from file
-        let state = load_state();
-
+        let mut state = load_state();
+        state.csd = csd;
         cx.set_global(state);
         cx.set_global(GlobalStyle(Arc::new(Style::default())));
 

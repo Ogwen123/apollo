@@ -1,16 +1,15 @@
-use crate::state::{Project, State};
+use crate::state::{Project, State, StateProvider};
 use crate::style::{Style, StyleProvider};
 use crate::widgets::styling::{Colour, Size};
 
 use crate::ModalHelper;
 use crate::widgets::core::button::{Button, TextPosition};
 use crate::widgets::core::modal::{Modal, ModalButtonOptions};
-use gpui::{
-    AppContext, Context, IntoElement, MouseDownEvent, ParentElement, PathPromptOptions, Render,
-    Styled, Window, div, px, rgba,
-};
+use gpui::{AppContext, Context, IntoElement, MouseDownEvent, ParentElement, PathPromptOptions, Render, Styled, Window, div, px, rgba, InteractiveElement, MouseButton, DragMoveEvent, Div};
 use gpui::{BorrowAppContext, RenderOnce};
 use zed_util::ResultExt;
+use std::env;
+use gpui::prelude::FluentBuilder;
 
 const BUTTON_HOVER_COLOUR: u32 = 0xffffff22;
 
@@ -18,6 +17,7 @@ pub struct ToolBar {}
 // cx.style().toolbar.bg_colour.get()
 impl Render for ToolBar {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+
         div()
             .flex()
             .flex_row()
@@ -134,24 +134,26 @@ impl Render for ToolBar {
                     )
 
             )
-            .child(
-                div()
-                    .w(px(40.0))
-                    .child( Button::new()
-                        .text(String::from("X"))
-                        .text_colour(&cx.style().text_colour)
-                        .justify_content(TextPosition::Centre)
-                        .align_text(TextPosition::Centre)
-                        .w(cx.style().toolbar.button_height) // make the button a circle
-                        .h(cx.style().toolbar.button_height)
-                        .mx(cx.style().margin.clone())
-                        .colour(&cx.style().toolbar.bg_colour)
-                        .hover_colour(Colour::Rgba(BUTTON_HOVER_COLOUR))
-                        .rounding_all(Size::Px(100.0))
-                        .on_click(|_e, _window, cx| {
-                            cx.quit()
-                        }).render(window, cx)
-                    )
+            .when(cx.state().csd , |_self|
+                _self.child(
+                    div()
+                        .w(px(40.0))
+                        .child( Button::new()
+                            .text(String::from("X"))
+                            .text_colour(&cx.style().text_colour)
+                            .justify_content(TextPosition::Centre)
+                            .align_text(TextPosition::Centre)
+                            .w(cx.style().toolbar.button_height) // make the button a circle
+                            .h(cx.style().toolbar.button_height)
+                            .mx(cx.style().margin.clone())
+                            .colour(&cx.style().toolbar.bg_colour)
+                            .hover_colour(Colour::Rgba(BUTTON_HOVER_COLOUR))
+                            .rounding_all(Size::Px(100.0))
+                            .on_click(|_e, _window, cx| {
+                                cx.quit()
+                            }).render(window, cx)
+                        )
+                )
             )
     }
 }
