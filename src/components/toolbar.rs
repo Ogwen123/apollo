@@ -5,11 +5,14 @@ use crate::widgets::styling::{Colour, Size};
 use crate::ModalHelper;
 use crate::widgets::core::button::{Button, TextPosition};
 use crate::widgets::core::modal::{Modal, ModalButtonOptions};
-use gpui::{AppContext, Context, IntoElement, MouseDownEvent, ParentElement, PathPromptOptions, Render, Styled, Window, div, px, rgba, InteractiveElement, MouseButton, DragMoveEvent, Div};
-use gpui::{BorrowAppContext, RenderOnce};
-use zed_util::ResultExt;
-use std::env;
 use gpui::prelude::FluentBuilder;
+use gpui::{
+    AppContext, Context, Div, DragMoveEvent, InteractiveElement, IntoElement, MouseButton,
+    MouseDownEvent, ParentElement, PathPromptOptions, Render, Styled, Window, div, px, rgba,
+};
+use gpui::{BorrowAppContext, RenderOnce};
+use std::env;
+use zed_util::ResultExt;
 
 const BUTTON_HOVER_COLOUR: u32 = 0xffffff22;
 
@@ -17,7 +20,6 @@ pub struct ToolBar {}
 // cx.style().toolbar.bg_colour.get()
 impl Render for ToolBar {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-
         div()
             .flex()
             .flex_row()
@@ -61,7 +63,7 @@ impl Render for ToolBar {
                             let rec = _cx.prompt_for_paths(options);
 
                             _cx.spawn(
-                                async move |__cx| match rec.await.anyhow().and_then(|res| res){
+                                async move |__cx| match rec.await.anyhow().and_then(|res| res) {
                                     Ok(res) => {
                                         match res {
                                             Some(path) => {

@@ -5,7 +5,6 @@ mod style;
 mod utils;
 mod widgets;
 
-use std::env;
 use crate::components::status_bar::StatusBar;
 use crate::components::toolbar::ToolBar;
 use crate::components::workspace::Workspace;
@@ -13,7 +12,11 @@ use crate::state::{State, StateProvider};
 use crate::style::{GlobalStyle, Style, StyleProvider};
 use crate::utils::file::{load_state, save_state};
 use crate::widgets::core::modal::Modal;
-use gpui::{App, Application, Bounds, Context, Task, Window, WindowBounds, WindowOptions, div, prelude::*, px, size, TitlebarOptions, SharedString};
+use gpui::{
+    App, Application, Bounds, Context, SharedString, Task, TitlebarOptions, Window, WindowBounds,
+    WindowOptions, div, prelude::*, px, size,
+};
+use std::env;
 use std::sync::Arc;
 
 trait ModalHelper {
@@ -115,7 +118,7 @@ fn main() {
             titlebar: Some(TitlebarOptions {
                 title: Some(SharedString::new("Apollo")),
                 appears_transparent: csd,
-                traffic_light_position: None
+                traffic_light_position: None,
             }),
             is_movable: true,
             ..Default::default()

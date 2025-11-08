@@ -16,7 +16,7 @@ pub struct Project {
     #[serde(skip_serializing, skip_deserializing)]
     pub tests: Option<Vec<ParsedTestGroup>>,
     /// The index of the selected tests from the tests_linear() function
-    pub selected_test: Option<usize> 
+    pub selected_test: Option<usize>,
 }
 
 impl Project {
@@ -25,7 +25,7 @@ impl Project {
             id,
             path,
             tests: None,
-            selected_test: None
+            selected_test: None,
         }
     }
 
@@ -80,7 +80,7 @@ impl Default for Project {
             id: 0, // A 0 id for a project or for State::active_project means inactive
             path: PathBuf::new(),
             tests: None,
-            selected_test: None
+            selected_test: None,
         }
     }
 }
@@ -129,7 +129,7 @@ pub struct State {
     pub active_project: u32,
     pub status: Status,
     /// Client-side decorations for wayland
-    pub csd: bool
+    pub csd: bool,
 }
 
 impl State {
@@ -237,7 +237,11 @@ impl State {
             .into_iter()
             .map(|x| {
                 if x.id == id {
-                    Project { tests: None, selected_test: None, ..x }
+                    Project {
+                        tests: None,
+                        selected_test: None,
+                        ..x
+                    }
                 } else {
                     x
                 }
@@ -251,7 +255,10 @@ impl State {
             .into_iter()
             .map(|x| {
                 if x.id == self.active_project {
-                    Project { selected_test: Some(index), ..x }
+                    Project {
+                        selected_test: Some(index),
+                        ..x
+                    }
                 } else {
                     x
                 }
@@ -259,14 +266,22 @@ impl State {
             .collect::<Vec<Project>>();
     }
     pub fn get_selected_test(&self) -> Option<ParsedTest> {
-        if !self.has_active_project() { return None }
-        if self.get_active_project()?.tests_linear().is_none() { return None }
-        if self.get_active_project()?.selected_test.is_none() { return None }
-        match self.get_active_project()?.tests_linear()?.get(self.get_active_project()?.selected_test?) {
-            Some(res) => {
-                Some(res.clone())
-            },
-            None => None
+        if !self.has_active_project() {
+            return None;
+        }
+        if self.get_active_project()?.tests_linear().is_none() {
+            return None;
+        }
+        if self.get_active_project()?.selected_test.is_none() {
+            return None;
+        }
+        match self
+            .get_active_project()?
+            .tests_linear()?
+            .get(self.get_active_project()?.selected_test?)
+        {
+            Some(res) => Some(res.clone()),
+            None => None,
         }
     }
 }
@@ -296,7 +311,7 @@ impl Default for State {
             open_projects: Vec::new(),
             active_project: 0,
             status: Default::default(),
-            csd: false
+            csd: false,
         }
     }
 }

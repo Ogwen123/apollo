@@ -8,8 +8,8 @@ use cargo_ptest::config::Config;
 use cargo_ptest::run::run;
 use gpui::prelude::FluentBuilder;
 use gpui::{
-    BorrowAppContext, Context, Element, ElementId, InteractiveElement, IntoElement, MouseButton,
-    ParentElement, Render, RenderOnce, Styled, Window, div, px,
+    AsyncApp, BorrowAppContext, Context, Element, ElementId, InteractiveElement, IntoElement,
+    MouseButton, ParentElement, Render, RenderOnce, Styled, Task, Window, div, px,
 };
 use std::env::set_current_dir;
 use std::path::PathBuf;
@@ -114,30 +114,38 @@ impl Render for ControlBar {
                                     global.status.running_tests = true;
                                 });
                                 _window.refresh();
-                                let _ =
-                                    set_current_dir(_cx.state().get_active_project().unwrap().path);
-                                match run(
-                                    Some(Config {
-                                        debug: false,
-                                        ..Default::default()
-                                    }),
-                                    Some(vec![
-                                        "--no-fail-fast".to_string(),
-                                        "--workspace".to_string(),
-                                    ]),
-                                ) {
-                                    Ok(res) => {
-                                        _cx.update_global::<State, ()>(|global, _cx| {
-                                            global.set_tests(global.active_project, res);
-                                            global.status.running_tests = false;
-                                        });
-                                        _window.refresh()
+                                _cx.spawn(async move |__cx| {
+                                    let _ = set_current_dir(
+                                        __cx.read_global::<State, PathBuf>(|global, ___cx| {
+                                            global.get_active_project().unwrap().path
+                                        })
+                                        .unwrap(),
+                                    );
+
+                                    match run(
+                                        Some(Config {
+                                            debug: false,
+                                            ..Default::default()
+                                        }),
+                                        Some(vec![
+                                            "--no-fail-fast".to_string(),
+                                            "--workspace".to_string(),
+                                        ]),
+                                    ) {
+                                        Ok(res) => {
+                                            __cx.update_global::<State, ()>(|global, ___cx| {
+                                                global.set_tests(global.active_project, res);
+                                                global.status.running_tests = false;
+                                            });
+                                        }
+                                        Err(err) => {
+                                            warning!("An error occurred when running tests");
+                                            println!("{}", err)
+                                        }
                                     }
-                                    Err(err) => {
-                                        warning!("An error occurred when running tests");
-                                        println!("{}", err)
-                                    }
-                                }
+                                })
+                                .detach()
+
                             })
                             .render(window, cx),
                     )

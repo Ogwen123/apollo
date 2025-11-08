@@ -1,9 +1,12 @@
+use crate::components::test_info::TestInfo;
 use crate::components::test_item::TestItem;
 use crate::state::{Project, StateProvider};
 use crate::style::{Size, StyleProvider};
 use gpui::prelude::FluentBuilder;
-use gpui::{AppContext, Context, Element, IntoElement, ParentElement, Render, RenderOnce, SharedString, Styled, TextOverflow, Window, div, px, rgb, percentage};
-use crate::components::test_info::TestInfo;
+use gpui::{
+    AppContext, Context, Element, IntoElement, ParentElement, Render, RenderOnce, SharedString,
+    Styled, TextOverflow, Window, div, percentage, px, rgb,
+};
 
 pub struct Tests {}
 
@@ -15,7 +18,8 @@ impl Render for Tests {
             .unwrap_or(Project::default())
             .tests_linear();
         let show_test = tests_option.is_some();
-        let horizontal_positioning = <gpui::Pixels as Into<f32>>::into(window.viewport_size().width.into()) > 1000.0;
+        let horizontal_positioning =
+            <gpui::Pixels as Into<f32>>::into(window.viewport_size().width.into()) > 1000.0;
         div()
             .h_full()
             .flex()
@@ -27,57 +31,52 @@ impl Render for Tests {
                         .w_full()
                         .when_else(
                             horizontal_positioning,
-                            |_self| {
-                                _self.flex_row()
-                            },
-                            |_self| {
-                                _self.flex_col()
-                            }
+                            |_self| _self.flex_row(),
+                            |_self| _self.flex_col(),
                         )
                         .child(
-                            div().flex().flex_col().when_else(
-                                horizontal_positioning,
-                                |_self| {
-                                    _self.w_1_2().h_full()
-                                },
-                                |_self| {
-                                    _self.w_full().h_1_2()
-                                }
-                            ).children(
-                                {
-                                    let mut elements: Vec<TestItem> = Vec::new();
-
-                                    for test in tests {
-                                        elements.push(TestItem { test_data: test })
-                                    }
-
-                                    elements
-                                }
-                                .into_iter()
-                                .map(|x| cx.new(|_| x)),
-                            ),
-                        )
-                        .child(
-                            div().when_else(
-                                horizontal_positioning,
-                                |_self| {
-                                    _self.w_1_2().h_full()
-                                },
-                                |_self| {
-                                    _self.w_full().h_1_2()
-                                }
-                            )
+                            div()
+                                .flex()
+                                .flex_col()
                                 .when_else(
-                                    cx.state().has_active_project() && cx.state().get_selected_test().is_some(),
+                                    horizontal_positioning,
+                                    |_self| _self.w_1_2().h_full(),
+                                    |_self| _self.w_full().h_1_2(),
+                                )
+                                .children(
+                                    {
+                                        let mut elements: Vec<TestItem> = Vec::new();
+
+                                        for test in tests {
+                                            elements.push(TestItem { test_data: test })
+                                        }
+
+                                        elements
+                                    }
+                                    .into_iter()
+                                    .map(|x| cx.new(|_| x)),
+                                ),
+                        )
+                        .child(
+                            div()
+                                .when_else(
+                                    horizontal_positioning,
+                                    |_self| _self.w_1_2().h_full(),
+                                    |_self| _self.w_full().h_1_2(),
+                                )
+                                .when_else(
+                                    cx.state().has_active_project()
+                                        && cx.state().get_selected_test().is_some(),
                                     |_self| {
                                         _self.child(
-                                            TestInfo { test: cx.state().get_selected_test().unwrap() }.render(window, cx)
+                                            TestInfo {
+                                                test: cx.state().get_selected_test().unwrap(),
+                                            }
+                                            .render(window, cx),
                                         )
                                     },
-                                    |_self| {
-                                        _self.child("Select a test to view it here")
-                                    }
-                                )
+                                    |_self| _self.child("Select a test to view it here"),
+                                ),
                         ),
                 )
             })

@@ -9,6 +9,7 @@ pub struct StatusBar {}
 
 impl Render for StatusBar {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        println!("{}", cx.state().status.running_tests);
         div()
             .flex()
             .h(cx.style().statusbar.height.get())

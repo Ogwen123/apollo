@@ -1,8 +1,8 @@
 use cargo_ptest::parse::ParsedTest;
-use gpui::{div, App, IntoElement, ParentElement, RenderOnce, Window};
+use gpui::{App, IntoElement, ParentElement, RenderOnce, Window, div};
 
 pub struct TestInfo {
-    pub test: ParsedTest
+    pub test: ParsedTest,
 }
 
 impl RenderOnce for TestInfo {
