@@ -6,7 +6,7 @@ use gpui::prelude::FluentBuilder;
 use gpui::{
     App, BorrowAppContext, Context, DefiniteLength, InteractiveElement, IntoElement, Length,
     MouseButton, MouseDownEvent, ParentElement, Pixels, Render, RenderOnce, Styled, Window,
-    anchored, div, point, px, rgba,
+    anchored, div, point, px, rgb, rgba,
 };
 use std::sync::Arc;
 
@@ -103,10 +103,34 @@ impl Render for Modal {
                             .rounded(self.rounding.abs())
                             .child(
                                 div()
+                                    .flex()
+                                    .flex_row()
+                                    .justify_between()
                                     .text_2xl()
                                     .mb_2()
+                                    .items_center()
                                     .h(Length::from(DefiniteLength::Fraction(0.1)))
-                                    .child(self.title.clone()),
+                                    .child(self.title.clone())
+                                    .child({
+                                        let oc = self.on_close.clone();
+
+                                        Button::new()
+                                            .h(Size::Px(20.0))
+                                            .w(Size::Px(20.0))
+                                            .colour(&self.cancel_button.colour)
+                                            .pa(self.accept_button.padding)
+                                            .text_colour(Colour::Rgb(0xffffff))
+                                            .text("X")
+                                            .justify_content(TextPosition::Centre)
+                                            .hover_colour(Colour::Rgb(0xff0000))
+                                            .rounding_all(self.rounding)
+                                            .on_click(move |e, _window, _cx| {
+                                                let _oc =
+                                                    oc.clone().unwrap_or(Arc::new(|_, _, _| {}));
+                                                _oc(e, _window, _cx)
+                                            })
+                                            .render(window, cx)
+                                    }),
                             )
                             .child(
                                 div()

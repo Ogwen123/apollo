@@ -15,6 +15,8 @@ pub struct Project {
     pub path: PathBuf,
     #[serde(skip_serializing, skip_deserializing)]
     pub tests: Option<Vec<ParsedTestGroup>>,
+    /// The index of the selected tests from the tests_linear() function
+    pub selected_test: Option<usize> 
 }
 
 impl Project {
@@ -23,6 +25,7 @@ impl Project {
             id,
             path,
             tests: None,
+            selected_test: None
         }
     }
 
@@ -58,7 +61,7 @@ impl Project {
         let mut tests = Vec::new();
 
         if self.tests.is_none() {
-            return None
+            return None;
         }
 
         for group in self.tests.clone().unwrap() {
@@ -77,6 +80,7 @@ impl Default for Project {
             id: 0, // A 0 id for a project or for State::active_project means inactive
             path: PathBuf::new(),
             tests: None,
+            selected_test: None
         }
     }
 }
@@ -231,12 +235,37 @@ impl State {
             .into_iter()
             .map(|x| {
                 if x.id == id {
-                    Project { tests: None, ..x }
+                    Project { tests: None, selected_test: None, ..x }
                 } else {
                     x
                 }
             })
             .collect::<Vec<Project>>();
+    }
+    pub fn select_test(&mut self, index: usize) {
+        self.open_projects = self
+            .open_projects
+            .clone()
+            .into_iter()
+            .map(|x| {
+                if x.id == self.active_project {
+                    Project { selected_test: Some(index), ..x }
+                } else {
+                    x
+                }
+            })
+            .collect::<Vec<Project>>();
+    }
+    pub fn get_selected_test(&self) -> Option<ParsedTest> {
+        if !self.has_active_project() { return None }
+        if self.get_active_project()?.tests_linear().is_none() { return None }
+        if self.get_active_project()?.selected_test.is_none() { return None }
+        match self.get_active_project()?.tests_linear()?.get(self.get_active_project()?.selected_test?) {
+            Some(res) => {
+                Some(res.clone())
+            },
+            None => None
+        }
     }
 }
 

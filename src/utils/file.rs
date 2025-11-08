@@ -77,7 +77,6 @@ pub fn save_state(state: State) {
     match config_folder() {
         Ok(mut res) => {
             res = res.join("open_projects.json");
-            println!("save path: {:?}", res);
             //open file
             let mut file = match OpenOptions::new()
                 .write(true)

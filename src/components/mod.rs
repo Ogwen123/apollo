@@ -7,3 +7,4 @@ mod test_item;
 mod tests;
 pub(crate) mod toolbar;
 pub(crate) mod workspace;
+mod test_info;
