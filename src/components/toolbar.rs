@@ -129,6 +129,9 @@ impl Render for ToolBar {
                                 }.on_click(|e, __window, __cx| {
                                     __window.close_modal(__cx)
                                 })))
+                                .on_close(|e, __window, __cx| {
+                                    __window.close_modal(__cx)
+                                })
                             )
                         }).render(window, cx)
                     )

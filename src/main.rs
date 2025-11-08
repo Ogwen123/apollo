@@ -77,7 +77,7 @@ impl Render for Base {
                     on_close: if x.on_close.is_none() {
                         None
                     } else {
-                        Some(x.on_close.clone().unwrap().clone())
+                        Some(x.on_close.clone().unwrap())
                     },
                     backdrop_close: x.backdrop_close,
                 })
@@ -130,7 +130,6 @@ fn main() {
         let _ = cx
             .on_app_quit(|_cx| {
                 // save state to a file
-                println!("saving state");
                 save_state(_cx.state().clone());
                 return Task::ready(());
             })

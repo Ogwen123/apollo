@@ -118,7 +118,7 @@ impl Render for ControlBar {
                                     set_current_dir(_cx.state().get_active_project().unwrap().path);
                                 match run(
                                     Some(Config {
-                                        debug: true,
+                                        debug: false,
                                         ..Default::default()
                                     }),
                                     Some(vec![
