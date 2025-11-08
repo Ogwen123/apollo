@@ -128,6 +128,8 @@ pub struct State {
     pub open_projects: Vec<Project>,
     pub active_project: u32,
     pub status: Status,
+    /// Client-side decorations for wayland
+    pub csd: bool
 }
 
 impl State {
@@ -294,6 +296,7 @@ impl Default for State {
             open_projects: Vec::new(),
             active_project: 0,
             status: Default::default(),
+            csd: false
         }
     }
 }

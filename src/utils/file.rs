@@ -132,6 +132,7 @@ pub fn load_state() -> State {
                 open_projects: saved_state.open_projects,
                 active_project: saved_state.active_project,
                 status: Status::default(),
+                ..Default::default()
             }
         }
         Err(_) => State::default(),
