@@ -1,10 +1,11 @@
-mod collapsable_stack;
-mod control_bar;
+pub(crate) mod collapsable_stack;
+pub(crate) mod control_bar;
 pub(crate) mod status_bar;
 pub(crate) mod tab_bar;
-mod tab_bar_item;
-mod test_info;
-mod test_item;
-mod tests;
+pub(crate) mod tab_bar_item;
+pub(crate) mod test_info;
+pub(crate) mod test_list;
+pub(crate) mod test_list_item;
+pub(crate) mod tests;
 pub(crate) mod toolbar;
 pub(crate) mod workspace;

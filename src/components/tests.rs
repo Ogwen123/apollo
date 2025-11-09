@@ -1,11 +1,15 @@
 use crate::components::test_info::TestInfo;
-use crate::components::test_item::TestItem;
+use crate::components::test_list::TestList;
+use crate::components::test_list_item::TestListItem;
 use crate::state::{Project, StateProvider};
 use crate::style::{Size, StyleProvider};
+use crate::widgets::core::divider::Divider;
+use crate::widgets::styling::Direction;
 use gpui::prelude::FluentBuilder;
 use gpui::{
-    AppContext, Context, Element, IntoElement, ParentElement, Render, RenderOnce, SharedString,
-    Styled, TextOverflow, Window, div, percentage, px, rgb,
+    AppContext, Context, Element, InteractiveElement, IntoElement, ParentElement, Render,
+    RenderOnce, SharedString, StatefulInteractiveElement, Styled, TextOverflow,
+    UniformListScrollHandle, Window, div, percentage, px, rgb,
 };
 
 pub struct Tests {}
@@ -36,26 +40,24 @@ impl Render for Tests {
                         )
                         .child(
                             div()
-                                .flex()
-                                .flex_col()
+                                .id("test_list_parent")
+                                .overflow_scroll()
                                 .when_else(
                                     horizontal_positioning,
                                     |_self| _self.w_1_2().h_full(),
                                     |_self| _self.w_full().h_1_2(),
                                 )
-                                .children(
-                                    {
-                                        let mut elements: Vec<TestItem> = Vec::new();
-
-                                        for test in tests {
-                                            elements.push(TestItem { test_data: test })
-                                        }
-
-                                        elements
-                                    }
-                                    .into_iter()
-                                    .map(|x| cx.new(|_| x)),
-                                ),
+                                .child(cx.new(|_| TestList {}))
+                                .on_scroll_wheel(|e, _, _| {
+                                    println!("{:?}", e.delta)
+                                })
+                        )
+                        .child(
+                            Divider::new()
+                                .thickness(2.0)
+                                .colour(&cx.style().separator_colour)
+                                .direction(Direction::Horizontal)
+                                .render(window, cx),
                         )
                         .child(
                             div()

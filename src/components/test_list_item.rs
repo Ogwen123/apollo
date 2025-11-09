@@ -1,23 +1,36 @@
+use crate::state::{State, StateProvider};
 use crate::style::StyleProvider;
 use crate::widgets::core::divider::Divider;
 use crate::widgets::styling::Direction;
 use cargo_ptest::parse::{ParsedTest, Status};
-use gpui::{App, Context, IntoElement, ParentElement, Render, RenderOnce, Styled, Window, div, px};
+use gpui::{
+    App, BorrowAppContext, Context, InteractiveElement, IntoElement, MouseButton, ParentElement,
+    Render, RenderOnce, Styled, Window, div, px, rgba,
+};
 
-pub struct TestItem {
+pub struct TestListItem {
+    pub index: usize,
     pub test_data: ParsedTest,
 }
 
-impl Render for TestItem {
+impl Render for TestListItem {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        let index = self.index.clone();
         div()
             .flex()
             .flex_col()
             .w_full()
+            .h(px(30.0))
+            .justify_center()
+            .hover(|style| style.bg(rgba(0xffffff22)))
+            .on_mouse_down(MouseButton::Left, move |e, _window, _cx| {
+                _cx.update_global::<State, ()>(move |global, _| global.select_test(index))
+            })
             .child(
                 div()
                     .flex()
                     .flex_row()
+                    .h_full()
                     .child(
                         div()
                             .w(px(60.0))

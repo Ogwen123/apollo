@@ -4,7 +4,10 @@ use crate::components::tests::Tests;
 use crate::state::{State, StateProvider};
 use crate::style::StyleProvider;
 use gpui::prelude::FluentBuilder;
-use gpui::{AppContext, Context, IntoElement, ParentElement, Render, Styled, Window, div, px, rgb};
+use gpui::{
+    AppContext, Context, InteractiveElement, IntoElement, ParentElement, Render,
+    StatefulInteractiveElement, Styled, Window, div, px, rgb,
+};
 
 pub struct Workspace {}
 
@@ -13,10 +16,11 @@ impl Render for Workspace {
         let projects = cx.state().clone().open_projects;
 
         div()
+            .id("workspace")
+            .overflow_scroll()
             .flex()
             .flex_col()
-            .h_full()
-            .w_full()
+            .size_full()
             .when(projects.len() > 0, |_self| {
                 _self
                     .child(cx.new(|_| TabBar {}))

@@ -6,6 +6,7 @@ mod utils;
 mod widgets;
 
 use crate::components::status_bar::StatusBar;
+use crate::components::test_list::TestList;
 use crate::components::toolbar::ToolBar;
 use crate::components::workspace::Workspace;
 use crate::state::{State, StateProvider};
@@ -108,19 +109,17 @@ fn main() {
                 csd = true
             } else {
                 // Unknown environment, defaulting to no CSD
-                csd = true
+                csd = false
             }
         }
 
         let window_options = WindowOptions {
             window_bounds: Some(WindowBounds::Windowed(bounds)),
-            is_resizable: true,
             titlebar: Some(TitlebarOptions {
                 title: Some(SharedString::new("Apollo")),
                 appears_transparent: csd,
                 traffic_light_position: None,
             }),
-            is_movable: true,
             ..Default::default()
         };
 
@@ -142,5 +141,7 @@ fn main() {
             cx.new(|_cx| Base { modals: Vec::new() })
         })
         .unwrap();
+
+        cx.activate(true);
     });
 }

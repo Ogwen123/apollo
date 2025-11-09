@@ -8,8 +8,8 @@ use cargo_ptest::config::Config;
 use cargo_ptest::run::run;
 use gpui::prelude::FluentBuilder;
 use gpui::{
-    AsyncApp, BorrowAppContext, Context, Element, ElementId, InteractiveElement, IntoElement,
-    MouseButton, ParentElement, Render, RenderOnce, Styled, Task, Window, div, px,
+    BorrowAppContext, Context, InteractiveElement, IntoElement, MouseButton, ParentElement, Render,
+    RenderOnce, Styled, Window, div, px,
 };
 use std::env::set_current_dir;
 use std::path::PathBuf;
@@ -52,28 +52,31 @@ impl Render for ControlBar {
                                             style.bg(&cx.style().primary_colour).opacity(0.75)
                                         })
                                         .rounded(px(4.0))
-                                        .on_mouse_down(MouseButton::Left, move |e, _window, _cx| {
-                                            let sp = _cx
-                                                .state()
-                                                .get_active_project()
-                                                .unwrap_or(Project::default())
-                                                .path_string()
-                                                .split(&['/', '\\'][..])
-                                                .map(|x| x.to_string())
-                                                .filter(|x| x.len() > 0)
-                                                .collect::<Vec<String>>();
+                                        .on_mouse_down(
+                                            MouseButton::Left,
+                                            move |_e, _window, _cx| {
+                                                let sp = _cx
+                                                    .state()
+                                                    .get_active_project()
+                                                    .unwrap_or(Project::default())
+                                                    .path_string()
+                                                    .split(&['/', '\\'][..])
+                                                    .map(|x| x.to_string())
+                                                    .filter(|x| x.len() > 0)
+                                                    .collect::<Vec<String>>();
 
-                                            let mut buffer = PathBuf::from("/");
+                                                let mut buffer = PathBuf::from("/");
 
-                                            for (loc, i) in sp.iter().enumerate() {
-                                                buffer = buffer.join(i);
-                                                if loc == index {
-                                                    break;
+                                                for (loc, i) in sp.iter().enumerate() {
+                                                    buffer = buffer.join(i);
+                                                    if loc == index {
+                                                        break;
+                                                    }
                                                 }
-                                            }
-                                            println!("{:?}", buffer);
-                                            _cx.open_with_system(buffer.as_path());
-                                        })
+                                                println!("{:?}", buffer);
+                                                _cx.open_with_system(buffer.as_path());
+                                            },
+                                        )
                                         .child(x.to_string()),
                                 )
                                 .when(index != split_path.len() - 1, |_self| _self.child(">"))
@@ -91,12 +94,10 @@ impl Render for ControlBar {
                 div()
                     .flex()
                     .flex_row()
-                    .border_b_1()
                     .items_center()
                     .h(cx.style().controlbar.height.get())
                     .w_full()
                     .bg(&cx.style().controlbar.bg_colour)
-                    .border_color(&cx.style().separator_colour)
                     .child(
                         Button::new()
                             .text("Run Tests")
@@ -109,7 +110,7 @@ impl Render for ControlBar {
                             .hover_colour(&cx.style().hover_primary_colour)
                             .text_size(Size::Px(15.0))
                             .text_colour(&cx.style().text_colour)
-                            .on_click(|e, _window, _cx| {
+                            .on_click(|_e, _window, _cx| {
                                 _cx.update_global::<State, ()>(|global, _cx| {
                                     global.status.running_tests = true;
                                 });
@@ -133,10 +134,11 @@ impl Render for ControlBar {
                                         ]),
                                     ) {
                                         Ok(res) => {
-                                            __cx.update_global::<State, ()>(|global, ___cx| {
-                                                global.set_tests(global.active_project, res);
-                                                global.status.running_tests = false;
-                                            });
+                                            let _ =
+                                                __cx.update_global::<State, ()>(|global, ___cx| {
+                                                    global.set_tests(global.active_project, res);
+                                                    global.status.running_tests = false;
+                                                });
                                         }
                                         Err(err) => {
                                             warning!("An error occurred when running tests");
@@ -145,7 +147,6 @@ impl Render for ControlBar {
                                     }
                                 })
                                 .detach()
-
                             })
                             .render(window, cx),
                     )
@@ -161,8 +162,8 @@ impl Render for ControlBar {
                             .hover_colour(Colour::Rgba(0xffffff22))
                             .text_size(Size::Px(15.0))
                             .text_colour(&cx.style().text_colour)
-                            .on_click(|e, _window, _cx| {
-                                _cx.update_global::<State, ()>(|global, cx| {
+                            .on_click(|_, _window, _cx| {
+                                _cx.update_global::<State, ()>(|global, _cx| {
                                     global.clear_tests(global.active_project)
                                 });
                                 _window.refresh()
@@ -190,7 +191,7 @@ impl Render for ControlBar {
                             .hover_colour(&cx.style().hover_primary_colour)
                             .text_size(Size::Px(15.0))
                             .text_colour(&cx.style().text_colour)
-                            .on_click(|e, _window, _cx| {
+                            .on_click(|_, _window, _cx| {
                                 if _cx.state().has_active_project() {
                                     _cx.open_with_system(
                                         _cx.state().get_active_project().unwrap().path.as_path(),
@@ -199,6 +200,13 @@ impl Render for ControlBar {
                             })
                             .render(window, cx),
                     ),
+            )
+            .child(
+                Divider::new()
+                    .thickness(2.0)
+                    .colour(&cx.style().separator_colour)
+                    .direction(Direction::Horizontal)
+                    .render(window, cx),
             )
     }
 }
