@@ -9,14 +9,11 @@ use crate::components::status_bar::StatusBar;
 use crate::components::test_list::TestList;
 use crate::components::toolbar::ToolBar;
 use crate::components::workspace::Workspace;
-use crate::state::{State, StateProvider};
+use crate::state::{Alert, AlertSeverity, AlertType, State, StateProvider};
 use crate::style::{GlobalStyle, Style, StyleProvider};
 use crate::utils::file::{load_state, save_state};
 use crate::widgets::core::modal::Modal;
-use gpui::{
-    App, Application, Bounds, Context, SharedString, Task, TitlebarOptions, Window, WindowBounds,
-    WindowOptions, div, prelude::*, px, size,
-};
+use gpui::{App, Application, Bounds, Context, SharedString, Task, TitlebarOptions, Window, WindowBounds, WindowOptions, div, prelude::*, px, size, AsyncApp};
 use std::env;
 use std::sync::Arc;
 
@@ -46,6 +43,150 @@ impl ModalHelper for Window {
             base.modals.pop();
         });
         self.refresh()
+    }
+}
+
+trait AlertHandler {
+    fn alert_success(&mut self, message: String, time: Option<f64>);
+
+    fn alert_info(&mut self, message: String, time: Option<f64>);
+
+    fn alert_warning(&mut self, message: String, time: Option<f64>);
+
+    fn alert_error(&mut self, message: String, time: Option<f64>);
+
+    fn alert_clear(&mut self);
+}
+
+impl AlertHandler for App {
+    fn alert_success(&mut self, message: String, time: Option<f64>) {
+        self.update_global::<State, ()>(|global, _| {
+            global.alert = Some(Alert {
+                string: message,
+                severity: AlertSeverity::SUCCESS,
+                _type: match time {
+                    Some(res) => AlertType::Timed(res),
+                    None => AlertType::UserMustClose
+                }
+            });
+        })
+    }
+
+    fn alert_info(&mut self, message: String, time: Option<f64>) {
+        self.update_global::<State, ()>(|global, _| {
+            global.alert = Some(Alert {
+                string: message,
+                severity: AlertSeverity::INFO,
+                _type: match time {
+                    Some(res) => AlertType::Timed(res),
+                    None => AlertType::UserMustClose
+                }
+            });
+        })
+    }
+
+    fn alert_warning(&mut self, message: String, time: Option<f64>) {
+        self.update_global::<State, ()>(|global, _| {
+            global.alert = Some(Alert {
+                string: message,
+                severity: AlertSeverity::WARNING,
+                _type: match time {
+                    Some(res) => AlertType::Timed(res),
+                    None => AlertType::UserMustClose
+                }
+            });
+        })
+    }
+
+    fn alert_error(&mut self, message: String, time: Option<f64>) {
+        self.update_global::<State, ()>(|global, _| {
+            global.alert = Some(Alert {
+                string: message,
+                severity: AlertSeverity::ERROR,
+                _type: match time {
+                    Some(res) => AlertType::Timed(res),
+                    None => AlertType::UserMustClose
+                }
+            });
+        })
+    }
+
+    fn alert_clear(&mut self) {
+        self.update_global::<State, ()>(|global, _| {
+            global.alert = None;
+        })
+    }
+}
+
+trait AsyncAlertHandler {
+    fn alert_success(&self, message: String, time: Option<f64>);
+
+    fn alert_info(&self, message: String, time: Option<f64>);
+
+    fn alert_warning(&self, message: String, time: Option<f64>);
+
+    fn alert_error(&self, message: String, time: Option<f64>);
+
+    fn alert_clear(&self);
+}
+
+impl AsyncAlertHandler for AsyncApp {
+    fn alert_success(&self, message: String, time: Option<f64>) {
+        let _ = self.update_global::<State, ()>(|global, _| {
+            global.alert = Some(Alert {
+                string: message,
+                severity: AlertSeverity::SUCCESS,
+                _type: match time {
+                    Some(res) => AlertType::Timed(res),
+                    None => AlertType::UserMustClose
+                }
+            });
+        });
+    }
+
+    fn alert_info(&self, message: String, time: Option<f64>) {
+        let _ = self.update_global::<State, ()>(|global, _| {
+            global.alert = Some(Alert {
+                string: message,
+                severity: AlertSeverity::INFO,
+                _type: match time {
+                    Some(res) => AlertType::Timed(res),
+                    None => AlertType::UserMustClose
+                }
+            });
+        });
+    }
+
+    fn alert_warning(&self, message: String, time: Option<f64>) {
+        let _ = self.update_global::<State, ()>(|global, _| {
+            global.alert = Some(Alert {
+                string: message,
+                severity: AlertSeverity::WARNING,
+                _type: match time {
+                    Some(res) => AlertType::Timed(res),
+                    None => AlertType::UserMustClose
+                }
+            });
+        });
+    }
+
+    fn alert_error(&self, message: String, time: Option<f64>) {
+        let _ = self.update_global::<State, ()>(|global, _| {
+            global.alert = Some(Alert {
+                string: message,
+                severity: AlertSeverity::ERROR,
+                _type: match time {
+                    Some(res) => AlertType::Timed(res),
+                    None => AlertType::UserMustClose
+                }
+            });
+        });
+    }
+
+    fn alert_clear(&self) {
+        let _ = self.update_global::<State, ()>(|global, _| {
+            global.alert = None;
+        });
     }
 }
 

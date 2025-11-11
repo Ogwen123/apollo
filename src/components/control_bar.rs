@@ -5,14 +5,36 @@ use crate::widgets::core::button::{Button, TextPosition};
 use crate::widgets::core::divider::Divider;
 use crate::widgets::styling::Direction;
 use cargo_ptest::config::Config;
-use cargo_ptest::run::run;
+use cargo_ptest::parse::ParsedTestGroup;
+use cargo_ptest::run::{RunError, run};
 use gpui::prelude::FluentBuilder;
-use gpui::{
-    BorrowAppContext, Context, InteractiveElement, IntoElement, MouseButton, ParentElement, Render,
-    RenderOnce, Styled, Window, div, px,
-};
+use gpui::{App, AppContext, BorrowAppContext, Context, InteractiveElement, IntoElement, MouseButton, ParentElement, Render, RenderOnce, Styled, Task, Window, div, px, AsyncApp};
 use std::env::set_current_dir;
 use std::path::PathBuf;
+use crate::{AlertHandler, AsyncAlertHandler};
+
+fn run_tests(dir: PathBuf, cx: &AsyncApp) -> Task<Result<Vec<ParsedTestGroup>, RunError>> {
+    cx.background_executor().spawn(async move {
+        let _ = set_current_dir(dir);
+
+        match run(
+            Some(Config {
+                debug: false,
+                ..Default::default()
+            }),
+            Some(vec![
+                "--no-fail-fast".to_string(),
+                "--workspace".to_string(),
+            ]),
+        ) {
+            Ok(res) => Ok(res),
+            Err(err) => {
+                warning!("An error occurred when running tests");
+                Err(err)
+            }
+        }
+    })
+}
 
 pub struct ControlBar {}
 
@@ -115,38 +137,23 @@ impl Render for ControlBar {
                                     global.status.running_tests = true;
                                 });
                                 _window.refresh();
-                                _cx.spawn(async move |__cx| {
-                                    let _ = set_current_dir(
-                                        __cx.read_global::<State, PathBuf>(|global, ___cx| {
-                                            global.get_active_project().unwrap().path
-                                        })
-                                        .unwrap(),
-                                    );
 
-                                    match run(
-                                        Some(Config {
-                                            debug: false,
-                                            ..Default::default()
-                                        }),
-                                        Some(vec![
-                                            "--no-fail-fast".to_string(),
-                                            "--workspace".to_string(),
-                                        ]),
-                                    ) {
+                                let dir = _cx.read_global::<State, PathBuf>(|global, ___cx| {
+                                    global.get_active_project().unwrap().path
+                                });
+                                _cx.spawn(async |__cx| {
+                                    match run_tests(dir, __cx).await {
                                         Ok(res) => {
-                                            let _ =
-                                                __cx.update_global::<State, ()>(|global, ___cx| {
-                                                    global.set_tests(global.active_project, res);
-                                                    global.status.running_tests = false;
-                                                });
-                                        }
+                                            let _ = __cx.update_global::<State, ()>(|global, ___cx| {
+                                                global.set_tests(global.active_project, res);
+                                                global.status.running_tests = false;
+                                            });
+                                        },
                                         Err(err) => {
-                                            warning!("An error occurred when running tests");
-                                            println!("{}", err)
+                                            __cx.alert_error(format!("Could not run tests: {}", err.error), Some(5000.0));
                                         }
-                                    }
-                                })
-                                .detach()
+                                    };
+                                }).detach();
                             })
                             .render(window, cx),
                     )

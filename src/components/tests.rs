@@ -29,7 +29,6 @@ impl Render for Tests {
             .flex()
             .w_full()
             .when(show_test, |_self| {
-                let tests = tests_option.unwrap();
                 _self.child(
                     div()
                         .w_full()
@@ -42,15 +41,9 @@ impl Render for Tests {
                             div()
                                 .id("test_list_parent")
                                 .overflow_scroll()
-                                .when_else(
-                                    horizontal_positioning,
-                                    |_self| _self.w_1_2().h_full(),
-                                    |_self| _self.w_full().h_1_2(),
-                                )
-                                .child(cx.new(|_| TestList {}))
-                                .on_scroll_wheel(|e, _, _| {
-                                    println!("{:?}", e.delta)
-                                })
+                                .w_full()
+                                .h_1_2()
+                                .child(cx.new(|_| TestList {})), //.on_scroll_wheel(|e, _, _| println!("{:?}", e.delta)),
                         )
                         .child(
                             Divider::new()

@@ -15,6 +15,7 @@ pub struct Project {
     pub path: PathBuf,
     #[serde(skip_serializing, skip_deserializing)]
     pub tests: Option<Vec<ParsedTestGroup>>,
+    #[serde(skip_serializing, skip_deserializing)]
     /// The index of the selected tests from the tests_linear() function
     pub selected_test: Option<usize>,
 }
@@ -119,9 +120,32 @@ impl Default for Status {
     }
 }
 
+// ALERT
+
+#[derive(Clone)]
+pub enum AlertSeverity {
+    SUCCESS,
+    INFO,
+    WARNING,
+    ERROR
+}
+
+#[derive(Clone)]
+pub enum AlertType {
+    Timed(f64),
+    UserMustClose
+}
+
+#[derive(Clone)]
+pub struct Alert {
+    pub string: String,
+    pub severity: AlertSeverity,
+    pub _type: AlertType
+}
+
 // STATE
 
-#[derive(Clone, Serialize)]
+#[derive(Clone)]
 /// Stores the global state for the app
 pub struct State {
     /// All of the currently open projects
@@ -130,6 +154,8 @@ pub struct State {
     pub status: Status,
     /// Client-side decorations for wayland
     pub csd: bool,
+    /// Stores data for the alert banner
+    pub alert: Option<Alert>
 }
 
 impl State {
@@ -312,6 +338,7 @@ impl Default for State {
             active_project: 0,
             status: Default::default(),
             csd: false,
+            alert: None
         }
     }
 }

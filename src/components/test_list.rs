@@ -19,7 +19,9 @@ impl Render for TestList {
             .tests_linear()
             .unwrap();
 
-        div().w_full().h(px(30.0 * tests.len() as f32)).children({
+        let height = px(30.0 * tests.len() as f32);
+
+        div().w_full().h(height).children({
             let mut elements = Vec::new();
 
             for (index, test) in tests.iter().enumerate() {
