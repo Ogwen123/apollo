@@ -13,7 +13,10 @@ use crate::state::{Alert, AlertSeverity, AlertType, State, StateProvider};
 use crate::style::{GlobalStyle, Style, StyleProvider};
 use crate::utils::file::{load_state, save_state};
 use crate::widgets::core::modal::Modal;
-use gpui::{App, Application, Bounds, Context, SharedString, Task, TitlebarOptions, Window, WindowBounds, WindowOptions, div, prelude::*, px, size, AsyncApp};
+use gpui::{
+    App, Application, AsyncApp, Bounds, Context, SharedString, Task, TitlebarOptions, Window,
+    WindowBounds, WindowOptions, div, prelude::*, px, size,
+};
 use std::env;
 use std::sync::Arc;
 
@@ -66,8 +69,8 @@ impl AlertHandler for App {
                 severity: AlertSeverity::SUCCESS,
                 _type: match time {
                     Some(res) => AlertType::Timed(res),
-                    None => AlertType::UserMustClose
-                }
+                    None => AlertType::UserMustClose,
+                },
             });
         })
     }
@@ -79,8 +82,8 @@ impl AlertHandler for App {
                 severity: AlertSeverity::INFO,
                 _type: match time {
                     Some(res) => AlertType::Timed(res),
-                    None => AlertType::UserMustClose
-                }
+                    None => AlertType::UserMustClose,
+                },
             });
         })
     }
@@ -92,8 +95,8 @@ impl AlertHandler for App {
                 severity: AlertSeverity::WARNING,
                 _type: match time {
                     Some(res) => AlertType::Timed(res),
-                    None => AlertType::UserMustClose
-                }
+                    None => AlertType::UserMustClose,
+                },
             });
         })
     }
@@ -105,8 +108,8 @@ impl AlertHandler for App {
                 severity: AlertSeverity::ERROR,
                 _type: match time {
                     Some(res) => AlertType::Timed(res),
-                    None => AlertType::UserMustClose
-                }
+                    None => AlertType::UserMustClose,
+                },
             });
         })
     }
@@ -138,8 +141,8 @@ impl AsyncAlertHandler for AsyncApp {
                 severity: AlertSeverity::SUCCESS,
                 _type: match time {
                     Some(res) => AlertType::Timed(res),
-                    None => AlertType::UserMustClose
-                }
+                    None => AlertType::UserMustClose,
+                },
             });
         });
     }
@@ -151,8 +154,8 @@ impl AsyncAlertHandler for AsyncApp {
                 severity: AlertSeverity::INFO,
                 _type: match time {
                     Some(res) => AlertType::Timed(res),
-                    None => AlertType::UserMustClose
-                }
+                    None => AlertType::UserMustClose,
+                },
             });
         });
     }
@@ -164,8 +167,8 @@ impl AsyncAlertHandler for AsyncApp {
                 severity: AlertSeverity::WARNING,
                 _type: match time {
                     Some(res) => AlertType::Timed(res),
-                    None => AlertType::UserMustClose
-                }
+                    None => AlertType::UserMustClose,
+                },
             });
         });
     }
@@ -177,8 +180,8 @@ impl AsyncAlertHandler for AsyncApp {
                 severity: AlertSeverity::ERROR,
                 _type: match time {
                     Some(res) => AlertType::Timed(res),
-                    None => AlertType::UserMustClose
-                }
+                    None => AlertType::UserMustClose,
+                },
             });
         });
     }

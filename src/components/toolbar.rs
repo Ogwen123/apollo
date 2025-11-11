@@ -3,7 +3,7 @@ use crate::style::{Style, StyleProvider};
 use crate::widgets::styling::{Colour, Size};
 
 use crate::ModalHelper;
-use crate::widgets::core::button::{Button, TextPosition};
+use crate::widgets::core::button::button::{Button, ContentPosition};
 use crate::widgets::core::modal::{Modal, ModalButtonOptions};
 use gpui::prelude::FluentBuilder;
 use gpui::{
@@ -13,6 +13,8 @@ use gpui::{
 use gpui::{BorrowAppContext, RenderOnce};
 use std::env;
 use zed_util::ResultExt;
+use crate::widgets::core::button::icon_button::IconButton;
+use crate::widgets::core::icon::Icons;
 
 const BUTTON_HOVER_COLOUR: u32 = 0xffffff22;
 
@@ -43,8 +45,8 @@ impl Render for ToolBar {
                     .child(Button::new()
                         .text(String::from("Open Project"))
                         .text_colour(&cx.style().text_colour)
-                        .justify_content(TextPosition::Centre)
-                        .align_text(TextPosition::Centre)
+                        .justify_content(ContentPosition::Centre)
+                        .align_text(ContentPosition::Centre)
                         .w(Size::Px(100.0))
                         .h(cx.style().toolbar.button_height)
                         .mx(cx.style().margin)
@@ -102,8 +104,8 @@ impl Render for ToolBar {
                     .child(Button::new()
                         .text(String::from("About"))
                         .text_colour(&cx.style().text_colour)
-                        .justify_content(TextPosition::Centre)
-                        .align_text(TextPosition::Centre)
+                        .justify_content(ContentPosition::Centre)
+                        .align_text(ContentPosition::Centre)
                         .w(Size::Px(60f32))
                         .h(cx.style().toolbar.button_height)
                         .mx(cx.style().margin)
@@ -143,11 +145,11 @@ impl Render for ToolBar {
                 _self.child(
                     div()
                         .w(px(40.0))
-                        .child( Button::new()
-                            .text(String::from("X"))
-                            .text_colour(&cx.style().text_colour)
-                            .justify_content(TextPosition::Centre)
-                            .align_text(TextPosition::Centre)
+                        .child( IconButton::new()
+                            .icon(Icons::Close)
+                            .icon_colour(&cx.style().text_colour)
+                            .justify_content(ContentPosition::Centre)
+                            .align_text(ContentPosition::Centre)
                             .w(cx.style().toolbar.button_height) // make the button a circle
                             .h(cx.style().toolbar.button_height)
                             .mx(cx.style().margin.clone())

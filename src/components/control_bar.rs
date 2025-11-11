@@ -1,17 +1,20 @@
 use crate::state::{Project, State, StateProvider};
 use crate::style::{Colour, Size, StyleProvider};
 use crate::utils::logger::warning;
-use crate::widgets::core::button::{Button, TextPosition};
+use crate::widgets::core::button::button::{Button, ContentPosition};
 use crate::widgets::core::divider::Divider;
 use crate::widgets::styling::Direction;
+use crate::{AlertHandler, AsyncAlertHandler};
 use cargo_ptest::config::Config;
 use cargo_ptest::parse::ParsedTestGroup;
 use cargo_ptest::run::{RunError, run};
 use gpui::prelude::FluentBuilder;
-use gpui::{App, AppContext, BorrowAppContext, Context, InteractiveElement, IntoElement, MouseButton, ParentElement, Render, RenderOnce, Styled, Task, Window, div, px, AsyncApp};
+use gpui::{
+    App, AppContext, AsyncApp, BorrowAppContext, Context, InteractiveElement, IntoElement,
+    MouseButton, ParentElement, Render, RenderOnce, Styled, Task, Window, div, px,
+};
 use std::env::set_current_dir;
 use std::path::PathBuf;
-use crate::{AlertHandler, AsyncAlertHandler};
 
 fn run_tests(dir: PathBuf, cx: &AsyncApp) -> Task<Result<Vec<ParsedTestGroup>, RunError>> {
     cx.background_executor().spawn(async move {
@@ -123,8 +126,8 @@ impl Render for ControlBar {
                     .child(
                         Button::new()
                             .text("Run Tests")
-                            .justify_content(TextPosition::Centre)
-                            .align_text(TextPosition::Centre)
+                            .justify_content(ContentPosition::Centre)
+                            .align_text(ContentPosition::Centre)
                             .rounding_all(cx.style().rounding)
                             .mx(cx.style().margin)
                             .h(cx.style().controlbar.button_height)
@@ -144,24 +147,29 @@ impl Render for ControlBar {
                                 _cx.spawn(async |__cx| {
                                     match run_tests(dir, __cx).await {
                                         Ok(res) => {
-                                            let _ = __cx.update_global::<State, ()>(|global, ___cx| {
-                                                global.set_tests(global.active_project, res);
-                                                global.status.running_tests = false;
-                                            });
-                                        },
+                                            let _ =
+                                                __cx.update_global::<State, ()>(|global, ___cx| {
+                                                    global.set_tests(global.active_project, res);
+                                                    global.status.running_tests = false;
+                                                });
+                                        }
                                         Err(err) => {
-                                            __cx.alert_error(format!("Could not run tests: {}", err.error), Some(5000.0));
+                                            __cx.alert_error(
+                                                format!("Could not run tests: {}", err.error),
+                                                Some(5000.0),
+                                            );
                                         }
                                     };
-                                }).detach();
+                                })
+                                .detach();
                             })
                             .render(window, cx),
                     )
                     .child(
                         Button::new()
                             .text("Clear Output")
-                            .justify_content(TextPosition::Centre)
-                            .align_text(TextPosition::Centre)
+                            .justify_content(ContentPosition::Centre)
+                            .align_text(ContentPosition::Centre)
                             .rounding_all(cx.style().rounding)
                             .mx(cx.style().margin)
                             .h(cx.style().controlbar.button_height)
@@ -187,8 +195,8 @@ impl Render for ControlBar {
                     .child(
                         Button::new()
                             .text("Open File Location")
-                            .justify_content(TextPosition::Centre)
-                            .align_text(TextPosition::Centre)
+                            .justify_content(ContentPosition::Centre)
+                            .align_text(ContentPosition::Centre)
                             .rounding_all(cx.style().rounding)
                             .pa(cx.style().padding)
                             .mx(cx.style().margin)

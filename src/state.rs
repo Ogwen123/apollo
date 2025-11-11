@@ -127,20 +127,20 @@ pub enum AlertSeverity {
     SUCCESS,
     INFO,
     WARNING,
-    ERROR
+    ERROR,
 }
 
 #[derive(Clone)]
 pub enum AlertType {
     Timed(f64),
-    UserMustClose
+    UserMustClose,
 }
 
 #[derive(Clone)]
 pub struct Alert {
     pub string: String,
     pub severity: AlertSeverity,
-    pub _type: AlertType
+    pub _type: AlertType,
 }
 
 // STATE
@@ -155,7 +155,7 @@ pub struct State {
     /// Client-side decorations for wayland
     pub csd: bool,
     /// Stores data for the alert banner
-    pub alert: Option<Alert>
+    pub alert: Option<Alert>,
 }
 
 impl State {
@@ -338,7 +338,7 @@ impl Default for State {
             active_project: 0,
             status: Default::default(),
             csd: false,
-            alert: None
+            alert: None,
         }
     }
 }

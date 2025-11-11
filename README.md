@@ -13,4 +13,5 @@ A rust testing tool written in rust using [gpui](https://gpui.rs) and my custom 
    - [ ] add close button to modal
  - [x] switch passing the style to each component to use cx.global struct
  - [ ] add Into traits to Size
- - [ ] make cargo-ptest run async
+ - [x] make cargo-ptest run async
+ - [ ] display the alerts from global state

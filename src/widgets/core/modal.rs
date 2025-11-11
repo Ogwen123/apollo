@@ -1,7 +1,7 @@
 use crate::ModalHelper;
 use crate::state::State;
 use crate::style::{Colour, Size};
-use crate::widgets::core::button::{Button, TextPosition};
+use crate::widgets::core::button::button::{Button, ContentPosition};
 use gpui::prelude::FluentBuilder;
 use gpui::{
     App, BorrowAppContext, Context, DefiniteLength, InteractiveElement, IntoElement, Length,
@@ -121,7 +121,7 @@ impl Render for Modal {
                                             .pa(self.accept_button.padding)
                                             .text_colour(Colour::Rgb(0xffffff))
                                             .text("X")
-                                            .justify_content(TextPosition::Centre)
+                                            .justify_content(ContentPosition::Centre)
                                             .hover_colour(Colour::Rgb(0xff0000))
                                             .rounding_all(self.rounding)
                                             .on_click(move |e, _window, _cx| {
@@ -154,7 +154,7 @@ impl Render for Modal {
                                                 .text(&self.accept_button.text)
                                                 .border_width(self.accept_button.border_width)
                                                 .w_full()
-                                                .justify_content(TextPosition::Centre)
+                                                .justify_content(ContentPosition::Centre)
                                                 .border_colour(
                                                     if self.accept_button.border_colour.is_none() {
                                                         Colour::Rgba(0x00000000)
@@ -190,7 +190,7 @@ impl Render for Modal {
                                                 .text(&self.cancel_button.text)
                                                 .border_width(self.cancel_button.border_width)
                                                 .w_full()
-                                                .justify_content(TextPosition::Centre)
+                                                .justify_content(ContentPosition::Centre)
                                                 .border_colour(
                                                     if self.cancel_button.border_colour.is_none() {
                                                         Colour::Rgba(0x00000000)

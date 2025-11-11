@@ -8,7 +8,7 @@ use gpui::{
 use std::sync::Arc;
 
 #[derive(Clone)]
-pub enum TextPosition {
+pub enum ContentPosition {
     Start,
     Centre,
     End,
@@ -19,9 +19,9 @@ pub struct Button {
     /// Text to be displayed on the button
     text: String,
     /// Horizontal position for the text
-    justify_content: TextPosition,
+    justify_content: ContentPosition,
     /// Vertical position for the text
-    align_text: TextPosition,
+    align_text: ContentPosition,
     /// Width in pixels
     width: Option<Size>,
     /// Height in pixels
@@ -97,15 +97,15 @@ impl RenderOnce for Button {
             .child(self.text.clone());
 
         let justified = match self.justify_content {
-            TextPosition::Start => d.justify_start(),
-            TextPosition::Centre => d.justify_center(),
-            TextPosition::End => d.justify_end(),
+            ContentPosition::Start => d.justify_start(),
+            ContentPosition::Centre => d.justify_center(),
+            ContentPosition::End => d.justify_end(),
         };
 
         let aligned = match self.align_text {
-            TextPosition::Start => justified.items_start(),
-            TextPosition::Centre => justified.items_center(),
-            TextPosition::End => justified.items_end(),
+            ContentPosition::Start => justified.items_start(),
+            ContentPosition::Centre => justified.items_center(),
+            ContentPosition::End => justified.items_end(),
         };
 
         aligned
@@ -132,12 +132,12 @@ impl Button {
         self
     }
     /// Horizontal position for the text
-    pub fn justify_content(mut self, pos: TextPosition) -> Self {
+    pub fn justify_content(mut self, pos: ContentPosition) -> Self {
         self.justify_content = pos;
         self
     }
     /// Vertical position for the text
-    pub fn align_text(mut self, pos: TextPosition) -> Self {
+    pub fn align_text(mut self, pos: ContentPosition) -> Self {
         self.align_text = pos;
         self
     }
@@ -325,8 +325,8 @@ impl Default for Button {
     fn default() -> Self {
         Self {
             text: String::new(),
-            justify_content: TextPosition::Start,
-            align_text: TextPosition::Start,
+            justify_content: ContentPosition::Start,
+            align_text: ContentPosition::Start,
             width: Some(Size::Px(100.0)),
             height: Some(Size::Px(50.0)),
             text_size: Size::Px(12.0),

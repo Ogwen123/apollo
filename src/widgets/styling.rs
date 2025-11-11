@@ -1,5 +1,5 @@
 use crate::utils::logger::warning;
-use gpui::{AbsoluteLength, DefiniteLength, Fill, Hsla, Length, px, rgb, rgba};
+use gpui::{AbsoluteLength, DefiniteLength, Fill, Hsla, Length, px, rgb, rgba, Pixels};
 use std::ops::Deref;
 
 #[derive(Clone)]
@@ -106,6 +106,16 @@ impl Size {
             Size::Auto => {
                 warning!("Cannot convert Size::Auto into a definite length, defaulting to 0px.");
                 DefiniteLength::Absolute(AbsoluteLength::Pixels(px(0.0)))
+            }
+        }
+    }
+
+    pub fn px(&self) -> Pixels {
+        match self.clone() {
+            Size::Px(res) => px(res),
+            _ => {
+                warning!("Cannot convert Size::Auto or Size::Percent into a pixel length, defaulting to 0px.");
+                px(0.0)
             }
         }
     }

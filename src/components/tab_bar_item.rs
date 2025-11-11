@@ -1,6 +1,6 @@
 use crate::state::State;
 use crate::style::{Size, Style, StyleProvider};
-use crate::widgets::core::button::{Button, TextPosition};
+use crate::widgets::core::button::button::{Button, ContentPosition};
 use crate::widgets::core::divider::Divider;
 use crate::widgets::styling::{Colour, Direction};
 use gpui::prelude::FluentBuilder;
@@ -62,8 +62,8 @@ impl Render for TabBarItem {
                         Button::new()
                             .text(String::from("x"))
                             .text_colour(&cx.style().text_colour)
-                            .justify_content(TextPosition::Centre)
-                            .align_text(TextPosition::Centre)
+                            .justify_content(ContentPosition::Centre)
+                            .align_text(ContentPosition::Centre)
                             .w(Size::Px(20.0))
                             .h(Size::Px(20.0))
                             .mx(cx.style().margin)
