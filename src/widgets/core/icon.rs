@@ -7,13 +7,17 @@ use std::fmt::Display;
 pub enum Icons {
     Play,
     Close,
+    OpenFolder,
+    Trash
 }
 
 impl Into<SharedString> for Icons {
     fn into(self) -> SharedString {
         match self {
-            Icons::Play => SharedString::from("play.svg"),
-            Icons::Close => SharedString::from("close.svg"),
+            Icons::Play => SharedString::from("svg/play.svg"),
+            Icons::Close => SharedString::from("svg/close.svg"),
+            Icons::OpenFolder => SharedString::from("svg/open_folder.svg"),
+            Icons::Trash => SharedString::from("svg/trash.svg")
         }
     }
 }

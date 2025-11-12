@@ -15,6 +15,8 @@ use gpui::{
 };
 use std::env::set_current_dir;
 use std::path::PathBuf;
+use crate::widgets::core::button::icon_button::IconButton;
+use crate::widgets::core::icon::Icons;
 
 fn run_tests(dir: PathBuf, cx: &AsyncApp) -> Task<Result<Vec<ParsedTestGroup>, RunError>> {
     cx.background_executor().spawn(async move {
@@ -54,7 +56,7 @@ impl Render for ControlBar {
             .map(|x| x.to_string())
             .filter(|x| x.len() > 0)
             .collect::<Vec<String>>();
-        
+
         div()
             .flex()
             .flex_col()
@@ -129,8 +131,8 @@ impl Render for ControlBar {
                             .justify_content(ContentPosition::Centre)
                             .align_text(ContentPosition::Centre)
                             .rounding_all(cx.style().rounding)
-                            .mx(cx.style().margin)
                             .h(cx.style().controlbar.button_height)
+                            .mx(cx.style().margin)
                             .colour(&cx.style().primary_colour)
                             .hover_colour(&cx.style().hover_primary_colour)
                             .text_size(Size::Px(15.0))
@@ -167,17 +169,18 @@ impl Render for ControlBar {
                             .render(window, cx),
                     )
                     .child(
-                        Button::new()
-                            .text("Clear Output")
+                        IconButton::new()
+                            .icon(Icons::Trash)
                             .justify_content(ContentPosition::Centre)
                             .align_text(ContentPosition::Centre)
                             .rounding_all(cx.style().rounding)
                             .mx(cx.style().margin)
                             .h(cx.style().controlbar.button_height)
+                            .w(cx.style().controlbar.button_height)
                             .colour(&cx.style().bg_colour)
                             .hover_colour(Colour::Rgba(0xffffff22))
-                            .text_size(Size::Px(15.0))
-                            .text_colour(&cx.style().text_colour)
+                            .icon_size(cx.style().controlbar.button_height * 0.75)
+                            .icon_colour(&cx.style().text_colour)
                             .on_click(|_, _window, _cx| {
                                 _cx.update_global::<State, ()>(|global, _cx| {
                                     global.clear_tests(global.active_project)
@@ -194,19 +197,19 @@ impl Render for ControlBar {
                             .render(window, cx),
                     )
                     .child(
-                        Button::new()
-                            .text("Open File Location")
+                        IconButton::new()
+                            .icon(Icons::OpenFolder)
                             .justify_content(ContentPosition::Centre)
                             .align_text(ContentPosition::Centre)
                             .rounding_all(cx.style().rounding)
                             .pa(cx.style().padding)
                             .mx(cx.style().margin)
                             .h(cx.style().controlbar.button_height)
-                            .w(Size::Px(140.0))
-                            .colour(&cx.style().primary_colour)
-                            .hover_colour(&cx.style().hover_primary_colour)
-                            .text_size(Size::Px(15.0))
-                            .text_colour(&cx.style().text_colour)
+                            .w(cx.style().controlbar.button_height)
+                            .colour(Colour::Rgba(0x00000000))
+                            .hover_colour(Colour::Rgba(0xffffff22))
+                            .icon_size(cx.style().controlbar.button_height * 0.75)
+                            .icon_colour(&cx.style().text_colour)
                             .on_click(|_, _window, _cx| {
                                 if _cx.state().has_active_project() {
                                     _cx.open_with_system(
