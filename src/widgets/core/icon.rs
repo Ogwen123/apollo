@@ -12,8 +12,8 @@ pub enum Icons {
 impl Into<SharedString> for Icons {
     fn into(self) -> SharedString {
         match self {
-            Icons::Play => SharedString::from("./src/widgets/assets/play.svg"),
-            Icons::Close => SharedString::from("./src/widgets/assets/close.svg"),
+            Icons::Play => SharedString::from("play.svg"),
+            Icons::Close => SharedString::from("close.svg"),
         }
     }
 }

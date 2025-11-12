@@ -1,6 +1,6 @@
 use crate::utils::logger::warning;
 use gpui::{AbsoluteLength, DefiniteLength, Fill, Hsla, Length, px, rgb, rgba, Pixels};
-use std::ops::Deref;
+use std::ops::{Div, Mul};
 
 #[derive(Clone)]
 pub enum Colour {
@@ -45,6 +45,15 @@ impl Into<Fill> for &Colour {
         let hsla: Hsla = self.clone().into();
 
         hsla.into()
+    }
+}
+
+impl Colour {
+    pub fn opacity(&self, opacity: u32) -> Self {
+        match self {
+            Colour::Rgb(res) => Colour::Rgba(res << 8 + opacity),
+            Colour::Rgba(res) => Colour::Rgba(res & 0xffffff00 + opacity)
+        }
     }
 }
 
@@ -117,6 +126,30 @@ impl Size {
                 warning!("Cannot convert Size::Auto or Size::Percent into a pixel length, defaulting to 0px.");
                 px(0.0)
             }
+        }
+    }
+}
+
+impl Div<f32> for Size {
+    type Output = Size;
+
+    fn div(self, rhs: f32) -> Self::Output {
+        match self {
+            Size::Px(res) => Size::Px(res/rhs),
+            Size::Percent(res) => Size::Percent(res/rhs),
+            Size::Auto => Size::Auto
+        }
+    }
+}
+
+impl Mul<f32> for Size {
+    type Output = Size;
+
+    fn mul(self, rhs: f32) -> Self::Output {
+        match self {
+            Size::Px(res) => Size::Px(res*rhs),
+            Size::Percent(res) => Size::Percent(res*rhs),
+            Size::Auto => Size::Auto
         }
     }
 }

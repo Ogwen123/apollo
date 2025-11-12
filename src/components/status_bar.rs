@@ -16,7 +16,7 @@ impl Render for StatusBar {
             .px(cx.style().padding.def())
             .text_xs()
             .bg(&cx.style().statusbar.bg_colour)
-            .child(div().w(px(80.0)).when_else(
+            .child(div().w(px(100.0)).when_else(
                 cx.state().status.running_tests,
                 |_self| _self.child("Running tests"),
                 |_self| _self.child("Idle"),
@@ -29,7 +29,7 @@ impl Render for StatusBar {
                     .margin(4.0)
                     .render(window, cx),
             )
-            .child(div().w(px(80.0)).when_else(
+            .child(div().w(px(100.0)).when_else(
                 cx.state().get_active_project().is_some()
                     && cx.state().get_active_project().unwrap().tests.is_some(),
                 |_self| {

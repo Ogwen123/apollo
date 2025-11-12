@@ -2,14 +2,11 @@ use crate::state::{Project, State, StateProvider};
 use crate::style::{Style, StyleProvider};
 use crate::widgets::styling::{Colour, Size};
 
-use crate::ModalHelper;
+use crate::{AsyncAlertHandler, ModalHelper};
 use crate::widgets::core::button::button::{Button, ContentPosition};
 use crate::widgets::core::modal::{Modal, ModalButtonOptions};
 use gpui::prelude::FluentBuilder;
-use gpui::{
-    AppContext, Context, Div, DragMoveEvent, InteractiveElement, IntoElement, MouseButton,
-    MouseDownEvent, ParentElement, PathPromptOptions, Render, Styled, Window, div, px, rgba,
-};
+use gpui::{AppContext, Context, Div, DragMoveEvent, InteractiveElement, IntoElement, MouseButton, MouseDownEvent, ParentElement, PathPromptOptions, Render, Styled, Window, div, px, rgba, AsyncApp};
 use gpui::{BorrowAppContext, RenderOnce};
 use std::env;
 use zed_util::ResultExt;
@@ -77,7 +74,6 @@ impl Render for ToolBar {
                                                             path.iter().for_each(|x|global.add_project_by_path(x.clone()));
                                                         });
                                                     } else {
-                                                        // TODO: add proper error handling once implemented
                                                         println!("No global state set")
                                                     }
 
@@ -85,7 +81,7 @@ impl Render for ToolBar {
                                                     .ok();
                                             },
                                             None => {
-                                                // TODO: add proper error handling once implemented
+                                                __cx.alert_error("Could not open this path", Some(5000.0));
                                                 println!("No path was found")
                                             }
                                         }
@@ -147,11 +143,12 @@ impl Render for ToolBar {
                         .w(px(40.0))
                         .child( IconButton::new()
                             .icon(Icons::Close)
-                            .icon_colour(&cx.style().text_colour)
+                            .icon_colour(Colour::Rgb(0xffffff))
                             .justify_content(ContentPosition::Centre)
                             .align_text(ContentPosition::Centre)
                             .w(cx.style().toolbar.button_height) // make the button a circle
                             .h(cx.style().toolbar.button_height)
+                            .icon_size(cx.style().toolbar.button_height * 0.75)
                             .mx(cx.style().margin.clone())
                             .colour(&cx.style().toolbar.bg_colour)
                             .hover_colour(Colour::Rgba(BUTTON_HOVER_COLOUR))

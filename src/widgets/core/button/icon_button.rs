@@ -88,7 +88,6 @@ impl RenderOnce for IconButton {
                     .icon(self.icon)
                     .colour(self.icon_colour)
                     .when_some(self.icon_size, |_self, size| _self.size(size.px())))
-                    
             );
 
         let justified = match self.justify_content {
@@ -158,7 +157,7 @@ impl IconButton {
         self
     }
     /// Text size in pixels
-    pub fn text_size(mut self, size: Size) -> Self {
+    pub fn icon_size(mut self, size: Size) -> Self {
         self.icon_size = Some(size);
         self
     }

@@ -54,7 +54,7 @@ impl Render for ControlBar {
             .map(|x| x.to_string())
             .filter(|x| x.len() > 0)
             .collect::<Vec<String>>();
-
+        
         div()
             .flex()
             .flex_col()
@@ -160,6 +160,7 @@ impl Render for ControlBar {
                                             );
                                         }
                                     };
+                                    __cx.refresh()
                                 })
                                 .detach();
                             })

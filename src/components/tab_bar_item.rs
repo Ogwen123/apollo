@@ -8,6 +8,8 @@ use gpui::{
     AppContext, BorrowAppContext, Context, InteractiveElement, IntoElement, MouseButton,
     ParentElement, Render, RenderOnce, Styled, Window, div, px, rgb, rgba,
 };
+use crate::widgets::core::button::icon_button::IconButton;
+use crate::widgets::core::icon::Icons;
 
 #[derive(Clone)]
 pub struct TabBarItem {
@@ -31,14 +33,14 @@ impl Render for TabBarItem {
             .h(cx.style().tabbar.height.get())
             .pl(px(4.0))
             .child(self.name.clone())
-            .when(self.active, |_self| {
-                _self
-                    .border_b_4()
-                    .border_color(&cx.style().secondary_colour)
-            })
+            .border_b_4()
+            .when_else(self.active,
+                       |_self| _self.border_color(&cx.style().tabbar.active_colour),
+                       |_self| _self.border_color(rgba(0xffffff22))
+            )
             .when_else(
                 self.active,
-                |_self| _self.bg(&cx.style().tabbar.active_colour),
+                |_self| _self.bg(&cx.style().tabbar.active_colour.opacity(0xbb)),
                 |_self| _self.bg(&cx.style().bg_colour),
             )
             .when_else(
@@ -59,13 +61,14 @@ impl Render for TabBarItem {
                     .h_full()
                     .items_center()
                     .child(
-                        Button::new()
-                            .text(String::from("x"))
-                            .text_colour(&cx.style().text_colour)
+                        IconButton::new()
+                            .icon(Icons::Close)
+                            .icon_colour(&cx.style().text_colour)
                             .justify_content(ContentPosition::Centre)
                             .align_text(ContentPosition::Centre)
                             .w(Size::Px(20.0))
                             .h(Size::Px(20.0))
+                            .icon_size(Size::Px(15.0))
                             .mx(cx.style().margin)
                             .colour(Colour::Rgba(0x00000000))
                             .hover_colour(Colour::Rgba(0xffffff22))

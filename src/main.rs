@@ -18,7 +18,9 @@ use gpui::{
     WindowBounds, WindowOptions, div, prelude::*, px, size,
 };
 use std::env;
+use std::path::PathBuf;
 use std::sync::Arc;
+use crate::utils::assets::Assets;
 
 trait ModalHelper {
     fn open_modal(&mut self, cx: &mut App, modal: Modal);
@@ -50,22 +52,22 @@ impl ModalHelper for Window {
 }
 
 trait AlertHandler {
-    fn alert_success(&mut self, message: String, time: Option<f64>);
+    fn alert_success<T: ToString>(&mut self, message: T, time: Option<f64>);
 
-    fn alert_info(&mut self, message: String, time: Option<f64>);
+    fn alert_info<T: ToString>(&mut self, message: T, time: Option<f64>);
 
-    fn alert_warning(&mut self, message: String, time: Option<f64>);
+    fn alert_warning<T: ToString>(&mut self, message: T, time: Option<f64>);
 
-    fn alert_error(&mut self, message: String, time: Option<f64>);
+    fn alert_error<T: ToString>(&mut self, message: T, time: Option<f64>);
 
     fn alert_clear(&mut self);
 }
 
 impl AlertHandler for App {
-    fn alert_success(&mut self, message: String, time: Option<f64>) {
+    fn alert_success<T: ToString>(&mut self, message: T, time: Option<f64>) {
         self.update_global::<State, ()>(|global, _| {
             global.alert = Some(Alert {
-                string: message,
+                string: message.to_string(),
                 severity: AlertSeverity::SUCCESS,
                 _type: match time {
                     Some(res) => AlertType::Timed(res),
@@ -75,10 +77,10 @@ impl AlertHandler for App {
         })
     }
 
-    fn alert_info(&mut self, message: String, time: Option<f64>) {
+    fn alert_info<T: ToString>(&mut self, message: T, time: Option<f64>) {
         self.update_global::<State, ()>(|global, _| {
             global.alert = Some(Alert {
-                string: message,
+                string: message.to_string(),
                 severity: AlertSeverity::INFO,
                 _type: match time {
                     Some(res) => AlertType::Timed(res),
@@ -88,10 +90,10 @@ impl AlertHandler for App {
         })
     }
 
-    fn alert_warning(&mut self, message: String, time: Option<f64>) {
+    fn alert_warning<T: ToString>(&mut self, message: T, time: Option<f64>) {
         self.update_global::<State, ()>(|global, _| {
             global.alert = Some(Alert {
-                string: message,
+                string: message.to_string(),
                 severity: AlertSeverity::WARNING,
                 _type: match time {
                     Some(res) => AlertType::Timed(res),
@@ -101,10 +103,10 @@ impl AlertHandler for App {
         })
     }
 
-    fn alert_error(&mut self, message: String, time: Option<f64>) {
+    fn alert_error<T: ToString>(&mut self, message: T, time: Option<f64>) {
         self.update_global::<State, ()>(|global, _| {
             global.alert = Some(Alert {
-                string: message,
+                string: message.to_string(),
                 severity: AlertSeverity::ERROR,
                 _type: match time {
                     Some(res) => AlertType::Timed(res),
@@ -122,22 +124,22 @@ impl AlertHandler for App {
 }
 
 trait AsyncAlertHandler {
-    fn alert_success(&self, message: String, time: Option<f64>);
+    fn alert_success<T: ToString>(&self, message: T, time: Option<f64>);
 
-    fn alert_info(&self, message: String, time: Option<f64>);
+    fn alert_info<T: ToString>(&self, message: T, time: Option<f64>);
 
-    fn alert_warning(&self, message: String, time: Option<f64>);
+    fn alert_warning<T: ToString>(&self, message: T, time: Option<f64>);
 
-    fn alert_error(&self, message: String, time: Option<f64>);
+    fn alert_error<T: ToString>(&self, message: T, time: Option<f64>);
 
     fn alert_clear(&self);
 }
 
 impl AsyncAlertHandler for AsyncApp {
-    fn alert_success(&self, message: String, time: Option<f64>) {
+    fn alert_success<T: ToString>(&self, message: T, time: Option<f64>) {
         let _ = self.update_global::<State, ()>(|global, _| {
             global.alert = Some(Alert {
-                string: message,
+                string: message.to_string(),
                 severity: AlertSeverity::SUCCESS,
                 _type: match time {
                     Some(res) => AlertType::Timed(res),
@@ -147,10 +149,10 @@ impl AsyncAlertHandler for AsyncApp {
         });
     }
 
-    fn alert_info(&self, message: String, time: Option<f64>) {
+    fn alert_info<T: ToString>(&self, message: T, time: Option<f64>) {
         let _ = self.update_global::<State, ()>(|global, _| {
             global.alert = Some(Alert {
-                string: message,
+                string: message.to_string(),
                 severity: AlertSeverity::INFO,
                 _type: match time {
                     Some(res) => AlertType::Timed(res),
@@ -160,10 +162,10 @@ impl AsyncAlertHandler for AsyncApp {
         });
     }
 
-    fn alert_warning(&self, message: String, time: Option<f64>) {
+    fn alert_warning<T: ToString>(&self, message: T, time: Option<f64>) {
         let _ = self.update_global::<State, ()>(|global, _| {
             global.alert = Some(Alert {
-                string: message,
+                string: message.to_string(),
                 severity: AlertSeverity::WARNING,
                 _type: match time {
                     Some(res) => AlertType::Timed(res),
@@ -173,10 +175,10 @@ impl AsyncAlertHandler for AsyncApp {
         });
     }
 
-    fn alert_error(&self, message: String, time: Option<f64>) {
+    fn alert_error<T: ToString>(&self, message: T, time: Option<f64>) {
         let _ = self.update_global::<State, ()>(|global, _| {
             global.alert = Some(Alert {
-                string: message,
+                string: message.to_string(),
                 severity: AlertSeverity::ERROR,
                 _type: match time {
                     Some(res) => AlertType::Timed(res),
@@ -234,7 +236,9 @@ impl Render for Base {
 }
 
 fn main() {
-    Application::new().run(|cx: &mut App| {
+    Application::new().with_assets(Assets {
+        base: PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("assets"),
+    }).run(|cx: &mut App| {
         let bounds = Bounds::centered(None, size(px(1000.), px(800.0)), cx);
 
         let session_type = env::var("XDG_SESSION_TYPE").unwrap_or_default();
