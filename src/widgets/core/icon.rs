@@ -8,7 +8,9 @@ pub enum Icons {
     Play,
     Close,
     OpenFolder,
-    Trash
+    Trash,
+    ChevronDown,
+    Settings,
 }
 
 impl Into<SharedString> for Icons {
@@ -17,7 +19,9 @@ impl Into<SharedString> for Icons {
             Icons::Play => SharedString::from("svg/play.svg"),
             Icons::Close => SharedString::from("svg/close.svg"),
             Icons::OpenFolder => SharedString::from("svg/open_folder.svg"),
-            Icons::Trash => SharedString::from("svg/trash.svg")
+            Icons::Trash => SharedString::from("svg/trash.svg"),
+            Icons::ChevronDown => SharedString::from("svg/chevron-down.svg"),
+            Icons::Settings => SharedString::from("svg/settings.svg"),
         }
     }
 }
@@ -92,6 +96,6 @@ impl Render for Icon {
                 |_self| _self.size_full(),
             )
             .text_color(&self.colour)
-            //.bg(&self.colour)
+        //.bg(&self.colour)
     }
 }

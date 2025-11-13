@@ -2,6 +2,8 @@ use crate::ModalHelper;
 use crate::state::State;
 use crate::style::{Colour, Size};
 use crate::widgets::core::button::button::{Button, ContentPosition};
+use crate::widgets::core::button::icon_button::IconButton;
+use crate::widgets::core::icon::Icons;
 use gpui::prelude::FluentBuilder;
 use gpui::{
     App, BorrowAppContext, Context, DefiniteLength, InteractiveElement, IntoElement, Length,
@@ -114,14 +116,16 @@ impl Render for Modal {
                                     .child({
                                         let oc = self.on_close.clone();
 
-                                        Button::new()
+                                        IconButton::new("close-button")
+                                            .icon(Icons::Close)
                                             .h(Size::Px(20.0))
                                             .w(Size::Px(20.0))
                                             .colour(&self.cancel_button.colour)
                                             .pa(self.accept_button.padding)
-                                            .text_colour(Colour::Rgb(0xffffff))
-                                            .text("X")
+                                            .icon_colour(Colour::Rgb(0xffffff))
+                                            .icon_size(Size::Px(15.0))
                                             .justify_content(ContentPosition::Centre)
+                                            .align_text(ContentPosition::Centre)
                                             .hover_colour(Colour::Rgb(0xff0000))
                                             .rounding_all(self.rounding)
                                             .on_click(move |e, _window, _cx| {
@@ -146,7 +150,7 @@ impl Render for Modal {
                                         let oc = self.accept_button.on_click.clone();
 
                                         _self.child(
-                                            Button::new()
+                                            Button::new("accept_button")
                                                 .h(Size::Px(20.0))
                                                 .colour(&self.accept_button.colour)
                                                 .pa(self.accept_button.padding)
@@ -182,7 +186,7 @@ impl Render for Modal {
                                     .when(self.cancel_button.show, |_self| {
                                         let oc = self.cancel_button.on_click.clone();
                                         _self.child(
-                                            Button::new()
+                                            Button::new("cancel_button")
                                                 .h(Size::Px(20.0))
                                                 .colour(&self.cancel_button.colour)
                                                 .pa(self.accept_button.padding)

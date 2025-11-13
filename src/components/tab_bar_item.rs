@@ -1,15 +1,15 @@
 use crate::state::State;
 use crate::style::{Size, Style, StyleProvider};
 use crate::widgets::core::button::button::{Button, ContentPosition};
+use crate::widgets::core::button::icon_button::IconButton;
 use crate::widgets::core::divider::Divider;
+use crate::widgets::core::icon::Icons;
 use crate::widgets::styling::{Colour, Direction};
 use gpui::prelude::FluentBuilder;
 use gpui::{
     AppContext, BorrowAppContext, Context, InteractiveElement, IntoElement, MouseButton,
     ParentElement, Render, RenderOnce, Styled, Window, div, px, rgb, rgba,
 };
-use crate::widgets::core::button::icon_button::IconButton;
-use crate::widgets::core::icon::Icons;
 
 #[derive(Clone)]
 pub struct TabBarItem {
@@ -34,9 +34,10 @@ impl Render for TabBarItem {
             .pl(px(4.0))
             .child(self.name.clone())
             .border_b_4()
-            .when_else(self.active,
-                       |_self| _self.border_color(&cx.style().tabbar.active_colour),
-                       |_self| _self.border_color(rgba(0xffffff22))
+            .when_else(
+                self.active,
+                |_self| _self.border_color(&cx.style().tabbar.active_colour),
+                |_self| _self.border_color(rgba(0xffffff22)),
             )
             .when_else(
                 self.active,
@@ -61,7 +62,7 @@ impl Render for TabBarItem {
                     .h_full()
                     .items_center()
                     .child(
-                        IconButton::new()
+                        IconButton::new("close-button")
                             .icon(Icons::Close)
                             .icon_colour(&cx.style().text_colour)
                             .justify_content(ContentPosition::Centre)

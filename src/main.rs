@@ -11,6 +11,7 @@ use crate::components::toolbar::ToolBar;
 use crate::components::workspace::Workspace;
 use crate::state::{Alert, AlertSeverity, AlertType, State, StateProvider};
 use crate::style::{GlobalStyle, Style, StyleProvider};
+use crate::utils::assets::Assets;
 use crate::utils::file::{load_state, save_state};
 use crate::widgets::core::modal::Modal;
 use gpui::{
@@ -20,7 +21,6 @@ use gpui::{
 use std::env;
 use std::path::PathBuf;
 use std::sync::Arc;
-use crate::utils::assets::Assets;
 
 trait ModalHelper {
     fn open_modal(&mut self, cx: &mut App, modal: Modal);
@@ -236,60 +236,62 @@ impl Render for Base {
 }
 
 fn main() {
-    Application::new().with_assets(Assets {
-        base: PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("assets"),
-    }).run(|cx: &mut App| {
-        let bounds = Bounds::centered(None, size(px(1000.), px(800.0)), cx);
-
-        let session_type = env::var("XDG_SESSION_TYPE").unwrap_or_default();
-        let wayland_display = env::var("WAYLAND_DISPLAY").ok().is_some();
-        let x_display = env::var("DISPLAY").ok().is_some();
-        let os = env::consts::OS;
-
-        let mut csd: bool = false;
-
-        if os == "linux" {
-            if session_type == "wayland" || wayland_display {
-                // wayland doesn't handle SSD
-                csd = true
-            } else if session_type == "x11" || x_display {
-                // SSD handled by x11
-                csd = true
-            } else {
-                // Unknown environment, defaulting to no CSD
-                csd = false
-            }
-        }
-
-        let window_options = WindowOptions {
-            window_bounds: Some(WindowBounds::Windowed(bounds)),
-            titlebar: Some(TitlebarOptions {
-                title: Some(SharedString::new("Apollo")),
-                appears_transparent: csd,
-                traffic_light_position: None,
-            }),
-            ..Default::default()
-        };
-
-        // load previous state from file
-        let mut state = load_state();
-        state.csd = csd;
-        cx.set_global(state);
-        cx.set_global(GlobalStyle(Arc::new(Style::default())));
-
-        let _ = cx
-            .on_app_quit(|_cx| {
-                // save state to a file
-                save_state(_cx.state().clone());
-                return Task::ready(());
-            })
-            .detach();
-
-        cx.open_window(window_options, |_, cx| {
-            cx.new(|_cx| Base { modals: Vec::new() })
+    Application::new()
+        .with_assets(Assets {
+            base: PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("assets"),
         })
-        .unwrap();
+        .run(|cx: &mut App| {
+            let bounds = Bounds::centered(None, size(px(1000.), px(800.0)), cx);
 
-        cx.activate(true);
-    });
+            let session_type = env::var("XDG_SESSION_TYPE").unwrap_or_default();
+            let wayland_display = env::var("WAYLAND_DISPLAY").ok().is_some();
+            let x_display = env::var("DISPLAY").ok().is_some();
+            let os = env::consts::OS;
+
+            let mut csd: bool = false;
+
+            if os == "linux" {
+                if session_type == "wayland" || wayland_display {
+                    // wayland doesn't handle SSD
+                    csd = true
+                } else if session_type == "x11" || x_display {
+                    // SSD handled by x11
+                    csd = true
+                } else {
+                    // Unknown environment, defaulting to no CSD
+                    csd = false
+                }
+            }
+
+            let window_options = WindowOptions {
+                window_bounds: Some(WindowBounds::Windowed(bounds)),
+                titlebar: Some(TitlebarOptions {
+                    title: Some(SharedString::new("Apollo")),
+                    appears_transparent: csd,
+                    traffic_light_position: None,
+                }),
+                ..Default::default()
+            };
+
+            // load previous state from file
+            let mut state = load_state();
+            state.csd = csd;
+            cx.set_global(state);
+            cx.set_global(GlobalStyle(Arc::new(Style::default())));
+
+            let _ = cx
+                .on_app_quit(|_cx| {
+                    // save state to a file
+                    save_state(_cx.state().clone());
+                    return Task::ready(());
+                })
+                .detach();
+
+            cx.open_window(window_options, |_, cx| {
+                cx.new(|_cx| Base { modals: Vec::new() })
+            })
+            .unwrap();
+
+            cx.activate(true);
+        });
 }

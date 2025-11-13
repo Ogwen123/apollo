@@ -15,3 +15,4 @@ A rust testing tool written in rust using [gpui](https://gpui.rs) and my custom 
  - [ ] add Into traits to Size
  - [x] make cargo-ptest run async
  - [ ] display the alerts from global state
+ - [ ] make dropdown button for control bar

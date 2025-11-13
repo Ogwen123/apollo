@@ -156,6 +156,8 @@ pub struct State {
     pub csd: bool,
     /// Stores data for the alert banner
     pub alert: Option<Alert>,
+    /// Args passed into cargo_ptest::Run::run()
+    pub run_args: Vec<String>,
 }
 
 impl State {
@@ -339,6 +341,7 @@ impl Default for State {
             status: Default::default(),
             csd: false,
             alert: None,
+            run_args: vec!["--no-fail-fast".to_string(), "--workspace".to_string()],
         }
     }
 }

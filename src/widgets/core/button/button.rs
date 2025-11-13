@@ -1,9 +1,11 @@
+use crate::widgets::core::tooltip::SimpleTooltip;
 use crate::widgets::styling::{Colour, Size};
 use crate::{margin, padding, rounding};
 use gpui::prelude::FluentBuilder;
 use gpui::{
-    App, Context, Hsla, InteractiveElement, IntoElement, MouseButton, MouseDownEvent,
-    ParentElement, Render, RenderOnce, Rgba, Styled, Window, div, rgb,
+    App, AppContext, Context, Element, ElementId, Hsla, InteractiveElement, IntoElement,
+    MouseButton, MouseDownEvent, ParentElement, Render, RenderOnce, Rgba,
+    StatefulInteractiveElement, Styled, Window, div, rgb,
 };
 use std::sync::Arc;
 
@@ -16,6 +18,7 @@ pub enum ContentPosition {
 
 /// A button capable of displaying text
 pub struct Button {
+    id: ElementId,
     /// Text to be displayed on the button
     text: String,
     /// Horizontal position for the text
@@ -46,6 +49,8 @@ pub struct Button {
     padding: (Size, Size, Size, Size),
     /// Margin in pixels, ordered as (top, right, left, bottom), you can use the margin!() macro to convert a single value or x and y value to this form.
     margin: (Size, Size, Size, Size),
+    /// The tooltip of the button
+    tooltip: Option<String>,
     /// If the button should be disabled
     disabled: bool,
 }
@@ -55,6 +60,7 @@ impl RenderOnce for Button {
         let disabled = self.disabled;
 
         let d = div()
+            .id(self.id)
             .flex()
             .when_else(
                 self.height.is_some(),
@@ -89,6 +95,14 @@ impl RenderOnce for Button {
             .text_color(self.text_colour)
             .bg(&self.colour)
             .hover(|style| style.bg(self.hover_colour.unwrap_or(self.colour)))
+            .when_some(self.tooltip, |_self, tooltip| {
+                println!("setting tooltip");
+                _self.tooltip(move |_window, _cx| {
+                    println!("tooltip");
+                    let tp = tooltip.clone();
+                    _cx.new(|_| SimpleTooltip::new(tp)).into()
+                })
+            })
             .when(!self.disabled, |_self| {
                 _self.when_some(self.on_click, |__self, on_click| {
                     __self.on_mouse_down(MouseButton::Left, on_click)
@@ -113,8 +127,11 @@ impl RenderOnce for Button {
 }
 
 impl Button {
-    pub fn new() -> Self {
-        Self::default()
+    pub fn new<T: Into<ElementId>>(id: T) -> Self {
+        Self {
+            id: id.into(),
+            ..Self::default()
+        }
     }
 
     /// Function ran on_mouse_down for left click
@@ -264,6 +281,26 @@ impl Button {
         self.margin = (margin.clone(), self.margin.1, margin.clone(), self.margin.3);
         self
     }
+    /// Sets the margin for the top of the button.
+    pub fn mt(mut self, margin: Size) -> Self {
+        self.margin = (margin.clone(), self.margin.1, self.margin.2, self.margin.3);
+        self
+    }
+    /// Sets the margin for the right of the button.
+    pub fn mr(mut self, margin: Size) -> Self {
+        self.margin = (self.margin.0, margin.clone(), self.margin.2, self.margin.3);
+        self
+    }
+    /// Sets the margin for the bottom of the button.
+    pub fn mb(mut self, margin: Size) -> Self {
+        self.margin = (self.margin.0, self.margin.1, margin.clone(), self.margin.3);
+        self
+    }
+    /// Sets the margin for the left of the button.
+    pub fn ml(mut self, margin: Size) -> Self {
+        self.margin = (self.margin.0, self.margin.1, self.margin.2, margin.clone());
+        self
+    }
     /// Margin for all sides, given as a single Size value.
     pub fn ma(mut self, margin: Size) -> Self {
         self.margin = (
@@ -274,18 +311,23 @@ impl Button {
         );
         self
     }
+    /// Set the buttons tooltip
+    pub fn tooltip<T: ToString>(mut self, tooltip: T) -> Self {
+        self.tooltip = Some(tooltip.to_string());
+        self
+    }
     /// Disable button
-    fn disable(mut self) -> Self {
+    pub fn disable(mut self) -> Self {
         self.disabled = true;
         self
     }
     /// Enable button
-    fn enable(mut self) -> Self {
+    pub fn enable(mut self) -> Self {
         self.disabled = false;
         self
     }
     /// Toggle the button
-    fn toggle(mut self) -> Self {
+    pub fn toggle(mut self) -> Self {
         self.disabled = !self.disabled;
         self
     }
@@ -324,6 +366,7 @@ impl Button {
 impl Default for Button {
     fn default() -> Self {
         Self {
+            id: "".into(),
             text: String::new(),
             justify_content: ContentPosition::Start,
             align_text: ContentPosition::Start,
@@ -339,6 +382,7 @@ impl Default for Button {
             on_click: None,
             padding: padding!(Size::Px(0.0)),
             margin: margin!(Size::Px(0.0)),
+            tooltip: None,
             disabled: false,
         }
     }

@@ -1,9 +1,9 @@
+use anyhow::Result;
+use gpui::private::anyhow;
+use gpui::{AssetSource, SharedString};
 use std::borrow::Cow;
 use std::fs;
 use std::path::PathBuf;
-use gpui::{AssetSource, SharedString};
-use gpui::private::anyhow;
-use anyhow::Result;
 
 pub struct Assets {
     pub(crate) base: PathBuf,

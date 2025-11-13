@@ -1,5 +1,5 @@
 use crate::utils::logger::warning;
-use gpui::{AbsoluteLength, DefiniteLength, Fill, Hsla, Length, px, rgb, rgba, Pixels};
+use gpui::{AbsoluteLength, DefiniteLength, Fill, Hsla, Length, Pixels, px, rgb, rgba};
 use std::ops::{Div, Mul};
 
 #[derive(Clone)]
@@ -52,7 +52,7 @@ impl Colour {
     pub fn opacity(&self, opacity: u32) -> Self {
         match self {
             Colour::Rgb(res) => Colour::Rgba(res << 8 + opacity),
-            Colour::Rgba(res) => Colour::Rgba(res & 0xffffff00 + opacity)
+            Colour::Rgba(res) => Colour::Rgba(res & 0xffffff00 + opacity),
         }
     }
 }
@@ -123,7 +123,9 @@ impl Size {
         match self.clone() {
             Size::Px(res) => px(res),
             _ => {
-                warning!("Cannot convert Size::Auto or Size::Percent into a pixel length, defaulting to 0px.");
+                warning!(
+                    "Cannot convert Size::Auto or Size::Percent into a pixel length, defaulting to 0px."
+                );
                 px(0.0)
             }
         }
@@ -135,9 +137,9 @@ impl Div<f32> for Size {
 
     fn div(self, rhs: f32) -> Self::Output {
         match self {
-            Size::Px(res) => Size::Px(res/rhs),
-            Size::Percent(res) => Size::Percent(res/rhs),
-            Size::Auto => Size::Auto
+            Size::Px(res) => Size::Px(res / rhs),
+            Size::Percent(res) => Size::Percent(res / rhs),
+            Size::Auto => Size::Auto,
         }
     }
 }
@@ -147,9 +149,9 @@ impl Mul<f32> for Size {
 
     fn mul(self, rhs: f32) -> Self::Output {
         match self {
-            Size::Px(res) => Size::Px(res*rhs),
-            Size::Percent(res) => Size::Percent(res*rhs),
-            Size::Auto => Size::Auto
+            Size::Px(res) => Size::Px(res * rhs),
+            Size::Percent(res) => Size::Percent(res * rhs),
+            Size::Auto => Size::Auto,
         }
     }
 }

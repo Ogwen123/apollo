@@ -2,16 +2,20 @@ use crate::state::{Project, State, StateProvider};
 use crate::style::{Style, StyleProvider};
 use crate::widgets::styling::{Colour, Size};
 
-use crate::{AsyncAlertHandler, ModalHelper};
 use crate::widgets::core::button::button::{Button, ContentPosition};
+use crate::widgets::core::button::icon_button::IconButton;
+use crate::widgets::core::icon::Icons;
 use crate::widgets::core::modal::{Modal, ModalButtonOptions};
+use crate::{AsyncAlertHandler, ModalHelper};
 use gpui::prelude::FluentBuilder;
-use gpui::{AppContext, Context, Div, DragMoveEvent, InteractiveElement, IntoElement, MouseButton, MouseDownEvent, ParentElement, PathPromptOptions, Render, Styled, Window, div, px, rgba, AsyncApp};
+use gpui::{
+    AppContext, AsyncApp, Context, Div, DragMoveEvent, InteractiveElement, IntoElement,
+    MouseButton, MouseDownEvent, ParentElement, PathPromptOptions, Render, Styled, Window, div, px,
+    rgba,
+};
 use gpui::{BorrowAppContext, RenderOnce};
 use std::env;
 use zed_util::ResultExt;
-use crate::widgets::core::button::icon_button::IconButton;
-use crate::widgets::core::icon::Icons;
 
 const BUTTON_HOVER_COLOUR: u32 = 0xffffff22;
 
@@ -39,7 +43,7 @@ impl Render for ToolBar {
                         .text_xl()
                         .px(px(10.0))
                         .child("Apollo".to_string()))
-                    .child(Button::new()
+                    .child(Button::new("open-projects-button")
                         .text(String::from("Open Project"))
                         .text_colour(&cx.style().text_colour)
                         .justify_content(ContentPosition::Centre)
@@ -97,7 +101,7 @@ impl Render for ToolBar {
                                 .detach();
                         }).render(window, cx)
                     )
-                    .child(Button::new()
+                    .child(Button::new("about-button")
                         .text(String::from("About"))
                         .text_colour(&cx.style().text_colour)
                         .justify_content(ContentPosition::Centre)
@@ -141,7 +145,7 @@ impl Render for ToolBar {
                 _self.child(
                     div()
                         .w(px(40.0))
-                        .child( IconButton::new()
+                        .child( IconButton::new("quit-button")
                             .icon(Icons::Close)
                             .icon_colour(Colour::Rgb(0xffffff))
                             .justify_content(ContentPosition::Centre)

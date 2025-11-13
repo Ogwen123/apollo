@@ -1,12 +1,17 @@
+use crate::widgets::core::button::button::ContentPosition;
 use crate::widgets::core::icon::{Icon, Icons};
+use crate::widgets::core::tooltip::SimpleTooltip;
 use crate::widgets::styling::{Colour, Size};
 use crate::{margin, padding, rounding};
 use gpui::prelude::FluentBuilder;
-use gpui::{App, InteractiveElement, IntoElement, MouseButton, MouseDownEvent, ParentElement, RenderOnce, Styled, Window, div, AppContext};
-use crate::widgets::core::button::button::ContentPosition;
+use gpui::{
+    App, AppContext, ElementId, InteractiveElement, IntoElement, MouseButton, MouseDownEvent,
+    ParentElement, RenderOnce, StatefulInteractiveElement, Styled, Window, div,
+};
 
 /// A button capable of displaying text
 pub struct IconButton {
+    id: ElementId,
     /// Text to be displayed on the button
     icon: Icons,
     /// Horizontal position for the text
@@ -37,6 +42,8 @@ pub struct IconButton {
     padding: (Size, Size, Size, Size),
     /// Margin in pixels, ordered as (top, right, left, bottom), you can use the margin!() macro to convert a single value or x and y value to this form.
     margin: (Size, Size, Size, Size),
+    /// The tooltip of the button
+    tooltip: Option<String>,
     /// If the button should be disabled
     disabled: bool,
 }
@@ -45,7 +52,10 @@ impl RenderOnce for IconButton {
     fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
         let disabled = self.disabled;
 
+        println!("{}, {:?}", self.id, self.tooltip);
+
         let d = div()
+            .id(self.id)
             .flex()
             .when_else(
                 self.height.is_some(),
@@ -78,17 +88,23 @@ impl RenderOnce for IconButton {
             })
             .bg(&self.colour)
             .hover(|style| style.bg(self.hover_colour.unwrap_or(self.colour)))
+            .when_some(self.tooltip, |_self, tooltip| {
+                _self.tooltip(move |_window, _cx| {
+                    let tp = tooltip.clone();
+                    _cx.new(|_| SimpleTooltip::new(tp)).into()
+                })
+            })
             .when(!self.disabled, |_self| {
                 _self.when_some(self.on_click, |__self, on_click| {
                     __self.on_mouse_down(MouseButton::Left, on_click)
                 })
             })
-            .child(
-                cx.new(|_| Icon::new()
+            .child(cx.new(|_| {
+                Icon::new()
                     .icon(self.icon)
                     .colour(self.icon_colour)
-                    .when_some(self.icon_size, |_self, size| _self.size(size.px())))
-            );
+                    .when_some(self.icon_size, |_self, size| _self.size(size.px()))
+            }));
 
         let justified = match self.justify_content {
             ContentPosition::Start => d.justify_start(),
@@ -107,10 +123,13 @@ impl RenderOnce for IconButton {
 }
 
 impl IconButton {
-    pub fn new() -> Self {
-        Self::default()
+    pub fn new<T: Into<ElementId>>(id: T) -> Self {
+        Self {
+            id: id.into(),
+            ..Self::default()
+        }
     }
-    
+
     /// Set the icon
     pub fn icon(mut self, icon: Icons) -> Self {
         self.icon = icon;
@@ -125,7 +144,7 @@ impl IconButton {
         self.on_click = Some(Box::new(handler));
         self
     }
-    
+
     /// Horizontal position for the text
     pub fn justify_content(mut self, pos: ContentPosition) -> Self {
         self.justify_content = pos;
@@ -259,6 +278,26 @@ impl IconButton {
         self.margin = (margin.clone(), self.margin.1, margin.clone(), self.margin.3);
         self
     }
+    /// Sets the margin for the top of the button.
+    pub fn mt(mut self, margin: Size) -> Self {
+        self.margin = (margin.clone(), self.margin.1, self.margin.2, self.margin.3);
+        self
+    }
+    /// Sets the margin for the right of the button.
+    pub fn mr(mut self, margin: Size) -> Self {
+        self.margin = (self.margin.0, margin.clone(), self.margin.2, self.margin.3);
+        self
+    }
+    /// Sets the margin for the bottom of the button.
+    pub fn mb(mut self, margin: Size) -> Self {
+        self.margin = (self.margin.0, self.margin.1, margin.clone(), self.margin.3);
+        self
+    }
+    /// Sets the margin for the left of the button.
+    pub fn ml(mut self, margin: Size) -> Self {
+        self.margin = (self.margin.0, self.margin.1, self.margin.2, margin.clone());
+        self
+    }
     /// Margin for all sides, given as a single Size value.
     pub fn ma(mut self, margin: Size) -> Self {
         self.margin = (
@@ -267,6 +306,11 @@ impl IconButton {
             margin.clone(),
             margin.clone(),
         );
+        self
+    }
+    /// Set the buttons tooltip
+    pub fn tooltip<T: ToString>(mut self, tooltip: T) -> Self {
+        self.tooltip = Some(tooltip.to_string());
         self
     }
     /// Disable button
@@ -319,6 +363,7 @@ impl IconButton {
 impl Default for IconButton {
     fn default() -> Self {
         Self {
+            id: "".into(),
             icon: Icons::Close,
             justify_content: ContentPosition::Start,
             align_text: ContentPosition::Start,
@@ -334,6 +379,7 @@ impl Default for IconButton {
             on_click: None,
             padding: padding!(Size::Px(0.0)),
             margin: margin!(Size::Px(0.0)),
+            tooltip: None,
             disabled: false,
         }
     }

@@ -2,7 +2,9 @@ use crate::state::{Project, State, StateProvider};
 use crate::style::{Colour, Size, StyleProvider};
 use crate::utils::logger::warning;
 use crate::widgets::core::button::button::{Button, ContentPosition};
+use crate::widgets::core::button::icon_button::IconButton;
 use crate::widgets::core::divider::Divider;
+use crate::widgets::core::icon::Icons;
 use crate::widgets::styling::Direction;
 use crate::{AlertHandler, AsyncAlertHandler};
 use cargo_ptest::config::Config;
@@ -15,10 +17,12 @@ use gpui::{
 };
 use std::env::set_current_dir;
 use std::path::PathBuf;
-use crate::widgets::core::button::icon_button::IconButton;
-use crate::widgets::core::icon::Icons;
 
-fn run_tests(dir: PathBuf, cx: &AsyncApp) -> Task<Result<Vec<ParsedTestGroup>, RunError>> {
+fn run_tests(
+    dir: PathBuf,
+    args: Vec<String>,
+    cx: &AsyncApp,
+) -> Task<Result<Vec<ParsedTestGroup>, RunError>> {
     cx.background_executor().spawn(async move {
         let _ = set_current_dir(dir);
 
@@ -27,10 +31,7 @@ fn run_tests(dir: PathBuf, cx: &AsyncApp) -> Task<Result<Vec<ParsedTestGroup>, R
                 debug: false,
                 ..Default::default()
             }),
-            Some(vec![
-                "--no-fail-fast".to_string(),
-                "--workspace".to_string(),
-            ]),
+            Some(args),
         ) {
             Ok(res) => Ok(res),
             Err(err) => {
@@ -126,50 +127,109 @@ impl Render for ControlBar {
                     .w_full()
                     .bg(&cx.style().controlbar.bg_colour)
                     .child(
-                        Button::new()
-                            .text("Run Tests")
-                            .justify_content(ContentPosition::Centre)
-                            .align_text(ContentPosition::Centre)
-                            .rounding_all(cx.style().rounding)
-                            .h(cx.style().controlbar.button_height)
-                            .mx(cx.style().margin)
-                            .colour(&cx.style().primary_colour)
-                            .hover_colour(&cx.style().hover_primary_colour)
-                            .text_size(Size::Px(15.0))
-                            .text_colour(&cx.style().text_colour)
-                            .on_click(|_e, _window, _cx| {
-                                _cx.update_global::<State, ()>(|global, _cx| {
-                                    global.status.running_tests = true;
-                                });
-                                _window.refresh();
+                        div()
+                            .flex()
+                            .flex_row()
+                            .child(
+                                Button::new("run-tests-button")
+                                    .text("Run Tests")
+                                    .justify_content(ContentPosition::Centre)
+                                    .align_text(ContentPosition::Centre)
+                                    .rounding((
+                                        cx.style().rounding,
+                                        0.0.into(),
+                                        0.0.into(),
+                                        cx.style().rounding,
+                                    ))
+                                    .h(cx.style().controlbar.button_height)
+                                    .ml(cx.style().margin)
+                                    .colour(&cx.style().primary_colour)
+                                    .hover_colour(&cx.style().hover_primary_colour)
+                                    .text_size(Size::Px(15.0))
+                                    .text_colour(&cx.style().text_colour)
+                                    .tooltip("Run the projects tests")
+                                    .on_click(|_e, _window, _cx| {
+                                        _cx.update_global::<State, ()>(|global, _cx| {
+                                            global.status.running_tests = true;
+                                        });
+                                        _window.refresh();
 
-                                let dir = _cx.read_global::<State, PathBuf>(|global, ___cx| {
-                                    global.get_active_project().unwrap().path
-                                });
-                                _cx.spawn(async |__cx| {
-                                    match run_tests(dir, __cx).await {
-                                        Ok(res) => {
-                                            let _ =
-                                                __cx.update_global::<State, ()>(|global, ___cx| {
-                                                    global.set_tests(global.active_project, res);
-                                                    global.status.running_tests = false;
-                                                });
-                                        }
-                                        Err(err) => {
-                                            __cx.alert_error(
-                                                format!("Could not run tests: {}", err.error),
-                                                Some(5000.0),
-                                            );
-                                        }
-                                    };
-                                    __cx.refresh()
-                                })
-                                .detach();
-                            })
-                            .render(window, cx),
+                                        let dir =
+                                            _cx.read_global::<State, PathBuf>(|global, ___cx| {
+                                                global.get_active_project().unwrap().path
+                                            });
+                                        _cx.spawn(async |__cx| {
+                                            let args: Vec<String> = __cx
+                                                .read_global::<State, Vec<String>>(|global, _| {
+                                                    global.run_args.clone()
+                                                })
+                                                .unwrap_or(vec![
+                                                    "--no-fail-fast".to_string(),
+                                                    "--workspace".to_string(),
+                                                ]);
+
+                                            match run_tests(dir, args, __cx).await {
+                                                Ok(res) => {
+                                                    let _ = __cx.update_global::<State, ()>(
+                                                        |global, ___cx| {
+                                                            global.set_tests(
+                                                                global.active_project,
+                                                                res,
+                                                            );
+                                                            global.status.running_tests = false;
+                                                        },
+                                                    );
+                                                }
+                                                Err(err) => {
+                                                    __cx.alert_error(
+                                                        format!(
+                                                            "Could not run tests: {}",
+                                                            err.error
+                                                        ),
+                                                        Some(5000.0),
+                                                    );
+                                                }
+                                            };
+                                            __cx.refresh()
+                                        })
+                                        .detach();
+                                    })
+                                    .render(window, cx),
+                            )
+                            .child(
+                                Divider::new()
+                                    .thickness(1.0)
+                                    .colour(&cx.style().separator_colour)
+                                    .direction(Direction::Vertical)
+                                    .render(window, cx),
+                            )
+                            .child(
+                                IconButton::new("run-settings-button")
+                                    .icon(Icons::Settings)
+                                    .justify_content(ContentPosition::Centre)
+                                    .align_text(ContentPosition::Centre)
+                                    .rounding((
+                                        0.0.into(),
+                                        cx.style().rounding,
+                                        cx.style().rounding,
+                                        0.0.into(),
+                                    ))
+                                    .h(cx.style().controlbar.button_height)
+                                    .w(cx.style().controlbar.button_height)
+                                    .mr(cx.style().margin)
+                                    .colour(&cx.style().primary_colour)
+                                    .hover_colour(&cx.style().hover_primary_colour)
+                                    .icon_size(Size::Px(15.0))
+                                    .icon_colour(&cx.style().text_colour)
+                                    .tooltip("Edit run settings")
+                                    .on_click(|_e, _window, _cx| {
+                                        println!("modal to edit run settings")
+                                    })
+                                    .render(window, cx),
+                            ),
                     )
                     .child(
-                        IconButton::new()
+                        IconButton::new("clear-tests-button")
                             .icon(Icons::Trash)
                             .justify_content(ContentPosition::Centre)
                             .align_text(ContentPosition::Centre)
@@ -181,6 +241,7 @@ impl Render for ControlBar {
                             .hover_colour(Colour::Rgba(0xffffff22))
                             .icon_size(cx.style().controlbar.button_height * 0.75)
                             .icon_colour(&cx.style().text_colour)
+                            .tooltip("Clear tests")
                             .on_click(|_, _window, _cx| {
                                 _cx.update_global::<State, ()>(|global, _cx| {
                                     global.clear_tests(global.active_project)
@@ -197,7 +258,7 @@ impl Render for ControlBar {
                             .render(window, cx),
                     )
                     .child(
-                        IconButton::new()
+                        IconButton::new("open-folder-location-button")
                             .icon(Icons::OpenFolder)
                             .justify_content(ContentPosition::Centre)
                             .align_text(ContentPosition::Centre)
@@ -210,6 +271,7 @@ impl Render for ControlBar {
                             .hover_colour(Colour::Rgba(0xffffff22))
                             .icon_size(cx.style().controlbar.button_height * 0.75)
                             .icon_colour(&cx.style().text_colour)
+                            .tooltip("Open folder location")
                             .on_click(|_, _window, _cx| {
                                 if _cx.state().has_active_project() {
                                     _cx.open_with_system(
