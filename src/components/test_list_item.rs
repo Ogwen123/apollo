@@ -31,9 +31,10 @@ impl Render for TestListItem {
                     .flex()
                     .flex_row()
                     .h_full()
+                    .child(index.to_string())
                     .child(
                         div()
-                            .w(px(60.0))
+                            .w(px(70.0))
                             .text_color(match self.test_data.status {
                                 Status::Failed => &cx.style().failed_colour,
                                 Status::Ignored => &cx.style().ignore_colour,

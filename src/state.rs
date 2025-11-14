@@ -151,7 +151,7 @@ pub struct RunArgs {
     pub bin: bool,
     pub docs: bool,
     pub workspace: bool,
-    pub no_fail_fast: bool
+    pub no_fail_fast: bool,
 }
 
 impl Default for RunArgs {
@@ -161,17 +161,14 @@ impl Default for RunArgs {
             bin: false,
             docs: false,
             workspace: true,
-            no_fail_fast: true
+            no_fail_fast: true,
         }
     }
 }
 
 impl RunArgs {
     pub fn default_vec() -> Vec<String> {
-        vec![
-            "--no-fail-fast".to_string(),
-            "--workspace".to_string(),
-        ]
+        vec!["--no-fail-fast".to_string(), "--workspace".to_string()]
     }
 }
 

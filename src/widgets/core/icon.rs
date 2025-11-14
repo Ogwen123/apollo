@@ -11,6 +11,9 @@ pub enum Icons {
     Trash,
     ChevronDown,
     Settings,
+    Check,
+    Ban,
+    AlertCircle,
 }
 
 impl Into<SharedString> for Icons {
@@ -20,8 +23,11 @@ impl Into<SharedString> for Icons {
             Icons::Close => SharedString::from("svg/close.svg"),
             Icons::OpenFolder => SharedString::from("svg/open_folder.svg"),
             Icons::Trash => SharedString::from("svg/trash.svg"),
-            Icons::ChevronDown => SharedString::from("svg/chevron-down.svg"),
+            Icons::ChevronDown => SharedString::from("svg/chevron_down.svg"),
             Icons::Settings => SharedString::from("svg/settings.svg"),
+            Icons::Check => SharedString::from("svg/check.svg"),
+            Icons::Ban => SharedString::from("svg/ban.svg"),
+            Icons::AlertCircle => SharedString::from("svg/alert_circle.svg"),
         }
     }
 }
@@ -46,8 +52,8 @@ impl Icon {
         self
     }
 
-    pub fn colour(mut self, colour: Colour) -> Self {
-        self.colour = colour;
+    pub fn colour<T: Into<Colour>>(mut self, colour: T) -> Self {
+        self.colour = colour.into();
         self
     }
 

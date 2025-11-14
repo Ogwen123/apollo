@@ -31,6 +31,8 @@ impl Render for Tests {
             .when(show_test, |_self| {
                 _self.child(
                     div()
+                        .flex()
+                        .flex_col()
                         .w_full()
                         .when_else(
                             horizontal_positioning,
@@ -39,11 +41,15 @@ impl Render for Tests {
                         )
                         .child(
                             div()
-                                .id("test_list_parent")
+                                .id("test-list-parent")
+                                .flex()
+                                .when(!horizontal_positioning, |_self| {
+                                    _self.h(px(600.0))
+                                })
                                 .overflow_scroll()
                                 .w_full()
-                                .h_1_2()
-                                .child(cx.new(|_| TestList {})), //.on_scroll_wheel(|e, _, _| println!("{:?}", e.delta)),
+                                .child(cx.new(|_| TestList {})),
+                            //.on_scroll_wheel(|e, _, _| println!("{:?}", e.delta)),
                         )
                         .child(
                             Divider::new()
@@ -56,8 +62,8 @@ impl Render for Tests {
                             div()
                                 .when_else(
                                     horizontal_positioning,
-                                    |_self| _self.w_1_2().h_full(),
-                                    |_self| _self.w_full().h_1_2(),
+                                    |_self| _self.w(px(600.0)).h_full(),
+                                    |_self| _self.w_full(),
                                 )
                                 .when_else(
                                     cx.state().has_active_project()

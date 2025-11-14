@@ -26,18 +26,28 @@ use std::sync::Arc;
 type ModalBuilderFunction = Rc<dyn Fn(Modal, &mut Window, &mut App) -> Modal + 'static>;
 
 trait ModalHelper {
-    fn open_modal(&mut self, cx: &mut App, modal: impl Fn(Modal, &mut Window, &mut App) -> Modal + 'static);
+    fn open_modal(
+        &mut self,
+        cx: &mut App,
+        modal: impl Fn(Modal, &mut Window, &mut App) -> Modal + 'static,
+    );
     fn close_modal(&mut self, cx: &mut App);
 }
 
 impl ModalHelper for Window {
-    fn open_modal(&mut self, cx: &mut App, builder: impl Fn(Modal, &mut Window, &mut App) -> Modal + 'static) {
+    fn open_modal(
+        &mut self,
+        cx: &mut App,
+        builder: impl Fn(Modal, &mut Window, &mut App) -> Modal + 'static,
+    ) {
         let root = self
             .root::<Base>()
             .flatten()
             .expect("Window root should be type Base");
         root.update(cx, |base, cx| {
-            base.modals.push(ModalBuilder { builder: Rc::new(builder) });
+            base.modals.push(ModalBuilder {
+                builder: Rc::new(builder),
+            });
         });
         self.refresh()
     }

@@ -6,7 +6,10 @@ use crate::widgets::core::divider::Divider;
 use crate::widgets::core::icon::Icons;
 use crate::widgets::styling::{Colour, Direction};
 use gpui::prelude::FluentBuilder;
-use gpui::{AppContext, BorrowAppContext, Context, InteractiveElement, IntoElement, MouseButton, ParentElement, Render, RenderOnce, Styled, Window, div, px, rgb, rgba, FontWeight};
+use gpui::{
+    AppContext, BorrowAppContext, Context, FontWeight, InteractiveElement, IntoElement,
+    MouseButton, ParentElement, Render, RenderOnce, Styled, Window, div, px, rgb, rgba,
+};
 
 #[derive(Clone)]
 pub struct TabBarItem {

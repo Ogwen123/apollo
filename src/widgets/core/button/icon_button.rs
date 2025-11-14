@@ -51,7 +51,7 @@ pub struct IconButton {
 impl RenderOnce for IconButton {
     fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
         let disabled = self.disabled;
-        
+
         let d = div()
             .id(self.id)
             .flex()

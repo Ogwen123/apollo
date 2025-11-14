@@ -120,7 +120,7 @@ impl Render for ToolBar {
                                     .body(div().children(vec![format!("Version: {}", env!("CARGO_PKG_VERSION")), "Author: Owen Jones".to_string()]))
                                     .rounding(__cx.style().rounding)
                                     .bg_colour(&__cx.style().bg_colour)
-                                    .padding(Size::Px(10.0))
+                                    .p(Size::Px(10.0))
                                     .accept_button_options(None)
                                     .cancel_button_options(Some(ModalButtonOptions {
                                         show: true,

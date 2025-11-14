@@ -5,8 +5,9 @@ use crate::widgets::core::button::button::{Button, ContentPosition};
 use crate::widgets::core::button::icon_button::IconButton;
 use crate::widgets::core::divider::Divider;
 use crate::widgets::core::icon::Icons;
+use crate::widgets::core::modal::ModalButtonOptions;
 use crate::widgets::styling::Direction;
-use crate::{AlertHandler, AsyncAlertHandler};
+use crate::{AlertHandler, AsyncAlertHandler, ModalHelper};
 use cargo_ptest::config::Config;
 use cargo_ptest::parse::ParsedTestGroup;
 use cargo_ptest::run::{RunError, run};
@@ -220,7 +221,47 @@ impl Render for ControlBar {
                                     .icon_colour(&cx.style().text_colour)
                                     .tooltip("Edit run settings")
                                     .on_click(|_e, _window, _cx| {
-                                        
+                                        _window.open_modal(_cx, |modal, __window, __cx| {
+                                            modal
+                                                .title("Run Config")
+                                                .body(
+                                                    div()
+                                                        .child("Lib")
+                                                        .child("Bin")
+                                                        .child("Docs")
+                                                        .child("Workspace")
+                                                        .child("No Fail Fast"),
+                                                )
+                                                .h(px(500.0))
+                                                .w(px(500.0))
+                                                .rounding(__cx.style().rounding)
+                                                .bg_colour(&__cx.style().bg_colour)
+                                                .p(Size::Px(10.0))
+                                                .accept_button_options(None)
+                                                .cancel_button_options(Some(
+                                                    ModalButtonOptions {
+                                                        show: true,
+                                                        text: "Close".to_string(),
+                                                        colour: __cx.style().bg_colour.clone(),
+                                                        hover_colour: Some(Colour::Rgba(
+                                                            0xffffff22,
+                                                        )),
+                                                        border_width: Size::Px(1.0),
+                                                        border_colour: Some(
+                                                            __cx.style().separator_colour.clone(),
+                                                        ),
+                                                        padding: Size::Px(50.0),
+                                                        rounding: __cx.style().rounding,
+                                                        on_click: None,
+                                                    }
+                                                    .on_click(|e, ___window, ___cx| {
+                                                        ___window.close_modal(___cx)
+                                                    }),
+                                                ))
+                                                .on_close(|e, ___window, ___cx| {
+                                                    ___window.close_modal(___cx)
+                                                })
+                                        })
                                     })
                                     .render(window, cx),
                             ),

@@ -5,7 +5,11 @@ use crate::widgets::core::button::button::{Button, ContentPosition};
 use crate::widgets::core::button::icon_button::IconButton;
 use crate::widgets::core::icon::Icons;
 use gpui::prelude::FluentBuilder;
-use gpui::{App, BorrowAppContext, Context, DefiniteLength, InteractiveElement, IntoElement, Length, MouseButton, MouseDownEvent, ParentElement, Pixels, Render, RenderOnce, Styled, Window, anchored, div, point, px, rgb, rgba, Div};
+use gpui::{
+    App, BorrowAppContext, Context, DefiniteLength, Div, InteractiveElement, IntoElement, Length,
+    MouseButton, MouseDownEvent, ParentElement, Pixels, Render, RenderOnce, Styled, Window,
+    anchored, div, point, px, rgb, rgba,
+};
 use std::sync::Arc;
 
 #[derive(Clone)]
@@ -95,6 +99,7 @@ impl RenderOnce for Modal {
                         div()
                             .flex()
                             .flex_col()
+                            .flex_grow()
                             .occlude()
                             .bg(&self.bg_colour)
                             .w(self.width)
@@ -109,7 +114,7 @@ impl RenderOnce for Modal {
                                     .text_2xl()
                                     .mb_2()
                                     .items_center()
-                                    .h(Length::from(DefiniteLength::Fraction(0.1)))
+                                    .h(px(40.0))
                                     .child(self.title.clone())
                                     .child({
                                         let oc = self.on_close.clone();
@@ -134,16 +139,13 @@ impl RenderOnce for Modal {
                                             .render(window, cx)
                                     }),
                             )
-                            .child(
-                                div()
-                                    .h(Length::from(DefiniteLength::Fraction(0.8)))
-                                    .child(self.body)
-                            )
+                            .child(div().flex().flex_grow().child(self.body))
                             .child(
                                 div()
                                     .flex()
                                     .flex_row()
-                                    .h(Length::from(DefiniteLength::Fraction(0.1)))
+                                    .items_end()
+                                    .h(px(40.0))
                                     .when(self.accept_button.show, |_self| {
                                         let oc = self.accept_button.on_click.clone();
 
@@ -242,17 +244,17 @@ impl Modal {
         self
     }
     /// Set the width of the modal
-    pub fn width(mut self, width: Pixels) -> Self {
+    pub fn w(mut self, width: Pixels) -> Self {
         self.width = width;
         self
     }
     /// Set the height of the modal
-    pub fn height(mut self, height: Pixels) -> Self {
+    pub fn h(mut self, height: Pixels) -> Self {
         self.height = height;
         self
     }
     /// Set the padding on the inside edge of the modal
-    pub fn padding(mut self, padding: Size) -> Self {
+    pub fn p(mut self, padding: Size) -> Self {
         self.padding = padding;
         self
     }
