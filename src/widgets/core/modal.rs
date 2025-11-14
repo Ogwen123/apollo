@@ -5,11 +5,7 @@ use crate::widgets::core::button::button::{Button, ContentPosition};
 use crate::widgets::core::button::icon_button::IconButton;
 use crate::widgets::core::icon::Icons;
 use gpui::prelude::FluentBuilder;
-use gpui::{
-    App, BorrowAppContext, Context, DefiniteLength, InteractiveElement, IntoElement, Length,
-    MouseButton, MouseDownEvent, ParentElement, Pixels, Render, RenderOnce, Styled, Window,
-    anchored, div, point, px, rgb, rgba,
-};
+use gpui::{App, BorrowAppContext, Context, DefiniteLength, InteractiveElement, IntoElement, Length, MouseButton, MouseDownEvent, ParentElement, Pixels, Render, RenderOnce, Styled, Window, anchored, div, point, px, rgb, rgba, Div};
 use std::sync::Arc;
 
 #[derive(Clone)]
@@ -44,12 +40,14 @@ impl ModalButtonOptions {
     }
 }
 
+#[derive(IntoElement)]
 /// Displays a modal which is horizontally centred
 pub struct Modal {
     /// The title of the modal
     pub title: String,
     /// The body as a vec of strings that represent each line in the body
-    pub body: Vec<String>,
+    // pub body: Vec<String>,
+    pub body: Div,
     /// The width of the modal
     pub width: Pixels,
     /// The height of the modal
@@ -72,8 +70,8 @@ pub struct Modal {
     pub backdrop_close: bool,
 }
 
-impl Render for Modal {
-    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+impl RenderOnce for Modal {
+    fn render(mut self, window: &mut Window, cx: &mut App) -> impl IntoElement {
         anchored()
             .snap_to_window()
             .child(
@@ -139,7 +137,7 @@ impl Render for Modal {
                             .child(
                                 div()
                                     .h(Length::from(DefiniteLength::Fraction(0.8)))
-                                    .children(self.body.iter().map(|x| div().child(x.to_string()))),
+                                    .child(self.body)
                             )
                             .child(
                                 div()
@@ -239,8 +237,8 @@ impl Modal {
         self
     }
     /// Set the text in the body of the modal
-    pub fn body<T: ToString>(mut self, body: Vec<T>) -> Self {
-        self.body = body.iter().map(|x| x.to_string()).collect::<Vec<String>>();
+    pub fn body(mut self, body: Div) -> Self {
+        self.body = body;
         self
     }
     /// Set the width of the modal
@@ -316,7 +314,7 @@ impl Default for Modal {
     fn default() -> Self {
         Self {
             title: "Placeholder title".to_string(),
-            body: vec!["Line 1".to_string(), "Line 2".to_string()],
+            body: div().child("Default Body Text"),
             width: px(300.0),
             height: px(300.0),
             padding: Size::Px(0.0),

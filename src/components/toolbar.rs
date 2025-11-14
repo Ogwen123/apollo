@@ -113,29 +113,32 @@ impl Render for ToolBar {
                         .hover_colour(Colour::Rgba(BUTTON_HOVER_COLOUR))
                         .rounding_all(cx.style().rounding)
                         .on_click(|_e, _window, _cx| {
-                            _window.open_modal(_cx, Modal::new()
-                                .title("About")
-                                .body(vec![format!("Version: {}", env!("CARGO_PKG_VERSION")), "Author: Owen Jones".to_string()])
-                                .rounding(_cx.style().rounding)
-                                .bg_colour(&_cx.style().bg_colour)
-                                .padding(Size::Px(10.0))
-                                .accept_button_options(None)
-                                .cancel_button_options(Some(ModalButtonOptions {
-                                    show: true,
-                                    text: "Close".to_string(),
-                                    colour: _cx.style().bg_colour.clone(),
-                                    hover_colour: Some(Colour::Rgba(0xffffff22)),
-                                    border_width: Size::Px(1.0),
-                                    border_colour: Some(_cx.style().separator_colour.clone()),
-                                    padding: Size::Px(50.0),
-                                    rounding: _cx.style().rounding,
-                                    on_click: None
-                                }.on_click(|e, __window, __cx| {
-                                    __window.close_modal(__cx)
-                                })))
-                                .on_close(|e, __window, __cx| {
-                                    __window.close_modal(__cx)
-                                })
+                            _window.open_modal(_cx, |modal, __window, __cx| {
+                                modal
+                                    .title("About")
+                                    //.body(vec![format!("Version: {}", env!("CARGO_PKG_VERSION")), "Author: Owen Jones".to_string()])
+                                    .body(div().children(vec![format!("Version: {}", env!("CARGO_PKG_VERSION")), "Author: Owen Jones".to_string()]))
+                                    .rounding(__cx.style().rounding)
+                                    .bg_colour(&__cx.style().bg_colour)
+                                    .padding(Size::Px(10.0))
+                                    .accept_button_options(None)
+                                    .cancel_button_options(Some(ModalButtonOptions {
+                                        show: true,
+                                        text: "Close".to_string(),
+                                        colour: __cx.style().bg_colour.clone(),
+                                        hover_colour: Some(Colour::Rgba(0xffffff22)),
+                                        border_width: Size::Px(1.0),
+                                        border_colour: Some(__cx.style().separator_colour.clone()),
+                                        padding: Size::Px(50.0),
+                                        rounding: __cx.style().rounding,
+                                        on_click: None
+                                    }.on_click(|e, ___window, ___cx| {
+                                        ___window.close_modal(___cx)
+                                    })))
+                                    .on_close(|e, ___window, ___cx| {
+                                        ___window.close_modal(___cx)
+                                    })
+                            }
                             )
                         }).render(window, cx)
                     )

@@ -1,4 +1,4 @@
-use crate::state::{Project, State, StateProvider};
+use crate::state::{Project, RunArgs, State, StateProvider};
 use crate::style::{Colour, Size, StyleProvider};
 use crate::utils::logger::warning;
 use crate::widgets::core::button::button::{Button, ContentPosition};
@@ -161,12 +161,9 @@ impl Render for ControlBar {
                                         _cx.spawn(async |__cx| {
                                             let args: Vec<String> = __cx
                                                 .read_global::<State, Vec<String>>(|global, _| {
-                                                    global.run_args.clone()
+                                                    global.run_args.clone().into()
                                                 })
-                                                .unwrap_or(vec![
-                                                    "--no-fail-fast".to_string(),
-                                                    "--workspace".to_string(),
-                                                ]);
+                                                .unwrap_or(RunArgs::default_vec());
 
                                             match run_tests(dir, args, __cx).await {
                                                 Ok(res) => {
@@ -223,7 +220,7 @@ impl Render for ControlBar {
                                     .icon_colour(&cx.style().text_colour)
                                     .tooltip("Edit run settings")
                                     .on_click(|_e, _window, _cx| {
-                                        println!("modal to edit run settings")
+                                        
                                     })
                                     .render(window, cx),
                             ),

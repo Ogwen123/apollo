@@ -96,9 +96,7 @@ impl RenderOnce for Button {
             .bg(&self.colour)
             .hover(|style| style.bg(self.hover_colour.unwrap_or(self.colour)))
             .when_some(self.tooltip, |_self, tooltip| {
-                println!("setting tooltip");
                 _self.tooltip(move |_window, _cx| {
-                    println!("tooltip");
                     let tp = tooltip.clone();
                     _cx.new(|_| SimpleTooltip::new(tp)).into()
                 })

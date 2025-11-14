@@ -6,10 +6,7 @@ use crate::widgets::core::divider::Divider;
 use crate::widgets::core::icon::Icons;
 use crate::widgets::styling::{Colour, Direction};
 use gpui::prelude::FluentBuilder;
-use gpui::{
-    AppContext, BorrowAppContext, Context, InteractiveElement, IntoElement, MouseButton,
-    ParentElement, Render, RenderOnce, Styled, Window, div, px, rgb, rgba,
-};
+use gpui::{AppContext, BorrowAppContext, Context, InteractiveElement, IntoElement, MouseButton, ParentElement, Render, RenderOnce, Styled, Window, div, px, rgb, rgba, FontWeight};
 
 #[derive(Clone)]
 pub struct TabBarItem {
@@ -32,6 +29,7 @@ impl Render for TabBarItem {
             .max_w(px(300f32))
             .h(cx.style().tabbar.height.get())
             .pl(px(4.0))
+            .font_weight(FontWeight(900.0))
             .child(self.name.clone())
             .border_b_4()
             .when_else(

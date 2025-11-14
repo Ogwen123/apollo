@@ -143,6 +143,66 @@ pub struct Alert {
     pub _type: AlertType,
 }
 
+// RUN ARGS
+
+#[derive(Clone)]
+pub struct RunArgs {
+    pub lib: bool,
+    pub bin: bool,
+    pub docs: bool,
+    pub workspace: bool,
+    pub no_fail_fast: bool
+}
+
+impl Default for RunArgs {
+    fn default() -> Self {
+        Self {
+            lib: false,
+            bin: false,
+            docs: false,
+            workspace: true,
+            no_fail_fast: true
+        }
+    }
+}
+
+impl RunArgs {
+    pub fn default_vec() -> Vec<String> {
+        vec![
+            "--no-fail-fast".to_string(),
+            "--workspace".to_string(),
+        ]
+    }
+}
+
+impl Into<Vec<String>> for RunArgs {
+    fn into(self) -> Vec<String> {
+        let mut args = Vec::new();
+
+        if self.lib {
+            args.push(String::from("--lib"))
+        }
+
+        if self.bin {
+            args.push(String::from("--bin"))
+        }
+
+        if self.docs {
+            args.push(String::from("--docs"))
+        }
+
+        if self.workspace {
+            args.push(String::from("--workspace"))
+        }
+
+        if self.no_fail_fast {
+            args.push(String::from("--no-fail-fast"))
+        }
+
+        args
+    }
+}
+
 // STATE
 
 #[derive(Clone)]
@@ -157,7 +217,7 @@ pub struct State {
     /// Stores data for the alert banner
     pub alert: Option<Alert>,
     /// Args passed into cargo_ptest::Run::run()
-    pub run_args: Vec<String>,
+    pub run_args: RunArgs,
 }
 
 impl State {
@@ -341,7 +401,7 @@ impl Default for State {
             status: Default::default(),
             csd: false,
             alert: None,
-            run_args: vec!["--no-fail-fast".to_string(), "--workspace".to_string()],
+            run_args: Default::default(),
         }
     }
 }

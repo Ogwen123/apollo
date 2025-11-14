@@ -20,21 +20,24 @@ use gpui::{
 };
 use std::env;
 use std::path::PathBuf;
+use std::rc::Rc;
 use std::sync::Arc;
 
+type ModalBuilderFunction = Rc<dyn Fn(Modal, &mut Window, &mut App) -> Modal + 'static>;
+
 trait ModalHelper {
-    fn open_modal(&mut self, cx: &mut App, modal: Modal);
+    fn open_modal(&mut self, cx: &mut App, modal: impl Fn(Modal, &mut Window, &mut App) -> Modal + 'static);
     fn close_modal(&mut self, cx: &mut App);
 }
 
 impl ModalHelper for Window {
-    fn open_modal(&mut self, cx: &mut App, modal: Modal) {
+    fn open_modal(&mut self, cx: &mut App, builder: impl Fn(Modal, &mut Window, &mut App) -> Modal + 'static) {
         let root = self
             .root::<Base>()
             .flatten()
             .expect("Window root should be type Base");
         root.update(cx, |base, cx| {
-            base.modals.push(modal);
+            base.modals.push(ModalBuilder { builder: Rc::new(builder) });
         });
         self.refresh()
     }
@@ -195,8 +198,13 @@ impl AsyncAlertHandler for AsyncApp {
     }
 }
 
+#[derive(Clone)]
+pub struct ModalBuilder {
+    pub builder: Rc<dyn Fn(Modal, &mut Window, &mut App) -> Modal + 'static>,
+}
+
 struct Base {
-    modals: Vec<Modal>,
+    modals: Vec<ModalBuilder>,
 }
 
 impl Render for Base {
@@ -212,26 +220,19 @@ impl Render for Base {
             .child(cx.new(|_| Workspace {}))
             .child(cx.new(|_| StatusBar {}))
             // Modals
-            .children(self.modals.iter().map(|x| {
-                cx.new(|_| Modal {
-                    title: x.title.clone(),
-                    body: x.body.clone(),
-                    width: x.width,
-                    height: x.height,
-                    padding: x.padding,
-                    rounding: x.rounding,
-                    bg_colour: x.bg_colour.clone(),
-                    accept_button: x.accept_button.clone(),
-                    cancel_button: x.cancel_button.clone(),
-                    top_offset: x.top_offset,
-                    on_close: if x.on_close.is_none() {
-                        None
-                    } else {
-                        Some(x.on_close.clone().unwrap())
-                    },
-                    backdrop_close: x.backdrop_close,
-                })
-            }))
+            .children({
+                let mut modals: Vec<Modal> = Vec::new();
+
+                for i in self.modals.clone() {
+                    let mut modal = Modal::new();
+
+                    modal = (i.builder)(modal, window, cx);
+
+                    modals.push(modal)
+                }
+
+                modals
+            })
     }
 }
 

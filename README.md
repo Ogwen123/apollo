@@ -5,14 +5,16 @@ A rust testing tool written in rust using [gpui](https://gpui.rs) and my custom 
 ## TODO
  - [x] generalise the sizing for the button widget in the same way the colours are to allow for percentages, etc.
  - [x] get global state displaying in the workspace
- - [ ] make an SVG icon button widget
+ - [x] make an SVG icon button widget
  - [x] add helper functions to state to make adding, removing projects etc
  - [ ] allow setting border width on individual sides in the button widget
  - [x] make generic modal widget
    - [x] add on_click callbacks to the modals buttons
-   - [ ] add close button to modal
+   - [x] add close button to modal
  - [x] switch passing the style to each component to use cx.global struct
  - [ ] add Into traits to Size
  - [x] make cargo-ptest run async
  - [ ] display the alerts from global state
- - [ ] make dropdown button for control bar
+ - [ ] make config modal for test running
+ - [ ] fix tooltips not working
+ - [ ] fix scrolling not working
