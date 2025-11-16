@@ -34,6 +34,7 @@ impl Render for Tests {
                         .flex()
                         .flex_col()
                         .w_full()
+                        .h_full()
                         .when_else(
                             horizontal_positioning,
                             |_self| _self.flex_row(),
@@ -43,11 +44,12 @@ impl Render for Tests {
                             div()
                                 .id("test-list-parent")
                                 .flex()
-                                .when(!horizontal_positioning, |_self| {
-                                    _self.h(px(600.0))
-                                })
+                                .when_else(
+                                    horizontal_positioning,
+                                    |_self| _self.w_1_3().h_full(),
+                                    |_self| _self.w_full().h_2_3(),
+                                )
                                 .overflow_scroll()
-                                .w_full()
                                 .child(cx.new(|_| TestList {})),
                             //.on_scroll_wheel(|e, _, _| println!("{:?}", e.delta)),
                         )
@@ -60,10 +62,12 @@ impl Render for Tests {
                         )
                         .child(
                             div()
+                                .id("test-info-parent")
+                                .overflow_scroll()
                                 .when_else(
                                     horizontal_positioning,
-                                    |_self| _self.w(px(600.0)).h_full(),
-                                    |_self| _self.w_full(),
+                                    |_self| _self.w_2_3().h_full(),
+                                    |_self| _self.w_full().h_1_3(),
                                 )
                                 .when_else(
                                     cx.state().has_active_project()
@@ -81,7 +85,7 @@ impl Render for Tests {
                         ),
                 )
             })
-            .when(!show_test, |_self| {
+            .when(!show_test, |_self| { // this is needed over a when_else so both closures don't borrow cx
                 _self.child(
                     div()
                         .flex()

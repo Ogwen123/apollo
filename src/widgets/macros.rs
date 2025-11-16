@@ -41,3 +41,15 @@ macro_rules! rounding {
         ($top, $right, $bottom, $left)
     };
 }
+
+/// For a single value, x, outputs (x, x, x, x)
+/// For 4 values, t, r, b, l, outputs (t, r, b, l) where t, r, b, l are top, right, bottom and left respectively
+#[macro_export]
+macro_rules! border {
+    ($all:expr) => {
+        ($all, $all, $all, $all)
+    };
+    ($top:expr, $right:expr, $bottom:expr, $left:expr) => {
+        ($top, $right, $bottom, $left)
+    };
+}

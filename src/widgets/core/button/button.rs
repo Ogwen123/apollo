@@ -1,6 +1,6 @@
 use crate::widgets::core::tooltip::SimpleTooltip;
 use crate::widgets::styling::{Colour, Size};
-use crate::{margin, padding, rounding};
+use crate::{border, margin, padding, rounding};
 use gpui::prelude::FluentBuilder;
 use gpui::{
     App, AppContext, Context, Element, ElementId, Hsla, InteractiveElement, IntoElement,
@@ -42,7 +42,7 @@ pub struct Button {
     /// Border colour
     border_colour: Option<Colour>,
     /// Border width in pixels
-    border_width: Size,
+    border_width: (Size, Size, Size, Size),
     /// Function ran on_mouse_down for left click
     on_click: Option<Box<dyn Fn(&MouseDownEvent, &mut Window, &mut App) + 'static>>,
     /// Padding in pixels, ordered as (top, right, left, bottom), you can use the padding!() macro to convert a single value or x and y value to this form.
@@ -88,7 +88,10 @@ impl RenderOnce for Button {
             .rounded_tr(self.rounding.1.abs())
             .rounded_br(self.rounding.2.abs())
             .rounded_bl(self.rounding.3.abs())
-            .border(self.border_width.abs())
+            .border_t(self.border_width.0.abs())
+            .border_r(self.border_width.1.abs())
+            .border_b(self.border_width.2.abs())
+            .border_l(self.border_width.3.abs())
             .when_some(self.border_colour, |_self, colour| {
                 _self.border_color(colour)
             })
@@ -217,8 +220,28 @@ impl Button {
         self
     }
     /// Border width in pixels
-    pub fn border_width(mut self, w: Size) -> Self {
-        self.border_width = w;
+    pub fn border_t(mut self, w: Size) -> Self {
+        self.border_width = (w, self.border_width.1, self.border_width.2, self.border_width.3);
+        self
+    }
+    /// Border width in pixels
+    pub fn border_r(mut self, w: Size) -> Self {
+        self.border_width = (self.border_width.0, w, self.border_width.2, self.border_width.3);
+        self
+    }
+    /// Border width in pixels
+    pub fn border_b(mut self, w: Size) -> Self {
+        self.border_width = (self.border_width.0, self.border_width.1, w, self.border_width.3);
+        self
+    }
+    /// Border width in pixels
+    pub fn border_l(mut self, w: Size) -> Self {
+        self.border_width = (self.border_width.0, self.border_width.1, self.border_width.2, w);
+        self
+    }
+    /// Border width in pixels
+    pub fn border_all(mut self, w: Size) -> Self {
+        self.border_width = (w, w, w, w);
         self
     }
     /// Padding in pixels, ordered as (top, right, bottom, left), you can use the padding!() macro to convert a single value or x and y value to this form.
@@ -376,7 +399,7 @@ impl Default for Button {
             hover_colour: None,
             text_colour: Colour::Rgb(0x000000),
             border_colour: None,
-            border_width: Size::Px(0.0),
+            border_width: border!(Size::Px(0.0)),
             on_click: None,
             padding: padding!(Size::Px(0.0)),
             margin: margin!(Size::Px(0.0)),

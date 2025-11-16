@@ -80,7 +80,7 @@ impl RenderOnce for Modal {
             .snap_to_window()
             .child(
                 div()
-                    .occlude()
+                    .block_mouse_except_scroll()
                     .bg(rgba(0x00000055))
                     .pl((window.viewport_size().width / 2.0) - (self.width / 2.0))
                     .pt(if self.top_offset.is_some() {
@@ -100,7 +100,7 @@ impl RenderOnce for Modal {
                             .flex()
                             .flex_col()
                             .flex_grow()
-                            .occlude()
+                            .block_mouse_except_scroll()
                             .bg(&self.bg_colour)
                             .w(self.width)
                             .h(self.height)
@@ -156,7 +156,7 @@ impl RenderOnce for Modal {
                                                 .pa(self.accept_button.padding)
                                                 .text_colour(Colour::Rgb(0xffffff))
                                                 .text(&self.accept_button.text)
-                                                .border_width(self.accept_button.border_width)
+                                                .border_all(self.accept_button.border_width)
                                                 .w_full()
                                                 .justify_content(ContentPosition::Centre)
                                                 .border_colour(
@@ -192,7 +192,7 @@ impl RenderOnce for Modal {
                                                 .pa(self.accept_button.padding)
                                                 .text_colour(Colour::Rgb(0xffffff))
                                                 .text(&self.cancel_button.text)
-                                                .border_width(self.cancel_button.border_width)
+                                                .border_all(self.cancel_button.border_width)
                                                 .w_full()
                                                 .justify_content(ContentPosition::Centre)
                                                 .border_colour(

@@ -1,8 +1,5 @@
 use crate::components::test_list_item::TestListItem;
 use crate::state::{Project, StateProvider};
-use cargo_ptest::parse::ParsedTest;
-use gpui::Overflow::Scroll;
-use gpui::prelude::FluentBuilder;
 use gpui::{
     AppContext, Context, Element, InteractiveElement, IntoElement, ParentElement, Render,
     StatefulInteractiveElement, Styled, UniformListScrollHandle, Window, div, px, uniform_list,

@@ -17,7 +17,6 @@ impl Render for Workspace {
 
         div()
             .id("workspace")
-            .overflow_scroll()
             .flex()
             .flex_col()
             .size_full()
