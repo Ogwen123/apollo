@@ -85,7 +85,8 @@ impl Render for Tests {
                         ),
                 )
             })
-            .when(!show_test, |_self| { // this is needed over a when_else so both closures don't borrow cx
+            .when(!show_test, |_self| {
+                // this is needed over a when_else so both closures don't borrow cx
                 _self.child(
                     div()
                         .flex()

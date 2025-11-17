@@ -22,6 +22,7 @@ use std::env;
 use std::path::PathBuf;
 use std::rc::Rc;
 use std::sync::Arc;
+use crate::components::alert::AlertDisplay;
 
 type ModalBuilderFunction = Rc<dyn Fn(Modal, &mut Window, &mut App) -> Modal + 'static>;
 
@@ -65,22 +66,51 @@ impl ModalHelper for Window {
 }
 
 trait AlertHandler {
-    fn alert_success<T: ToString>(&mut self, message: T, time: Option<f64>);
+    fn alert_success<T: ToString, M: ToString>(
+        &mut self,
+        title: Option<T>,
+        message: M,
+        time: Option<f64>,
+    );
 
-    fn alert_info<T: ToString>(&mut self, message: T, time: Option<f64>);
+    fn alert_info<T: ToString, M: ToString>(
+        &mut self,
+        title: Option<T>,
+        message: M,
+        time: Option<f64>,
+    );
 
-    fn alert_warning<T: ToString>(&mut self, message: T, time: Option<f64>);
+    fn alert_warning<T: ToString, M: ToString>(
+        &mut self,
+        title: Option<T>,
+        message: M,
+        time: Option<f64>,
+    );
 
-    fn alert_error<T: ToString>(&mut self, message: T, time: Option<f64>);
+    fn alert_error<T: ToString, M: ToString>(
+        &mut self,
+        title: Option<T>,
+        message: M,
+        time: Option<f64>,
+    );
 
     fn alert_clear(&mut self);
 }
 
 impl AlertHandler for App {
-    fn alert_success<T: ToString>(&mut self, message: T, time: Option<f64>) {
+    fn alert_success<T: ToString, M: ToString>(
+        &mut self,
+        title: Option<T>,
+        message: M,
+        time: Option<f64>,
+    ) {
         self.update_global::<State, ()>(|global, _| {
             global.alert = Some(Alert {
-                string: message.to_string(),
+                title: match title {
+                    Some(res) => Some(res.to_string()),
+                    None => None,
+                },
+                message: message.to_string(),
                 severity: AlertSeverity::SUCCESS,
                 _type: match time {
                     Some(res) => AlertType::Timed(res),
@@ -90,10 +120,19 @@ impl AlertHandler for App {
         })
     }
 
-    fn alert_info<T: ToString>(&mut self, message: T, time: Option<f64>) {
+    fn alert_info<T: ToString, M: ToString>(
+        &mut self,
+        title: Option<T>,
+        message: M,
+        time: Option<f64>,
+    ) {
         self.update_global::<State, ()>(|global, _| {
             global.alert = Some(Alert {
-                string: message.to_string(),
+                title: match title {
+                    Some(res) => Some(res.to_string()),
+                    None => None,
+                },
+                message: message.to_string(),
                 severity: AlertSeverity::INFO,
                 _type: match time {
                     Some(res) => AlertType::Timed(res),
@@ -103,10 +142,19 @@ impl AlertHandler for App {
         })
     }
 
-    fn alert_warning<T: ToString>(&mut self, message: T, time: Option<f64>) {
+    fn alert_warning<T: ToString, M: ToString>(
+        &mut self,
+        title: Option<T>,
+        message: M,
+        time: Option<f64>,
+    ) {
         self.update_global::<State, ()>(|global, _| {
             global.alert = Some(Alert {
-                string: message.to_string(),
+                title: match title {
+                    Some(res) => Some(res.to_string()),
+                    None => None,
+                },
+                message: message.to_string(),
                 severity: AlertSeverity::WARNING,
                 _type: match time {
                     Some(res) => AlertType::Timed(res),
@@ -116,10 +164,19 @@ impl AlertHandler for App {
         })
     }
 
-    fn alert_error<T: ToString>(&mut self, message: T, time: Option<f64>) {
+    fn alert_error<T: ToString, M: ToString>(
+        &mut self,
+        title: Option<T>,
+        message: M,
+        time: Option<f64>,
+    ) {
         self.update_global::<State, ()>(|global, _| {
             global.alert = Some(Alert {
-                string: message.to_string(),
+                title: match title {
+                    Some(res) => Some(res.to_string()),
+                    None => None,
+                },
+                message: message.to_string(),
                 severity: AlertSeverity::ERROR,
                 _type: match time {
                     Some(res) => AlertType::Timed(res),
@@ -137,23 +194,47 @@ impl AlertHandler for App {
 }
 
 trait AsyncAlertHandler {
-    fn alert_success<T: ToString>(&self, message: T, time: Option<f64>);
+    fn alert_success<T: ToString, M: ToString>(
+        &self,
+        title: Option<T>,
+        message: M,
+        time: Option<f64>,
+    );
 
-    fn alert_info<T: ToString>(&self, message: T, time: Option<f64>);
+    fn alert_info<T: ToString, M: ToString>(&self, title: Option<T>, message: M, time: Option<f64>);
 
-    fn alert_warning<T: ToString>(&self, message: T, time: Option<f64>);
+    fn alert_warning<T: ToString, M: ToString>(
+        &self,
+        title: Option<T>,
+        message: M,
+        time: Option<f64>,
+    );
 
-    fn alert_error<T: ToString>(&self, message: T, time: Option<f64>);
+    fn alert_error<T: ToString, M: ToString>(
+        &self,
+        title: Option<T>,
+        message: M,
+        time: Option<f64>,
+    );
 
     fn alert_clear(&self);
 }
 
 impl AsyncAlertHandler for AsyncApp {
-    fn alert_success<T: ToString>(&self, message: T, time: Option<f64>) {
+    fn alert_success<T: ToString, M: ToString>(
+        &self,
+        title: Option<T>,
+        message: M,
+        time: Option<f64>,
+    ) {
         let _ = self.update_global::<State, ()>(|global, _| {
             global.alert = Some(Alert {
-                string: message.to_string(),
-                severity: AlertSeverity::SUCCESS,
+                title: match title {
+                    Some(res) => Some(res.to_string()),
+                    None => None,
+                },
+                message: message.to_string(),
+                severity: AlertSeverity::ERROR,
                 _type: match time {
                     Some(res) => AlertType::Timed(res),
                     None => AlertType::UserMustClose,
@@ -162,11 +243,20 @@ impl AsyncAlertHandler for AsyncApp {
         });
     }
 
-    fn alert_info<T: ToString>(&self, message: T, time: Option<f64>) {
+    fn alert_info<T: ToString, M: ToString>(
+        &self,
+        title: Option<T>,
+        message: M,
+        time: Option<f64>,
+    ) {
         let _ = self.update_global::<State, ()>(|global, _| {
             global.alert = Some(Alert {
-                string: message.to_string(),
-                severity: AlertSeverity::INFO,
+                title: match title {
+                    Some(res) => Some(res.to_string()),
+                    None => None,
+                },
+                message: message.to_string(),
+                severity: AlertSeverity::ERROR,
                 _type: match time {
                     Some(res) => AlertType::Timed(res),
                     None => AlertType::UserMustClose,
@@ -175,11 +265,20 @@ impl AsyncAlertHandler for AsyncApp {
         });
     }
 
-    fn alert_warning<T: ToString>(&self, message: T, time: Option<f64>) {
+    fn alert_warning<T: ToString, M: ToString>(
+        &self,
+        title: Option<T>,
+        message: M,
+        time: Option<f64>,
+    ) {
         let _ = self.update_global::<State, ()>(|global, _| {
             global.alert = Some(Alert {
-                string: message.to_string(),
-                severity: AlertSeverity::WARNING,
+                title: match title {
+                    Some(res) => Some(res.to_string()),
+                    None => None,
+                },
+                message: message.to_string(),
+                severity: AlertSeverity::ERROR,
                 _type: match time {
                     Some(res) => AlertType::Timed(res),
                     None => AlertType::UserMustClose,
@@ -188,10 +287,19 @@ impl AsyncAlertHandler for AsyncApp {
         });
     }
 
-    fn alert_error<T: ToString>(&self, message: T, time: Option<f64>) {
+    fn alert_error<T: ToString, M: ToString>(
+        &self,
+        title: Option<T>,
+        message: M,
+        time: Option<f64>,
+    ) {
         let _ = self.update_global::<State, ()>(|global, _| {
             global.alert = Some(Alert {
-                string: message.to_string(),
+                title: match title {
+                    Some(res) => Some(res.to_string()),
+                    None => None,
+                },
+                message: message.to_string(),
                 severity: AlertSeverity::ERROR,
                 _type: match time {
                     Some(res) => AlertType::Timed(res),
@@ -227,6 +335,7 @@ impl Render for Base {
             .items_center()
             .text_color(&cx.style().text_colour)
             .child(cx.new(|_| ToolBar {}))
+            .child(AlertDisplay {}.render(window, cx))
             .child(cx.new(|_| Workspace {}))
             .child(cx.new(|_| StatusBar {}))
             // Modals

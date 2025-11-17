@@ -85,7 +85,7 @@ impl Render for ToolBar {
                                                     .ok();
                                             },
                                             None => {
-                                                __cx.alert_error("Could not open this path", Some(5000.0));
+                                                __cx.alert_error(None::<String>, "Could not open this path", Some(5000.0));
                                                 println!("No path was found")
                                             }
                                         }

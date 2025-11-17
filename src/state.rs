@@ -130,7 +130,7 @@ pub enum AlertSeverity {
     ERROR,
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub enum AlertType {
     Timed(f64),
     UserMustClose,
@@ -138,7 +138,8 @@ pub enum AlertType {
 
 #[derive(Clone)]
 pub struct Alert {
-    pub string: String,
+    pub title: Option<String>,
+    pub message: String,
     pub severity: AlertSeverity,
     pub _type: AlertType,
 }

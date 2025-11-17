@@ -1,3 +1,4 @@
+pub(crate) mod alert;
 pub(crate) mod collapsable_stack;
 pub(crate) mod control_bar;
 pub(crate) mod status_bar;

@@ -52,6 +52,14 @@ pub struct ControlBarStyle {
 }
 
 #[derive(Clone)]
+pub struct AlertStyle {
+    pub success: Colour,
+    pub info: Colour,
+    pub warning: Colour,
+    pub error: Colour,
+}
+
+#[derive(Clone)]
 /// Top level style struct
 pub struct Style {
     /// Text colour
@@ -92,6 +100,8 @@ pub struct Style {
     pub tabbar: TabBarStyle,
     /// Styling for the control bar, which is just under the tab bar
     pub controlbar: ControlBarStyle,
+    /// Styling for the alert popup
+    pub alert: AlertStyle,
 }
 
 impl Default for ToolBarStyle {
@@ -134,6 +144,17 @@ impl Default for ControlBarStyle {
     }
 }
 
+impl Default for AlertStyle {
+    fn default() -> Self {
+        Self {
+            success: Colour::Rgb(0x6bcb61),
+            info: Colour::Rgb(0x3675f2),
+            warning: Colour::Rgb(0xe0ce70),
+            error: Colour::Rgb(0xde5544),
+        }
+    }
+}
+
 impl Default for Style {
     fn default() -> Self {
         Self {
@@ -156,6 +177,7 @@ impl Default for Style {
             statusbar: Default::default(),
             tabbar: Default::default(),
             controlbar: Default::default(),
+            alert: Default::default(),
         }
     }
 }

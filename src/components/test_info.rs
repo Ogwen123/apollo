@@ -18,7 +18,6 @@ impl RenderOnce for TestInfo {
             .flex_row()
             .w_full()
             .h_full()
-            .bg(rgb(0xff0000))
             .items_end()
             .child(
                 div()
@@ -26,7 +25,6 @@ impl RenderOnce for TestInfo {
                     .flex_col()
                     .w(px(105.0))
                     .h_full()
-                    .bg(rgb(0x00ff00))
                     .justify_center()
                     .child(cx.new(|_cx| {
                         Icon::new()

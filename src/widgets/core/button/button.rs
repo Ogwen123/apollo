@@ -221,22 +221,42 @@ impl Button {
     }
     /// Border width in pixels
     pub fn border_t(mut self, w: Size) -> Self {
-        self.border_width = (w, self.border_width.1, self.border_width.2, self.border_width.3);
+        self.border_width = (
+            w,
+            self.border_width.1,
+            self.border_width.2,
+            self.border_width.3,
+        );
         self
     }
     /// Border width in pixels
     pub fn border_r(mut self, w: Size) -> Self {
-        self.border_width = (self.border_width.0, w, self.border_width.2, self.border_width.3);
+        self.border_width = (
+            self.border_width.0,
+            w,
+            self.border_width.2,
+            self.border_width.3,
+        );
         self
     }
     /// Border width in pixels
     pub fn border_b(mut self, w: Size) -> Self {
-        self.border_width = (self.border_width.0, self.border_width.1, w, self.border_width.3);
+        self.border_width = (
+            self.border_width.0,
+            self.border_width.1,
+            w,
+            self.border_width.3,
+        );
         self
     }
     /// Border width in pixels
     pub fn border_l(mut self, w: Size) -> Self {
-        self.border_width = (self.border_width.0, self.border_width.1, self.border_width.2, w);
+        self.border_width = (
+            self.border_width.0,
+            self.border_width.1,
+            self.border_width.2,
+            w,
+        );
         self
     }
     /// Border width in pixels

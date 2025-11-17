@@ -83,7 +83,8 @@ impl RenderOnce for IconButton {
             .border_t(self.border_width.0.abs())
             .border_r(self.border_width.1.abs())
             .border_b(self.border_width.2.abs())
-            .border_l(self.border_width.3.abs())            .when_some(self.border_colour, |_self, colour| {
+            .border_l(self.border_width.3.abs())
+            .when_some(self.border_colour, |_self, colour| {
                 _self.border_color(colour)
             })
             .bg(&self.colour)
@@ -217,22 +218,42 @@ impl IconButton {
     }
     /// Border width in pixels
     pub fn border_t(mut self, w: Size) -> Self {
-        self.border_width = (w, self.border_width.1, self.border_width.2, self.border_width.3);
+        self.border_width = (
+            w,
+            self.border_width.1,
+            self.border_width.2,
+            self.border_width.3,
+        );
         self
     }
     /// Border width in pixels
     pub fn border_r(mut self, w: Size) -> Self {
-        self.border_width = (self.border_width.0, w, self.border_width.2, self.border_width.3);
+        self.border_width = (
+            self.border_width.0,
+            w,
+            self.border_width.2,
+            self.border_width.3,
+        );
         self
     }
     /// Border width in pixels
     pub fn border_b(mut self, w: Size) -> Self {
-        self.border_width = (self.border_width.0, self.border_width.1, w, self.border_width.3);
+        self.border_width = (
+            self.border_width.0,
+            self.border_width.1,
+            w,
+            self.border_width.3,
+        );
         self
     }
     /// Border width in pixels
     pub fn border_l(mut self, w: Size) -> Self {
-        self.border_width = (self.border_width.0, self.border_width.1, self.border_width.2, w);
+        self.border_width = (
+            self.border_width.0,
+            self.border_width.1,
+            self.border_width.2,
+            w,
+        );
         self
     }
     /// Border width in pixels

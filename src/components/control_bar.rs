@@ -180,6 +180,7 @@ impl Render for ControlBar {
                                                 }
                                                 Err(err) => {
                                                     __cx.alert_error(
+                                                        Some("cargo_ptest: RunError"),
                                                         format!(
                                                             "Could not run tests: {}",
                                                             err.error
