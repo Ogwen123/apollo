@@ -6,7 +6,7 @@ use crate::widgets::core::button::button::{Button, ContentPosition};
 use crate::widgets::core::button::icon_button::IconButton;
 use crate::widgets::core::icon::Icons;
 use crate::widgets::core::modal::{Modal, ModalButtonOptions};
-use crate::{AsyncAlertHandler, ModalHelper};
+use crate::{AlertHandler, AsyncAlertHandler, ModalHelper};
 use gpui::prelude::FluentBuilder;
 use gpui::{
     AppContext, AsyncApp, Context, Div, DragMoveEvent, InteractiveElement, IntoElement,
@@ -140,6 +140,21 @@ impl Render for ToolBar {
                                     })
                             }
                             )
+                        }).render(window, cx)
+                    )
+                    .child(Button::new("test-button")
+                        .text(String::from("test"))
+                        .text_colour(&cx.style().text_colour)
+                        .justify_content(ContentPosition::Centre)
+                        .align_text(ContentPosition::Centre)
+                        .w(Size::Px(60f32))
+                        .h(cx.style().toolbar.button_height)
+                        .mx(cx.style().margin)
+                        .colour(&cx.style().toolbar.bg_colour)
+                        .hover_colour(Colour::Rgba(BUTTON_HOVER_COLOUR))
+                        .rounding_all(cx.style().rounding)
+                        .on_click(|_e, _window, _cx| {
+                            _cx.alert_success(Some("Title test"), "message test", None);
                         }).render(window, cx)
                     )
 

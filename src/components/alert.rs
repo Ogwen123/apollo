@@ -1,3 +1,4 @@
+use std::cmp::max;
 use crate::AlertHandler;
 use crate::state::{AlertSeverity, AlertType, State, StateProvider};
 use crate::style::{Colour, Size, StyleProvider};
@@ -5,9 +6,7 @@ use crate::widgets::core::button::button::ContentPosition;
 use crate::widgets::core::button::icon_button::IconButton;
 use crate::widgets::core::icon::Icons;
 use gpui::prelude::FluentBuilder;
-use gpui::{
-    App, BorrowAppContext, IntoElement, ParentElement, RenderOnce, Styled, Window, div, rgb,
-};
+use gpui::{App, BorrowAppContext, IntoElement, ParentElement, RenderOnce, Styled, Window, div, rgb, InteractiveElement, px};
 
 pub struct AlertDisplay {}
 
@@ -15,8 +14,22 @@ impl RenderOnce for AlertDisplay {
     fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
         let alert_option = cx.state().alert.clone();
 
+        let window_w = window.viewport_size().width.to_f64().floor() as i32;
+
+        let top_margin = 50.0;
+        let left_margin = 40.0;
+
+        let w = max(window_w - left_margin as i32 * 2, 0) as f32;
+
         div().when_some(alert_option, |_self, alert| {
             _self
+                .absolute()
+                .top(px(top_margin))
+                .left(px(left_margin))
+                .w(px(w))
+                .h(px(60.0))
+                .child(
+                div()
                 .flex()
                 .flex_row()
                 .bg(match alert.severity {
@@ -25,21 +38,22 @@ impl RenderOnce for AlertDisplay {
                     AlertSeverity::WARNING => &cx.style().alert.warning,
                     AlertSeverity::ERROR => &cx.style().alert.error,
                 })
-                .child(div()
-                    .flex_col()
-                    .when_else(
-                        alert.title.is_some(),
-                        |_self| _self.child(alert.title.unwrap()),
-                        |_self| {
-                            _self.child(match alert.severity {
-                                AlertSeverity::SUCCESS => "Success",
-                                AlertSeverity::INFO => "Info",
-                                AlertSeverity::WARNING => "Warning",
-                                AlertSeverity::ERROR => "Error",
-                            })
-                        },
-                    )
-                    .child(alert.message)
+                .child(
+                    div()
+                        .flex_col()
+                        .when_else(
+                            alert.title.is_some(),
+                            |_self| _self.child(alert.title.unwrap()),
+                            |_self| {
+                                _self.child(match alert.severity {
+                                    AlertSeverity::SUCCESS => "Success",
+                                    AlertSeverity::INFO => "Info",
+                                    AlertSeverity::WARNING => "Warning",
+                                    AlertSeverity::ERROR => "Error",
+                                })
+                            },
+                        )
+                        .child(alert.message),
                 )
                 .when(alert._type == AlertType::UserMustClose, |_self| {
                     _self.child(
@@ -61,6 +75,7 @@ impl RenderOnce for AlertDisplay {
                             .render(window, cx),
                     )
                 })
+            )
         })
     }
 }

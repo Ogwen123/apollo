@@ -5,6 +5,7 @@ mod style;
 mod utils;
 mod widgets;
 
+use crate::components::alert::AlertDisplay;
 use crate::components::status_bar::StatusBar;
 use crate::components::test_list::TestList;
 use crate::components::toolbar::ToolBar;
@@ -22,7 +23,6 @@ use std::env;
 use std::path::PathBuf;
 use std::rc::Rc;
 use std::sync::Arc;
-use crate::components::alert::AlertDisplay;
 
 type ModalBuilderFunction = Rc<dyn Fn(Modal, &mut Window, &mut App) -> Modal + 'static>;
 

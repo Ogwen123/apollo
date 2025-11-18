@@ -17,4 +17,5 @@ A rust testing tool written in rust using [gpui](https://gpui.rs) and my custom 
  - [ ] display the alerts from global state
  - [ ] make config modal for test running
  - [ ] fix tooltips not working
- - [ ] fix scrolling not working or add custom scrolling that scrolls through the list of tests rather than the div
+ - [ ] make custom scrolling because overflow_scroll doesn't work
+ - [ ] fix the test list pushing other elements of the page

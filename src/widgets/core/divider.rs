@@ -1,7 +1,7 @@
 use crate::style::{Colour, Size};
 use crate::widgets::styling::Direction;
 use gpui::prelude::FluentBuilder;
-use gpui::{App, IntoElement, Render, RenderOnce, Styled, Window, div, px};
+use gpui::{App, IntoElement, Render, RenderOnce, Styled, Window, div, px, Div, ParentElement};
 
 pub struct Divider {
     /// The colour of the divider

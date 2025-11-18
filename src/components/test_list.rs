@@ -18,18 +18,23 @@ impl Render for TestList {
 
         let height = px(30.0 * tests.len() as f32);
 
-        div().flex().flex_col().w_full().h(height).children({
-            let mut elements = Vec::new();
+        div()
+            .flex()
+            .flex_col()
+            .w_full()
+            //.h(height)
+            .children({
+                let mut elements = Vec::new();
 
-            for (index, test) in tests.iter().enumerate() {
-                elements.push(cx.new(|_| TestListItem {
-                    index,
-                    test_data: test.clone(),
-                }))
-            }
+                for (index, test) in tests.iter().enumerate() {
+                    elements.push(cx.new(|_| TestListItem {
+                        index,
+                        test_data: test.clone(),
+                    }))
+                }
 
-            elements
-        })
+                elements
+            })
         // .child(
         //     uniform_list(
         //         "uniform_test_list",

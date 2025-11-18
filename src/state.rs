@@ -351,6 +351,23 @@ impl State {
             })
             .collect::<Vec<Project>>();
     }
+    pub fn unselect_test(&mut self) {
+        self.open_projects = self
+            .open_projects
+            .clone()
+            .into_iter()
+            .map(|x| {
+                if x.id == self.active_project {
+                    Project {
+                        selected_test: None,
+                        ..x
+                    }
+                } else {
+                    x
+                }
+            })
+            .collect::<Vec<Project>>();
+    }
     pub fn get_selected_test(&self) -> Option<ParsedTest> {
         if !self.has_active_project() {
             return None;
