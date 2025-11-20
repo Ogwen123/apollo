@@ -19,7 +19,9 @@ impl Render for Workspace {
             .id("workspace")
             .flex()
             .flex_col()
-            .size_full()
+            .w_full()
+            .h_full()
+            .max_h_full()
             .when(projects.len() > 0, |_self| {
                 _self
                     .child(cx.new(|_| TabBar {}))

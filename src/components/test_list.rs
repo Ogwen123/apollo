@@ -1,9 +1,6 @@
 use crate::components::test_list_item::TestListItem;
 use crate::state::{Project, StateProvider};
-use gpui::{
-    AppContext, Context, Element, InteractiveElement, IntoElement, ParentElement, Render,
-    StatefulInteractiveElement, Styled, UniformListScrollHandle, Window, div, px, uniform_list,
-};
+use gpui::{AppContext, Context, Element, InteractiveElement, IntoElement, ParentElement, Render, StatefulInteractiveElement, Styled, UniformListScrollHandle, Window, div, px, uniform_list, App, RenderOnce};
 
 pub struct TestList {}
 
@@ -19,22 +16,32 @@ impl Render for TestList {
         let height = px(30.0 * tests.len() as f32);
 
         div()
-            .flex()
-            .flex_col()
+            .absolute()
+            .top(px(0.0))
+            .left(px(0.0))
+            .h(height)
             .w_full()
-            //.h(height)
-            .children({
-                let mut elements = Vec::new();
+            .child(
+                div()
+                    .id("test-list")
+                    .flex()
+                    .flex_col()
+                    .w_full()
+                    .h(height)
+                    .overflow_scroll()
+                    .children({
+                        let mut elements = Vec::new();
 
-                for (index, test) in tests.iter().enumerate() {
-                    elements.push(cx.new(|_| TestListItem {
-                        index,
-                        test_data: test.clone(),
-                    }))
-                }
+                        for (index, test) in tests.iter().enumerate() {
+                            elements.push(cx.new(|_| TestListItem {
+                                index,
+                                test_data: test.clone(),
+                            }))
+                        }
 
-                elements
-            })
+                        elements
+                    })
+            )
         // .child(
         //     uniform_list(
         //         "uniform_test_list",

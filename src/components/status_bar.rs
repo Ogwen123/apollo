@@ -1,9 +1,12 @@
 use crate::state::StateProvider;
 use crate::style::StyleProvider;
 use crate::widgets::core::divider::Divider;
+use crate::widgets::core::spinner::Spinner;
 use crate::widgets::styling::Direction;
 use gpui::prelude::FluentBuilder;
-use gpui::{Context, IntoElement, ParentElement, Render, RenderOnce, Styled, Window, div, px};
+use gpui::{
+    AppContext, Context, IntoElement, ParentElement, Render, RenderOnce, Styled, Window, div, px,
+};
 
 pub struct StatusBar {}
 
@@ -15,10 +18,21 @@ impl Render for StatusBar {
             .w_full()
             .px(cx.style().padding.def())
             .text_xs()
-            .bg(&cx.style().statusbar.bg_colour)
+            .bg(&cx.style().secondary_bg_colour)
+            .border_t(px(1.0))
+            .border_color(&cx.style().separator_colour)
             .child(div().w(px(100.0)).when_else(
                 cx.state().status.running_tests,
-                |_self| _self.child("Running tests"),
+                |_self| {
+                    _self.child(
+                        div()
+                            .flex()
+                            .flex_row()
+                            .items_center()
+                            .child(cx.new(|_| Spinner::new()))
+                            .child(div().ml(px(5.0)).child("Running tests")),
+                    )
+                },
                 |_self| _self.child("Idle"),
             ))
             .child(

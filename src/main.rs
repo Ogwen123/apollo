@@ -17,7 +17,7 @@ use crate::utils::file::{load_state, save_state};
 use crate::widgets::core::modal::Modal;
 use gpui::{
     App, Application, AsyncApp, Bounds, Context, SharedString, Task, TitlebarOptions, Window,
-    WindowBounds, WindowOptions, div, prelude::*, px, size,
+    WindowBounds, WindowOptions, anchored, div, prelude::*, px, size,
 };
 use std::env;
 use std::path::PathBuf;

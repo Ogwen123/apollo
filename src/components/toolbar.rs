@@ -28,7 +28,7 @@ impl Render for ToolBar {
             .flex_row()
             .w_full()
             .h(cx.style().toolbar.height.get())
-            .bg(&cx.style().toolbar.bg_colour)
+            .bg(&cx.style().secondary_bg_colour)
             .items_center()
             .text_color(&cx.style().text_colour)
             .child(
@@ -38,7 +38,7 @@ impl Render for ToolBar {
                     .flex_row()
                     .items_center()
                     .h_full()
-                    .bg(&cx.style().toolbar.bg_colour)
+                    .bg(&cx.style().secondary_bg_colour)
                     .child(div()
                         .text_xl()
                         .px(px(10.0))
@@ -51,7 +51,7 @@ impl Render for ToolBar {
                         .w(Size::Px(100.0))
                         .h(cx.style().toolbar.button_height)
                         .mx(cx.style().margin)
-                        .colour(&cx.style().toolbar.bg_colour)
+                        .colour(&cx.style().secondary_bg_colour)
                         .hover_colour(Colour::Rgba(BUTTON_HOVER_COLOUR))
                         .rounding_all(cx.style().rounding)
                         .on_click(|_e, _window, _cx| {
@@ -109,7 +109,7 @@ impl Render for ToolBar {
                         .w(Size::Px(60f32))
                         .h(cx.style().toolbar.button_height)
                         .mx(cx.style().margin)
-                        .colour(&cx.style().toolbar.bg_colour)
+                        .colour(&cx.style().secondary_bg_colour)
                         .hover_colour(Colour::Rgba(BUTTON_HOVER_COLOUR))
                         .rounding_all(cx.style().rounding)
                         .on_click(|_e, _window, _cx| {
@@ -150,7 +150,7 @@ impl Render for ToolBar {
                         .w(Size::Px(60f32))
                         .h(cx.style().toolbar.button_height)
                         .mx(cx.style().margin)
-                        .colour(&cx.style().toolbar.bg_colour)
+                        .colour(&cx.style().secondary_bg_colour)
                         .hover_colour(Colour::Rgba(BUTTON_HOVER_COLOUR))
                         .rounding_all(cx.style().rounding)
                         .on_click(|_e, _window, _cx| {
@@ -172,7 +172,7 @@ impl Render for ToolBar {
                             .h(cx.style().toolbar.button_height)
                             .icon_size(cx.style().toolbar.button_height * 0.75)
                             .mx(cx.style().margin.clone())
-                            .colour(&cx.style().toolbar.bg_colour)
+                            .colour(&cx.style().secondary_bg_colour)
                             .hover_colour(Colour::Rgba(BUTTON_HOVER_COLOUR))
                             .rounding_all(Size::Px(100.0))
                             .on_click(|_e, _window, cx| {

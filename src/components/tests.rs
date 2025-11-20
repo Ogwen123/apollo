@@ -3,11 +3,16 @@ use crate::components::test_list::TestList;
 use crate::components::test_list_item::TestListItem;
 use crate::state::{Project, State, StateProvider};
 use crate::style::{Colour, Size, StyleProvider};
-use crate::widgets::core::divider::{Divider};
+use crate::widgets::core::divider::Divider;
+use crate::widgets::core::spinner::Spinner;
 use crate::widgets::styling::Direction;
 use cargo_ptest::parse::AggregateSummary;
 use gpui::prelude::FluentBuilder;
-use gpui::{AppContext, Context, Element, InteractiveElement, IntoElement, ParentElement, Render, RenderOnce, SharedString, StatefulInteractiveElement, Styled, TextOverflow, UniformListScrollHandle, Window, div, percentage, px, rgb, MouseButton, BorrowAppContext};
+use gpui::{
+    AppContext, BorrowAppContext, Context, Element, InteractiveElement, IntoElement, MouseButton,
+    ParentElement, Render, RenderOnce, SharedString, StatefulInteractiveElement, Styled,
+    TextOverflow, UniformListScrollHandle, Window, div, percentage, px, rgb,
+};
 
 pub struct Tests {}
 
@@ -31,18 +36,18 @@ impl Render for Tests {
                 .tests
                 .unwrap()
                 .aggregate_summary();
+
             summary_line = div()
                 .id("summary")
                 .flex()
                 .flex_row()
+                .h(px(30.0))
                 .hover(|style| style.bg(Colour::Rgba(0xffffff22)))
                 .w_full()
                 .border_b(px(2.0))
                 .border_color(&cx.style().separator_colour)
                 .on_mouse_down(MouseButton::Left, |_, _, cx| {
-                    cx.update_global::<State, ()>(|global, _| {
-                        global.unselect_test()
-                    })
+                    cx.update_global::<State, ()>(|global, _| global.unselect_test())
                 })
                 .child(summary.passed.to_string())
                 .child(
@@ -132,66 +137,36 @@ impl Render for Tests {
 
         let test_list = div()
             .id("test-list-parent")
-            .flex()
-            .flex_grow()
+            .relative()
             .when_else(
                 position_side_by_side,
-                |_self| _self.h_full(),
-                |_self| _self.w_full(),
+                |_self| _self.max_w_1_3().h_full(),
+                |_self| _self.w_full()./*h_auto().max_*/h(px(600.0)),
             )
             .overflow_y_scroll()
             .child(cx.new(|_| TestList {}));
 
-        let has_selected_test = cx.state().has_active_project() && cx.state().get_selected_test().is_some();
         let test_info = div()
+            .flex()
             .id("test-info-parent")
             .when_else(
                 position_side_by_side,
-                |_self| _self.w_2_3().h_full(),
-                |_self| _self.w_full().h_1_3(),
+                |_self| _self.h_full().flex_grow(),
+                |_self| _self.w_full().flex_grow(),
             )
-            .when(
-                has_selected_test,
-                |_self| {
-                    _self.child(
-                        TestInfo {
-                            test: cx.state().get_selected_test().unwrap(),
-                        }
-                        .render(window, cx),
-                    )
-                })
-                .when(!has_selected_test, |_self| {
-                    _self.child(
-                        div()
-                            .flex()
-                            .flex_row()
-                            .w_full()
-                            .h_full()
-                            .child("show pie chart of results here")
-                            .child(
-                                Divider::new()
-                                       .thickness(1.0)
-                                       .colour(&cx.style().separator_colour)
-                                       .direction(Direction::Vertical)
-                                       .margin(5.0)
-                                       .render(window, cx)
-                            )
-                            .child("other data here")
-                    )
-                },
-            );
+            .child(TestInfo {}.render(window, cx));
 
         let tests_display = div()
             .flex()
-            .flex_col()
+            .bg(rgb(0x00ff00))
             .w_full()
-            .h_full()
+            .flex_grow()
             .when_else(
                 position_side_by_side,
                 |_self| _self.flex_row(),
                 |_self| _self.flex_col(),
             )
-            .child(summary_line)
+            //.child(summary_line)
             .child(
                 test_list, //.on_scroll_wheel(|e, _, _| println!("{:?}", e.delta)),
             )
@@ -206,9 +181,11 @@ impl Render for Tests {
 
         div()
             .flex()
+            .flex_col()
+            .bg(rgb(0xff0000))
             .h_full()
             .w_full()
-            .when(show_test, |_self| _self.child(tests_display))
+            .when(show_test, |_self| _self.child(summary_line).child(tests_display))
             .when(!show_test, |_self| {
                 // this is needed over a when_else so both closures don't borrow cx
                 _self.child(

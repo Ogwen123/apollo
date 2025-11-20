@@ -14,8 +14,6 @@ pub struct ToolBarStyle {
     pub height: Size,
     /// Height of the buttons in the toolbar, should be less than the height
     pub button_height: Size,
-    /// Background colour of the status bar
-    pub bg_colour: Colour,
 }
 
 #[derive(Clone)]
@@ -23,8 +21,6 @@ pub struct ToolBarStyle {
 pub struct StatusBarStyle {
     /// Height of the status bar
     pub height: Size,
-    /// Height of the status bar
-    pub bg_colour: Colour,
 }
 
 #[derive(Clone)]
@@ -68,6 +64,8 @@ pub struct Style {
     pub sub_text_colour: Colour,
     /// Background colour
     pub bg_colour: Colour,
+    /// Secondary background colour
+    pub secondary_bg_colour: Colour,
     /// Primary colour for interactive elements like buttons
     pub primary_colour: Colour,
     /// Primary hover colour for interactive elements like buttons
@@ -109,7 +107,6 @@ impl Default for ToolBarStyle {
         Self {
             height: Size::Px(40.0),
             button_height: Size::Px(30.0),
-            bg_colour: Colour::Rgb(0x2b2d30),
         }
     }
 }
@@ -118,7 +115,6 @@ impl Default for StatusBarStyle {
     fn default() -> Self {
         Self {
             height: Size::Px(20.0),
-            bg_colour: Colour::Rgb(0x2b2d30),
         }
     }
 }
@@ -161,6 +157,7 @@ impl Default for Style {
             text_colour: Colour::Rgb(0xffffff),
             sub_text_colour: Colour::Rgba(0xffffffbb),
             bg_colour: Colour::Rgb(0x1e1f22),
+            secondary_bg_colour: Colour::Rgb(0x2b2d30),
             primary_colour: Colour::Rgb(0x2563eb),
             hover_primary_colour: Colour::Rgb(0x1b46a6),
             secondary_colour: Colour::Rgb(0x2563eb),
