@@ -31,19 +31,24 @@ impl RenderOnce for AlertDisplay {
                 .left(px(left_margin))
                 .w(px(w))
                 .h(px(60.0))
+                .text_color(rgb(0x202020))
                 .child(
                     div()
                         .flex()
-                        .flex_row()
+                        .flex_col()
                         .bg(match alert.severity {
                             AlertSeverity::SUCCESS => &cx.style().alert.success,
                             AlertSeverity::INFO => &cx.style().alert.info,
                             AlertSeverity::WARNING => &cx.style().alert.warning,
                             AlertSeverity::ERROR => &cx.style().alert.error,
                         })
+                        .p(px(5.0))
+                        .rounded(cx.style().rounding.abs())
                         .child(
                             div()
-                                .flex_col()
+                                .flex()
+                                .flex_row()
+                                .justify_between()
                                 .when_else(
                                     alert.title.is_some(),
                                     |_self| _self.child(alert.title.unwrap()),
@@ -56,28 +61,28 @@ impl RenderOnce for AlertDisplay {
                                         })
                                     },
                                 )
-                                .child(alert.message),
+                                .when(alert._type == AlertType::UserMustClose, |_self| {
+                                    _self.child(
+                                        IconButton::new("alert-close-button")
+                                            .icon(Icons::Close)
+                                            .icon_colour(Colour::Rgb(0x202020))
+                                            .justify_content(ContentPosition::Centre)
+                                            .align_text(ContentPosition::Centre)
+                                            .w(Size::Px(22.0))
+                                            .h(Size::Px(22.0))
+                                            .icon_size(Size::Px(14.0))
+                                            .mx(cx.style().margin)
+                                            .colour(Colour::Rgba(0x00000000))
+                                            .hover_colour(Colour::Rgba(0xffffff22))
+                                            .rounding_all(Size::Px(100.0))
+                                            .on_click(move |e, window, _cx| {
+                                                _cx.alert_clear();
+                                            })
+                                            .render(window, cx),
+                                    )
+                                }),
                         )
-                        .when(alert._type == AlertType::UserMustClose, |_self| {
-                            _self.child(
-                                IconButton::new("alert-close-button")
-                                    .icon(Icons::Close)
-                                    .icon_colour(&cx.style().text_colour)
-                                    .justify_content(ContentPosition::Centre)
-                                    .align_text(ContentPosition::Centre)
-                                    .w(Size::Px(22.0))
-                                    .h(Size::Px(22.0))
-                                    .icon_size(Size::Px(14.0))
-                                    .mx(cx.style().margin)
-                                    .colour(Colour::Rgba(0x00000000))
-                                    .hover_colour(Colour::Rgba(0xffffff22))
-                                    .rounding_all(Size::Px(100.0))
-                                    .on_click(move |e, window, _cx| {
-                                        _cx.alert_clear();
-                                    })
-                                    .render(window, cx),
-                            )
-                        }),
+                        .child(alert.message),
                 )
         })
     }

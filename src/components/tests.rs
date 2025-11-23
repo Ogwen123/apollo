@@ -158,7 +158,6 @@ impl Render for Tests {
 
         let tests_display = div()
             .flex()
-            .bg(rgb(0x00ff00))
             .w_full()
             .flex_grow()
             .when_else(
@@ -182,10 +181,11 @@ impl Render for Tests {
         div()
             .flex()
             .flex_col()
-            .bg(rgb(0xff0000))
             .h_full()
             .w_full()
-            .when(show_test, |_self| _self.child(summary_line).child(tests_display))
+            .when(show_test, |_self| {
+                _self.child(summary_line).child(tests_display)
+            })
             .when(!show_test, |_self| {
                 // this is needed over a when_else so both closures don't borrow cx
                 _self.child(

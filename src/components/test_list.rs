@@ -1,6 +1,10 @@
 use crate::components::test_list_item::TestListItem;
 use crate::state::{Project, StateProvider};
-use gpui::{AppContext, Context, Element, InteractiveElement, IntoElement, ParentElement, Render, StatefulInteractiveElement, Styled, UniformListScrollHandle, Window, div, px, uniform_list, App, RenderOnce};
+use gpui::{
+    App, AppContext, Context, Element, InteractiveElement, IntoElement, ParentElement, Render,
+    RenderOnce, StatefulInteractiveElement, Styled, UniformListScrollHandle, Window, div, px,
+    uniform_list,
+};
 
 pub struct TestList {}
 
@@ -40,7 +44,7 @@ impl Render for TestList {
                         }
 
                         elements
-                    })
+                    }),
             )
         // .child(
         //     uniform_list(

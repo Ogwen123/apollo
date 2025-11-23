@@ -335,7 +335,6 @@ impl Render for Base {
             .items_center()
             .text_color(&cx.style().text_colour)
             .child(cx.new(|_| ToolBar {}))
-            .child(AlertDisplay {}.render(window, cx))
             .child(cx.new(|_| Workspace {}))
             .child(cx.new(|_| StatusBar {}))
             // Modals
@@ -352,6 +351,8 @@ impl Render for Base {
 
                 modals
             })
+            // Alert
+            .child(AlertDisplay {}.render(window, cx))
     }
 }
 

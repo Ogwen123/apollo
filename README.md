@@ -15,11 +15,14 @@ A rust testing tool written in rust using [gpui](https://gpui.rs) and my custom 
  - [ ] add Into traits to Size
  - [x] make cargo-ptest run async
  - [ ] display the alerts from global state
+    - [x] fix alert being behind ui
+    - [ ] make timer work
  - [ ] make config modal for test running
  - [ ] fix tooltips not working
  - [ ] make custom scrolling because overflow_scroll doesn't work
  - [x] fix the test list pushing other elements of the page
  - [ ] fix spinner animation not working
+ - [ ] make pie chart for summary
 ## Feature List
  - [x] Run tests with cargo-ptest
  - [ ] View the code that makes up each test

@@ -56,6 +56,22 @@ pub struct AlertStyle {
 }
 
 #[derive(Clone)]
+pub struct TestInfoStyle {
+    /// Background colour of the error section
+    pub error_background: Colour,
+    /// Foreground colour of the error section
+    pub error_foreground: Colour,
+    /// Background colour of the ignore reason section
+    pub ignore_background: Colour,
+    /// Foreground colour of the ignore reason section
+    pub ignore_foreground: Colour,
+    /// Background colour of the note section
+    pub note_background: Colour,
+    /// Foreground colour of the note section
+    pub note_foreground: Colour
+}
+
+#[derive(Clone)]
 /// Top level style struct
 pub struct Style {
     /// Text colour
@@ -100,6 +116,8 @@ pub struct Style {
     pub controlbar: ControlBarStyle,
     /// Styling for the alert popup
     pub alert: AlertStyle,
+    /// Styling for the test info panel
+    pub test_info: TestInfoStyle,
 }
 
 impl Default for ToolBarStyle {
@@ -151,6 +169,19 @@ impl Default for AlertStyle {
     }
 }
 
+impl Default for TestInfoStyle {
+    fn default() -> Self {
+        Self {
+            error_background: Colour::Rgb(0x1e1f22),
+            error_foreground: Colour::Rgb(0xde5544),
+            ignore_background: Colour::Rgb(0x1e1f22),
+            ignore_foreground: Colour::Rgb(0xde5544),
+            note_background: Colour::Rgb(0x1e1f22),
+            note_foreground: Colour::Rgb(0xde5544),
+        }
+    }
+}
+
 impl Default for Style {
     fn default() -> Self {
         Self {
@@ -175,6 +206,7 @@ impl Default for Style {
             tabbar: Default::default(),
             controlbar: Default::default(),
             alert: Default::default(),
+            test_info: Default::default(),
         }
     }
 }
