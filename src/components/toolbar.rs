@@ -85,14 +85,14 @@ impl Render for ToolBar {
                                                     .ok();
                                             },
                                             None => {
-                                                __cx.alert_error(None::<String>, "Could not open this path", Some(5000.0));
+                                                __cx.alert_error(None::<String>, "Could not open this path", Some(5000));
                                                 println!("No path was found")
                                             }
                                         }
 
                                     }
                                     Err(err) => {
-                                        // TODO: add proper error handling once implemented
+                                        __cx.alert_error(None::<String>, "An error occurred when opening new folder", Some(5000));
                                         println!("The following error occurred when opening new folder");
                                         println!("{}", err)
                                     }
@@ -154,7 +154,7 @@ impl Render for ToolBar {
                         .hover_colour(Colour::Rgba(BUTTON_HOVER_COLOUR))
                         .rounding_all(cx.style().rounding)
                         .on_click(|_e, _window, _cx| {
-                            _cx.alert_success(Some("Title test"), "message test", None);
+                            _cx.alert_success(Some("Title test"), "message test", Some(1000));
                         }).render(window, cx)
                     )
 

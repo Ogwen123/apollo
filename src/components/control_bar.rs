@@ -185,7 +185,7 @@ impl Render for ControlBar {
                                                             "Could not run tests: {}",
                                                             err.error
                                                         ),
-                                                        Some(5000.0),
+                                                        Some(5000),
                                                     );
                                                 }
                                             };

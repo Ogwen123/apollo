@@ -132,7 +132,7 @@ pub enum AlertSeverity {
 
 #[derive(Clone, PartialEq)]
 pub enum AlertType {
-    Timed(f64),
+    Timed(u64),
     UserMustClose,
 }
 

@@ -14,9 +14,9 @@ A rust testing tool written in rust using [gpui](https://gpui.rs) and my custom 
  - [x] switch passing the style to each component to use cx.global struct
  - [ ] add Into traits to Size
  - [x] make cargo-ptest run async
- - [ ] display the alerts from global state
+ - [x] display the alerts from global state
     - [x] fix alert being behind ui
-    - [ ] make timer work
+    - [x] make timer work
  - [ ] make config modal for test running
  - [ ] fix tooltips not working
  - [ ] make custom scrolling because overflow_scroll doesn't work

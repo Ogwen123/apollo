@@ -20,9 +20,14 @@ use gpui::{
     WindowBounds, WindowOptions, anchored, div, prelude::*, px, size,
 };
 use std::env;
+use std::env::set_current_dir;
 use std::path::PathBuf;
 use std::rc::Rc;
 use std::sync::Arc;
+use std::time::Duration;
+use cargo_ptest::config::Config;
+use cargo_ptest::run::run;
+use crate::utils::logger::warning;
 
 type ModalBuilderFunction = Rc<dyn Fn(Modal, &mut Window, &mut App) -> Modal + 'static>;
 
@@ -70,28 +75,28 @@ trait AlertHandler {
         &mut self,
         title: Option<T>,
         message: M,
-        time: Option<f64>,
+        time: Option<u64>,
     );
 
     fn alert_info<T: ToString, M: ToString>(
         &mut self,
         title: Option<T>,
         message: M,
-        time: Option<f64>,
+        time: Option<u64>,
     );
 
     fn alert_warning<T: ToString, M: ToString>(
         &mut self,
         title: Option<T>,
         message: M,
-        time: Option<f64>,
+        time: Option<u64>,
     );
 
     fn alert_error<T: ToString, M: ToString>(
         &mut self,
         title: Option<T>,
         message: M,
-        time: Option<f64>,
+        time: Option<u64>,
     );
 
     fn alert_clear(&mut self);
@@ -102,9 +107,9 @@ impl AlertHandler for App {
         &mut self,
         title: Option<T>,
         message: M,
-        time: Option<f64>,
+        time: Option<u64>,
     ) {
-        self.update_global::<State, ()>(|global, _| {
+        self.update_global::<State, ()>(|global, cx| {
             global.alert = Some(Alert {
                 title: match title {
                     Some(res) => Some(res.to_string()),
@@ -117,14 +122,21 @@ impl AlertHandler for App {
                     None => AlertType::UserMustClose,
                 },
             });
-        })
+        });
+        if time.is_some() {
+            let _ = self.spawn(async move |_cx| {
+                _cx.background_executor().timer(Duration::from_millis(time.unwrap())).await;
+                _cx.alert_clear();
+                let _ = _cx.refresh();
+            }).detach();
+        }
     }
 
     fn alert_info<T: ToString, M: ToString>(
         &mut self,
         title: Option<T>,
         message: M,
-        time: Option<f64>,
+        time: Option<u64>,
     ) {
         self.update_global::<State, ()>(|global, _| {
             global.alert = Some(Alert {
@@ -139,14 +151,21 @@ impl AlertHandler for App {
                     None => AlertType::UserMustClose,
                 },
             });
-        })
+        });
+        if time.is_some() {
+            let _ = self.spawn(async move |_cx| {
+                _cx.background_executor().timer(Duration::from_millis(time.unwrap())).await;
+                _cx.alert_clear();
+                let _ = _cx.refresh();
+            });
+        }
     }
 
     fn alert_warning<T: ToString, M: ToString>(
         &mut self,
         title: Option<T>,
         message: M,
-        time: Option<f64>,
+        time: Option<u64>,
     ) {
         self.update_global::<State, ()>(|global, _| {
             global.alert = Some(Alert {
@@ -161,14 +180,21 @@ impl AlertHandler for App {
                     None => AlertType::UserMustClose,
                 },
             });
-        })
+        });
+        if time.is_some() {
+            let _ = self.spawn(async move |_cx| {
+                _cx.background_executor().timer(Duration::from_millis(time.unwrap())).await;
+                _cx.alert_clear();
+                let _ = _cx.refresh();
+            });
+        }
     }
 
     fn alert_error<T: ToString, M: ToString>(
         &mut self,
         title: Option<T>,
         message: M,
-        time: Option<f64>,
+        time: Option<u64>,
     ) {
         self.update_global::<State, ()>(|global, _| {
             global.alert = Some(Alert {
@@ -183,7 +209,14 @@ impl AlertHandler for App {
                     None => AlertType::UserMustClose,
                 },
             });
-        })
+        });
+        if time.is_some() {
+            let _ = self.spawn(async move |_cx| {
+                _cx.background_executor().timer(Duration::from_millis(time.unwrap())).await;
+                _cx.alert_clear();
+                let _ = _cx.refresh();
+            });
+        }
     }
 
     fn alert_clear(&mut self) {
@@ -198,23 +231,23 @@ trait AsyncAlertHandler {
         &self,
         title: Option<T>,
         message: M,
-        time: Option<f64>,
+        time: Option<u64>,
     );
 
-    fn alert_info<T: ToString, M: ToString>(&self, title: Option<T>, message: M, time: Option<f64>);
+    fn alert_info<T: ToString, M: ToString>(&self, title: Option<T>, message: M, time: Option<u64>);
 
     fn alert_warning<T: ToString, M: ToString>(
         &self,
         title: Option<T>,
         message: M,
-        time: Option<f64>,
+        time: Option<u64>,
     );
 
     fn alert_error<T: ToString, M: ToString>(
         &self,
         title: Option<T>,
         message: M,
-        time: Option<f64>,
+        time: Option<u64>,
     );
 
     fn alert_clear(&self);
@@ -225,7 +258,7 @@ impl AsyncAlertHandler for AsyncApp {
         &self,
         title: Option<T>,
         message: M,
-        time: Option<f64>,
+        time: Option<u64>,
     ) {
         let _ = self.update_global::<State, ()>(|global, _| {
             global.alert = Some(Alert {
@@ -241,13 +274,20 @@ impl AsyncAlertHandler for AsyncApp {
                 },
             });
         });
+        if time.is_some() {
+            let _ = self.spawn(async move |_cx| {
+                _cx.background_executor().timer(Duration::from_millis(time.unwrap())).await;
+                _cx.alert_clear();
+                let _ = _cx.refresh();
+            });
+        }
     }
 
     fn alert_info<T: ToString, M: ToString>(
         &self,
         title: Option<T>,
         message: M,
-        time: Option<f64>,
+        time: Option<u64>,
     ) {
         let _ = self.update_global::<State, ()>(|global, _| {
             global.alert = Some(Alert {
@@ -263,13 +303,20 @@ impl AsyncAlertHandler for AsyncApp {
                 },
             });
         });
+        if time.is_some() {
+            let _ = self.spawn(async move |_cx| {
+                _cx.background_executor().timer(Duration::from_millis(time.unwrap())).await;
+                _cx.alert_clear();
+                let _ = _cx.refresh();
+            });
+        }
     }
 
     fn alert_warning<T: ToString, M: ToString>(
         &self,
         title: Option<T>,
         message: M,
-        time: Option<f64>,
+        time: Option<u64>,
     ) {
         let _ = self.update_global::<State, ()>(|global, _| {
             global.alert = Some(Alert {
@@ -285,13 +332,20 @@ impl AsyncAlertHandler for AsyncApp {
                 },
             });
         });
+        if time.is_some() {
+            let _ = self.spawn(async move |_cx| {
+                _cx.background_executor().timer(Duration::from_millis(time.unwrap())).await;
+                _cx.alert_clear();
+                let _ = _cx.refresh();
+            });
+        }
     }
 
     fn alert_error<T: ToString, M: ToString>(
         &self,
         title: Option<T>,
         message: M,
-        time: Option<f64>,
+        time: Option<u64>,
     ) {
         let _ = self.update_global::<State, ()>(|global, _| {
             global.alert = Some(Alert {
@@ -307,6 +361,13 @@ impl AsyncAlertHandler for AsyncApp {
                 },
             });
         });
+        if time.is_some() {
+            let _ = self.spawn(async move |_cx| {
+                _cx.background_executor().timer(Duration::from_millis(time.unwrap())).await;
+                _cx.alert_clear();
+                let _ = _cx.refresh();
+            });
+        }
     }
 
     fn alert_clear(&self) {
