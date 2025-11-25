@@ -135,16 +135,20 @@ impl Render for Tests {
             summary_line = div().id("empty-summary");
         }
 
+        let test_list_viewport = 600.0;
+
         let test_list = div()
             .id("test-list-parent")
             .relative()
             .when_else(
                 position_side_by_side,
                 |_self| _self.max_w_1_3().h_full(),
-                |_self| _self.w_full()./*h_auto().max_*/h(px(600.0)),
+                |_self| _self.w_full()./*h_auto().max_*/h(px(test_list_viewport)),
             )
             .overflow_y_scroll()
-            .child(cx.new(|_| TestList {}));
+            .child(TestList {
+                test_list_viewport
+            }.render(window, cx));
 
         let test_info = div()
             .flex()

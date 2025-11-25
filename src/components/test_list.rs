@@ -1,29 +1,43 @@
 use crate::components::test_list_item::TestListItem;
-use crate::state::{Project, StateProvider};
-use gpui::{
-    App, AppContext, Context, Element, InteractiveElement, IntoElement, ParentElement, Render,
-    RenderOnce, StatefulInteractiveElement, Styled, UniformListScrollHandle, Window, div, px,
-    uniform_list,
-};
+use crate::state::{Project, ScrollHandles, StateProvider};
+use gpui::{App, AppContext, Context, Element, InteractiveElement, IntoElement, ParentElement, Render, RenderOnce, StatefulInteractiveElement, Styled, UniformListScrollHandle, Window, div, px, uniform_list, BorrowAppContext};
 
-pub struct TestList {}
+pub struct TestList {
+    pub test_list_viewport: f32
+}
 
-impl Render for TestList {
-    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+impl RenderOnce for TestList {
+    fn render(mut self, _window: &mut Window, cx: &mut App) -> impl IntoElement {
         let tests = cx
             .state()
             .get_active_project()
             .unwrap_or(Project::default())
             .tests_linear()
-            .unwrap();
+            .unwrap_or(Vec::new());
 
-        let height = px(30.0 * tests.len() as f32);
+        let line_height = 30.0;
+        let raw_height = line_height * tests.len() as f32;
+        let height = px(raw_height);
 
         div()
             .absolute()
-            .top(px(0.0))
+            .top(px(cx.global::<ScrollHandles>().test_list))
             .left(px(0.0))
             .h(height)
+            .on_scroll_wheel(move |e, _, cx| {
+                let current = cx.global::<ScrollHandles>().test_list;
+                let delta = e.delta.pixel_delta(px(1.0)).y.to_f64() as f32;
+
+                cx.update_global::<ScrollHandles, ()>(|global, _| {
+                    if current + delta < -(raw_height - self.test_list_viewport) {
+                        global.test_list = -(raw_height - self.test_list_viewport);
+                    } else if current + delta > 0.0 {
+                        global.test_list = 0.0;
+                    } else {
+                        global.test_list += delta;
+                    }
+                })
+            })
             .w_full()
             .child(
                 div()

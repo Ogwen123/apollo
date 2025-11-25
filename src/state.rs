@@ -420,3 +420,10 @@ impl Default for State {
         }
     }
 }
+
+// SCROLL HANDLING
+pub struct ScrollHandles {
+    pub test_list: f32
+}
+
+impl Global for ScrollHandles {}

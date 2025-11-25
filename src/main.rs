@@ -10,7 +10,7 @@ use crate::components::status_bar::StatusBar;
 use crate::components::test_list::TestList;
 use crate::components::toolbar::ToolBar;
 use crate::components::workspace::Workspace;
-use crate::state::{Alert, AlertSeverity, AlertType, State, StateProvider};
+use crate::state::{Alert, AlertSeverity, AlertType, ScrollHandles, State, StateProvider};
 use crate::style::{GlobalStyle, Style, StyleProvider};
 use crate::utils::assets::Assets;
 use crate::utils::file::{load_state, save_state};
@@ -460,6 +460,7 @@ fn main() {
             state.csd = csd;
             cx.set_global(state);
             cx.set_global(GlobalStyle(Arc::new(Style::default())));
+            cx.set_global(ScrollHandles {test_list: 0.0});
 
             let _ = cx
                 .on_app_quit(|_cx| {
