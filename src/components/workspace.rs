@@ -37,7 +37,7 @@ impl Render for Workspace {
                         .justify_center()
                         .items_center()
                         .text_size(px(50.0))
-                        .text_color(&cx.style().sub_text_colour)
+                        .text_color(&cx.style().muted_text_colour)
                         .child("Open a project to start"),
                 )
             })

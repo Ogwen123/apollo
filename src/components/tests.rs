@@ -199,7 +199,7 @@ impl Render for Tests {
                         .justify_center()
                         .items_center()
                         .text_size(px(30.0))
-                        .text_color(&cx.style().sub_text_colour)
+                        .text_color(&cx.style().muted_text_colour)
                         .text_overflow(TextOverflow::Truncate(SharedString::new("...")))
                         .child("Click the \"Run Tests\" button for the tests to appear here."),
                 )

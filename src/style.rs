@@ -81,7 +81,7 @@ pub struct Style {
     /// Text colour
     pub text_colour: Colour,
     /// Text colour that is slightly more muted than the main text colour
-    pub sub_text_colour: Colour,
+    pub muted_text_colour: Colour,
     /// Background colour
     pub bg_colour: Colour,
     /// Secondary background colour
@@ -192,7 +192,7 @@ impl Default for Style {
     fn default() -> Self {
         Self {
             text_colour: Colour::Rgb(0xffffff),
-            sub_text_colour: Colour::Rgba(0xffffffbb),
+            muted_text_colour: Colour::Rgba(0xffffffbb),
             bg_colour: Colour::Rgb(0x1e1f22),
             secondary_bg_colour: Colour::Rgb(0x2b2d30),
             primary_colour: Colour::Rgb(0x2563eb),

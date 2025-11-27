@@ -67,7 +67,7 @@ impl Render for ControlBar {
                     .flex()
                     .flex_row()
                     .text_sm()
-                    .text_color(&cx.style().sub_text_colour)
+                    .text_color(&cx.style().muted_text_colour)
                     .ml(cx.style().margin.get())
                     .py(px(2.0))
                     .children({
@@ -223,16 +223,82 @@ impl Render for ControlBar {
                                     .tooltip("Edit run settings")
                                     .on_click(|_e, _window, _cx| {
                                         _window.open_modal(_cx, |modal, __window, __cx| {
-                                            modal
-                                                .title("Run Config")
-                                                .body(
+                                            
+                                            let modal_body = div()
+                                                .size_full()
+                                                .child(
                                                     div()
-                                                        .child("Lib")
-                                                        .child("Bin")
-                                                        .child("Docs")
-                                                        .child("Workspace")
-                                                        .child("No Fail Fast"),
+                                                        .flex()
+                                                        .flex_row()
+                                                        .justify_between()
+                                                        .pb(__cx.style().padding.abs())
+                                                        .child(div().flex().flex_col().child("Lib").child(div().text_color(&__cx.style().muted_text_colour).text_xs().child("Run the library tests")))
+                                                        .child(
+                                                            __cx.state()
+                                                                .run_args
+                                                                .lib
+                                                                .to_string(),
+                                                        ),
                                                 )
+                                                .child(
+                                                    div()
+                                                        .flex()
+                                                        .flex_row()
+                                                        .justify_between()
+                                                        .pb(__cx.style().padding.abs())
+                                                        .child(div().flex().flex_col().child("Bin").child(div().text_color(&__cx.style().muted_text_colour).text_xs().child("Run the binary tests")))
+                                                        .child(
+                                                            __cx.state()
+                                                                .run_args
+                                                                .bin
+                                                                .to_string(),
+                                                        ),
+                                                )
+                                                .child(
+                                                    div()
+                                                        .flex()
+                                                        .flex_row()
+                                                        .justify_between()
+                                                        .pb(__cx.style().padding.abs())
+                                                        .child(div().flex().flex_col().child("Docs").child(div().text_color(&__cx.style().muted_text_colour).text_xs().child("Run the doc tests")))
+                                                        .child(
+                                                            __cx.state()
+                                                                .run_args
+                                                                .docs
+                                                                .to_string(),
+                                                        ),
+                                                )
+                                                .child(
+                                                    div()
+                                                        .flex()
+                                                        .flex_row()
+                                                        .justify_between()
+                                                        .pb(__cx.style().padding.abs())
+                                                        .child(div().flex().flex_col().child("Workspace").child(div().text_color(&__cx.style().muted_text_colour).text_xs().child("Run the workspace tests")))
+                                                        .child(
+                                                            __cx.state()
+                                                                .run_args
+                                                                .workspace
+                                                                .to_string(),
+                                                        ),
+                                                )
+                                                .child(
+                                                    div()
+                                                        .flex()
+                                                        .flex_row()
+                                                        .justify_between()
+                                                        .pb(__cx.style().padding.abs())
+                                                        .child(div().flex().flex_col().child("No Fail Fast").child(div().text_color(&__cx.style().muted_text_colour).text_xs().child("Continue tests after a failure")))
+                                                        .child(
+                                                            __cx.state()
+                                                                .run_args
+                                                                .no_fail_fast
+                                                                .to_string(),
+                                                        ),
+                                                );
+                                            modal
+                                                .title("Run Configuration")
+                                                .body(modal_body)
                                                 .h(px(500.0))
                                                 .w(px(500.0))
                                                 .rounding(__cx.style().rounding)
