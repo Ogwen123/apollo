@@ -44,6 +44,7 @@ impl Render for Tests {
                 .h(px(30.0))
                 .hover(|style| style.bg(Colour::Rgba(0xffffff22)))
                 .w_full()
+                .pl(cx.style().padding.abs())
                 .border_b(px(2.0))
                 .border_color(&cx.style().separator_colour)
                 .on_mouse_down(MouseButton::Left, |_, _, cx| {
@@ -146,9 +147,7 @@ impl Render for Tests {
                 |_self| _self.w_full()./*h_auto().max_*/h(px(test_list_viewport)),
             )
             .overflow_y_scroll()
-            .child(TestList {
-                test_list_viewport
-            }.render(window, cx));
+            .child(TestList { test_list_viewport }.render(window, cx));
 
         let test_info = div()
             .flex()

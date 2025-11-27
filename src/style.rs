@@ -68,7 +68,11 @@ pub struct TestInfoStyle {
     /// Background colour of the note section
     pub note_background: Colour,
     /// Foreground colour of the note section
-    pub note_foreground: Colour
+    pub note_foreground: Colour,
+    /// Padding on the info blocks
+    pub block_padding: Size,
+    /// Padding for the information grid
+    pub grid_padding: Size,
 }
 
 #[derive(Clone)]
@@ -178,6 +182,8 @@ impl Default for TestInfoStyle {
             ignore_foreground: Colour::Rgb(0xde5544),
             note_background: Colour::Rgb(0x1e1f22),
             note_foreground: Colour::Rgb(0xde5544),
+            block_padding: Size::Px(8.0),
+            grid_padding: Size::Px(4.0),
         }
     }
 }

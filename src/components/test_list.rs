@@ -1,9 +1,13 @@
 use crate::components::test_list_item::TestListItem;
 use crate::state::{Project, ScrollHandles, StateProvider};
-use gpui::{App, AppContext, Context, Element, InteractiveElement, IntoElement, ParentElement, Render, RenderOnce, StatefulInteractiveElement, Styled, UniformListScrollHandle, Window, div, px, uniform_list, BorrowAppContext};
+use gpui::{
+    App, AppContext, BorrowAppContext, Context, Element, InteractiveElement, IntoElement,
+    ParentElement, Render, RenderOnce, StatefulInteractiveElement, Styled, UniformListScrollHandle,
+    Window, div, px, uniform_list,
+};
 
 pub struct TestList {
-    pub test_list_viewport: f32
+    pub test_list_viewport: f32,
 }
 
 impl RenderOnce for TestList {
@@ -19,6 +23,8 @@ impl RenderOnce for TestList {
         let raw_height = line_height * tests.len() as f32;
         let height = px(raw_height);
 
+        let scroll_speed = 2.0;
+
         div()
             .absolute()
             .top(px(cx.global::<ScrollHandles>().test_list))
@@ -26,7 +32,7 @@ impl RenderOnce for TestList {
             .h(height)
             .on_scroll_wheel(move |e, _, cx| {
                 let current = cx.global::<ScrollHandles>().test_list;
-                let delta = e.delta.pixel_delta(px(1.0)).y.to_f64() as f32;
+                let delta = e.delta.pixel_delta(px(1.0)).y.to_f64() as f32 * scroll_speed;
 
                 cx.update_global::<ScrollHandles, ()>(|global, _| {
                     if current + delta < -(raw_height - self.test_list_viewport) {

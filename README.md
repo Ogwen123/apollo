@@ -23,6 +23,7 @@ A rust testing tool written in rust using [gpui](https://gpui.rs) and my custom 
  - [x] fix the test list pushing other elements of the page
  - [ ] fix spinner animation not working
  - [ ] make pie chart for summary
+ - [ ] fix laggyness
 ## Feature List
  - [x] Run tests with cargo-ptest
  - [ ] View the code that makes up each test

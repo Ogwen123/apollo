@@ -31,16 +31,20 @@ impl Render for TestListItem {
                     .flex()
                     .flex_row()
                     .h_full()
-                    .child(index.to_string())
                     .child(
                         div()
-                            .w(px(70.0))
+                            .w(px(100.0))
+                            .pl(cx.style().padding.abs())
                             .text_color(match self.test_data.status {
                                 Status::Failed => &cx.style().failed_colour,
                                 Status::Ignored => &cx.style().ignore_colour,
                                 Status::Passed => &cx.style().passed_colour,
                             })
-                            .child(self.test_data.status.to_string()),
+                            .child(match self.test_data.status {
+                                Status::Failed => "Failed",
+                                Status::Ignored => "Ignored",
+                                Status::Passed => "Passed",
+                            }),
                     )
                     .child(self.test_data.module_path.clone()),
             )

@@ -14,7 +14,10 @@ use crate::state::{Alert, AlertSeverity, AlertType, ScrollHandles, State, StateP
 use crate::style::{GlobalStyle, Style, StyleProvider};
 use crate::utils::assets::Assets;
 use crate::utils::file::{load_state, save_state};
+use crate::utils::logger::warning;
 use crate::widgets::core::modal::Modal;
+use cargo_ptest::config::Config;
+use cargo_ptest::run::run;
 use gpui::{
     App, Application, AsyncApp, Bounds, Context, SharedString, Task, TitlebarOptions, Window,
     WindowBounds, WindowOptions, anchored, div, prelude::*, px, size,
@@ -25,9 +28,6 @@ use std::path::PathBuf;
 use std::rc::Rc;
 use std::sync::Arc;
 use std::time::Duration;
-use cargo_ptest::config::Config;
-use cargo_ptest::run::run;
-use crate::utils::logger::warning;
 
 type ModalBuilderFunction = Rc<dyn Fn(Modal, &mut Window, &mut App) -> Modal + 'static>;
 
@@ -124,11 +124,15 @@ impl AlertHandler for App {
             });
         });
         if time.is_some() {
-            let _ = self.spawn(async move |_cx| {
-                _cx.background_executor().timer(Duration::from_millis(time.unwrap())).await;
-                _cx.alert_clear();
-                let _ = _cx.refresh();
-            }).detach();
+            let _ = self
+                .spawn(async move |_cx| {
+                    _cx.background_executor()
+                        .timer(Duration::from_millis(time.unwrap()))
+                        .await;
+                    _cx.alert_clear();
+                    let _ = _cx.refresh();
+                })
+                .detach();
         }
     }
 
@@ -154,7 +158,9 @@ impl AlertHandler for App {
         });
         if time.is_some() {
             let _ = self.spawn(async move |_cx| {
-                _cx.background_executor().timer(Duration::from_millis(time.unwrap())).await;
+                _cx.background_executor()
+                    .timer(Duration::from_millis(time.unwrap()))
+                    .await;
                 _cx.alert_clear();
                 let _ = _cx.refresh();
             });
@@ -183,7 +189,9 @@ impl AlertHandler for App {
         });
         if time.is_some() {
             let _ = self.spawn(async move |_cx| {
-                _cx.background_executor().timer(Duration::from_millis(time.unwrap())).await;
+                _cx.background_executor()
+                    .timer(Duration::from_millis(time.unwrap()))
+                    .await;
                 _cx.alert_clear();
                 let _ = _cx.refresh();
             });
@@ -212,7 +220,9 @@ impl AlertHandler for App {
         });
         if time.is_some() {
             let _ = self.spawn(async move |_cx| {
-                _cx.background_executor().timer(Duration::from_millis(time.unwrap())).await;
+                _cx.background_executor()
+                    .timer(Duration::from_millis(time.unwrap()))
+                    .await;
                 _cx.alert_clear();
                 let _ = _cx.refresh();
             });
@@ -276,7 +286,9 @@ impl AsyncAlertHandler for AsyncApp {
         });
         if time.is_some() {
             let _ = self.spawn(async move |_cx| {
-                _cx.background_executor().timer(Duration::from_millis(time.unwrap())).await;
+                _cx.background_executor()
+                    .timer(Duration::from_millis(time.unwrap()))
+                    .await;
                 _cx.alert_clear();
                 let _ = _cx.refresh();
             });
@@ -305,7 +317,9 @@ impl AsyncAlertHandler for AsyncApp {
         });
         if time.is_some() {
             let _ = self.spawn(async move |_cx| {
-                _cx.background_executor().timer(Duration::from_millis(time.unwrap())).await;
+                _cx.background_executor()
+                    .timer(Duration::from_millis(time.unwrap()))
+                    .await;
                 _cx.alert_clear();
                 let _ = _cx.refresh();
             });
@@ -334,7 +348,9 @@ impl AsyncAlertHandler for AsyncApp {
         });
         if time.is_some() {
             let _ = self.spawn(async move |_cx| {
-                _cx.background_executor().timer(Duration::from_millis(time.unwrap())).await;
+                _cx.background_executor()
+                    .timer(Duration::from_millis(time.unwrap()))
+                    .await;
                 _cx.alert_clear();
                 let _ = _cx.refresh();
             });
@@ -363,7 +379,9 @@ impl AsyncAlertHandler for AsyncApp {
         });
         if time.is_some() {
             let _ = self.spawn(async move |_cx| {
-                _cx.background_executor().timer(Duration::from_millis(time.unwrap())).await;
+                _cx.background_executor()
+                    .timer(Duration::from_millis(time.unwrap()))
+                    .await;
                 _cx.alert_clear();
                 let _ = _cx.refresh();
             });
@@ -460,7 +478,7 @@ fn main() {
             state.csd = csd;
             cx.set_global(state);
             cx.set_global(GlobalStyle(Arc::new(Style::default())));
-            cx.set_global(ScrollHandles {test_list: 0.0});
+            cx.set_global(ScrollHandles { test_list: 0.0 });
 
             let _ = cx
                 .on_app_quit(|_cx| {
