@@ -18,6 +18,8 @@ use gpui::{
 };
 use std::env::set_current_dir;
 use std::path::PathBuf;
+use crate::widgets::core::checkbox::CheckBox;
+use crate::widgets::core::icon::Icons::Check;
 
 fn run_tests(
     dir: PathBuf,
@@ -234,10 +236,21 @@ impl Render for ControlBar {
                                                         .pb(__cx.style().padding.abs())
                                                         .child(div().flex().flex_col().child("Lib").child(div().text_color(&__cx.style().muted_text_colour).text_xs().child("Run the library tests")))
                                                         .child(
-                                                            __cx.state()
-                                                                .run_args
-                                                                .lib
-                                                                .to_string(),
+                                                            __cx.new(|___cx| CheckBox::new()
+                                                                .checked(___cx.state().run_args.lib)
+                                                                .checked_colour(&___cx.style().primary_colour)
+                                                                .unchecked_colour(Colour::Rgba(0x00000000))
+                                                                .symbol_colour(Colour::Rgba(0xffffffaa))
+                                                                .border_colour(&___cx.style().muted_text_colour)
+                                                                .border(Size::Px(2.0))
+                                                                .size(Size::Px(20.0))
+                                                                .on_toggle(|e, ____window, ____cx| {
+                                                                    ____cx.update_global::<State, ()>(|global, _| {
+                                                                        global.run_args.lib = !global.run_args.lib;
+                                                                    });
+                                                                    ____window.refresh()
+                                                                })
+                                                            )
                                                         ),
                                                 )
                                                 .child(
@@ -248,10 +261,21 @@ impl Render for ControlBar {
                                                         .pb(__cx.style().padding.abs())
                                                         .child(div().flex().flex_col().child("Bin").child(div().text_color(&__cx.style().muted_text_colour).text_xs().child("Run the binary tests")))
                                                         .child(
-                                                            __cx.state()
-                                                                .run_args
-                                                                .bin
-                                                                .to_string(),
+                                                            __cx.new(|___cx| CheckBox::new()
+                                                                .checked(___cx.state().run_args.bin)
+                                                                .checked_colour(&___cx.style().primary_colour)
+                                                                .unchecked_colour(Colour::Rgba(0x00000000))
+                                                                .symbol_colour(Colour::Rgba(0xffffffaa))
+                                                                .border_colour(&___cx.style().muted_text_colour)
+                                                                .border(Size::Px(2.0))
+                                                                .size(Size::Px(20.0))
+                                                                .on_toggle(|e, ____window, ____cx| {
+                                                                    ____cx.update_global::<State, ()>(|global, _| {
+                                                                        global.run_args.bin = !global.run_args.bin;
+                                                                    });
+                                                                    ____window.refresh()
+                                                                })
+                                                            )
                                                         ),
                                                 )
                                                 .child(
@@ -262,10 +286,22 @@ impl Render for ControlBar {
                                                         .pb(__cx.style().padding.abs())
                                                         .child(div().flex().flex_col().child("Docs").child(div().text_color(&__cx.style().muted_text_colour).text_xs().child("Run the doc tests")))
                                                         .child(
-                                                            __cx.state()
-                                                                .run_args
-                                                                .docs
-                                                                .to_string(),
+                                                            __cx.new(|___cx| CheckBox::new()
+                                                                .checked(___cx.state().run_args.docs)
+                                                                .checked_colour(&___cx.style().primary_colour)
+                                                                .unchecked_colour(Colour::Rgba(0x00000000))
+                                                                .symbol_colour(Colour::Rgba(0xffffffaa))
+                                                                .border_colour(&___cx.style().muted_text_colour)
+                                                                .border(Size::Px(2.0))
+                                                                .size(Size::Px(20.0))
+                                                                .on_toggle(|e, ____window, ____cx| {
+                                                                    ____cx.update_global::<State, ()>(|global, _| {
+                                                                        global.run_args.docs = !global.run_args.docs;
+                                                                    });
+                                                                    ____window.refresh()
+
+                                                                })
+                                                            )
                                                         ),
                                                 )
                                                 .child(
@@ -276,10 +312,21 @@ impl Render for ControlBar {
                                                         .pb(__cx.style().padding.abs())
                                                         .child(div().flex().flex_col().child("Workspace").child(div().text_color(&__cx.style().muted_text_colour).text_xs().child("Run the workspace tests")))
                                                         .child(
-                                                            __cx.state()
-                                                                .run_args
-                                                                .workspace
-                                                                .to_string(),
+                                                            __cx.new(|___cx| CheckBox::new()
+                                                                .checked(___cx.state().run_args.workspace)
+                                                                .checked_colour(&___cx.style().primary_colour)
+                                                                .unchecked_colour(Colour::Rgba(0x00000000))
+                                                                .symbol_colour(Colour::Rgba(0xffffffaa))
+                                                                .border_colour(&___cx.style().muted_text_colour)
+                                                                .border(Size::Px(2.0))
+                                                                .size(Size::Px(20.0))
+                                                                .on_toggle(|e, ____window, ____cx| {
+                                                                    ____cx.update_global::<State, ()>(|global, _| {
+                                                                        global.run_args.workspace = !global.run_args.workspace;
+                                                                    });
+                                                                    ____window.refresh()
+                                                                })
+                                                            )
                                                         ),
                                                 )
                                                 .child(
@@ -290,10 +337,21 @@ impl Render for ControlBar {
                                                         .pb(__cx.style().padding.abs())
                                                         .child(div().flex().flex_col().child("No Fail Fast").child(div().text_color(&__cx.style().muted_text_colour).text_xs().child("Continue tests after a failure")))
                                                         .child(
-                                                            __cx.state()
-                                                                .run_args
-                                                                .no_fail_fast
-                                                                .to_string(),
+                                                            __cx.new(|___cx| CheckBox::new()
+                                                                .checked(___cx.state().run_args.no_fail_fast)
+                                                                .checked_colour(&___cx.style().primary_colour)
+                                                                .unchecked_colour(Colour::Rgba(0x00000000))
+                                                                .symbol_colour(Colour::Rgba(0xffffffaa))
+                                                                .border_colour(&___cx.style().muted_text_colour)
+                                                                .border(Size::Px(2.0))
+                                                                .size(Size::Px(20.0))
+                                                                .on_toggle(|e, ____window, ____cx| {
+                                                                    ____cx.update_global::<State, ()>(|global, _| {
+                                                                        global.run_args.no_fail_fast = !global.run_args.no_fail_fast;
+                                                                    });
+                                                                    ____window.refresh()
+                                                                })
+                                                            )
                                                         ),
                                                 );
                                             modal

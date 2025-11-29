@@ -4,4 +4,4 @@ pub mod icon;
 pub mod modal;
 pub mod spinner;
 pub mod tooltip;
-mod checkbox;
+pub mod checkbox;
