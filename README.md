@@ -18,12 +18,14 @@ A rust testing tool written in rust using [gpui](https://gpui.rs) and my custom 
     - [x] fix alert being behind ui
     - [x] make timer work
  - [x] make custom scrolling because overflow_scroll doesn't work
- - [ ] make config modal for test running
- - [ ] fix tooltips not working
- - [x] fix the test list pushing other elements of the page
- - [ ] fix spinner animation not working
+ - [x] make config modal for test running
  - [ ] make pie chart for summary
- - [ ] fix laggyness
+## Bug Fixes
+- [ ] fix tooltips not working
+- [x] fix the test list pushing other elements of the page
+- [ ] fix spinner animation not working
+- [ ] fix laggyness
+
 ## Feature List
  - [x] Run tests with cargo-ptest
  - [ ] View the code that makes up each test
