@@ -4,11 +4,35 @@ use crate::style::{Colour, Size};
 
 pub struct PieChartData {
     /// The name for the segment
-    name: SharedString,
+    pub name: SharedString,
     /// The number of elements this section represents
-    count: i64,
+    pub count: f64,
     /// The colour the segment will be
-    colour: Option<Colour>
+    pub colour: Option<Colour>
+}
+
+impl PieChartData {
+    pub fn new<N, C, T>(name: N, count: C, colour: T) -> Self
+    where
+        N: Into<SharedString>,
+        C: Into<f64>,
+        T: Into<Colour>
+    {
+        PieChartData {
+            name: SharedString::new(""),
+            count: 1.0,
+            colour: Some(Colour::Rgb(0x00ff00))
+        }
+    }
+
+    pub fn from<N, C, T>(names: Vec<N>, count: Vec<C>, colours: Vec<T>) -> Vec<Self>
+    where
+        N: Into<SharedString>,
+        C: Into<f64>,
+        T: Into<Colour>
+    {
+     Vec::new()
+    }
 }
 
 pub struct PieChart {
