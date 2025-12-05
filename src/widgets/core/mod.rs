@@ -5,4 +5,4 @@ pub mod modal;
 pub mod spinner;
 pub mod tooltip;
 pub mod checkbox;
-mod PieChart;
+mod piechart;
